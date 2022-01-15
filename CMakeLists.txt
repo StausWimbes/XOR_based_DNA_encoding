@@ -4,4 +4,4 @@ project(XOR_based_DNA_encoding)
 set(CMAKE_CXX_STANDARD 23)
 
 add_library(XOR_based_DNA_encoding SHARED library.cpp)
-add_executable(XOR_based_DNA_encoding_main main.cpp library.cpp library.h)
+add_executable(XOR_based_DNA_encoding_main main.cpp library.cpp library.h encode.cpp encode.h)
