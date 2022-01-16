@@ -11,7 +11,7 @@ namespace xorCode {
 
     struct strand {
         uint32_t payloadLength;
-        char *payload;
+        uint8_t *payload;
         uint64_t lowAddress;
         std::string *highAddress;
     };

@@ -23,8 +23,8 @@ namespace xorCode {
 
         bool end = false;
         while (!end) {
-            char *payload = new char[length];
-            auto readChars = input.readsome(payload, length);
+            auto *payload = new unsigned char[length];
+            auto readChars = input.readsome(reinterpret_cast<char *>(payload), length);
             if (readChars != length) {
                 end = true;
             }
