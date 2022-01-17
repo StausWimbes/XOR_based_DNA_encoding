@@ -4,7 +4,7 @@
 
 namespace xorCode {
 
-    std::vector<strand *> createStrands(std::string filePath, uint32_t length) {
+    std::vector<strand *> createStrands(const std::string &filePath, uint32_t length) {
         std::ifstream input(filePath, std::ios::binary);
         if (input.is_open()) {
             std::string key = filePath.substr(filePath.find_last_of("/\\") + 1);
@@ -17,7 +17,7 @@ namespace xorCode {
         }
     }
 
-    std::vector<strand *> createStrands(std::string key, std::ifstream &input, uint32_t length) {
+    std::vector<strand *> createStrands(const std::string &key, std::ifstream &input, uint32_t length) {
         auto *strands = new std::vector<strand *>();
 
         if (sizeof(uint8_t) != sizeof(char)) {
