@@ -19,6 +19,12 @@ namespace xorCode {
 
     std::vector<strand *> createStrands(std::string key, std::ifstream &input, uint32_t length) {
         auto *strands = new std::vector<strand *>();
+
+        if (sizeof(uint8_t) != sizeof(char)) {
+            std::cerr << "Unsupported platform!\n";
+            return *strands;
+        }
+
         uint64_t address = 0;
 
         bool end = false;
