@@ -26,7 +26,7 @@ namespace xorCode {
         }
 
         uint64_t address = 0;
-
+        auto *highAddress = new std::string(key);
         bool end = false;
         while (!end) {
             auto *payload = new unsigned char[length];
@@ -36,11 +36,11 @@ namespace xorCode {
             }
             if (readChars == 0) {
                 delete[](payload);
+                end = true;
             } else {
                 auto newStrand = new strand();
                 newStrand->payloadLength = readChars;
                 newStrand->payload = payload;
-                auto *highAddress = new std::string(key); // TODO use one pointer for all?
                 newStrand->highAddress = highAddress;
                 newStrand->lowAddress = address;
 

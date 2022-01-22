@@ -15,11 +15,11 @@ int main() {
         std::cout << "\"" << strands[i]->payload << "\"\n";
     }
 
-    auto data = new uint8_t[5];
-    for (int i = 0; i < 5; ++i) {
-        data[i] = 'a' + i;
+    auto data = new uint8_t[52];
+    for (int i = 0; i < 52; ++i) {
+        data[i] = 'A' + i;
     }
-    auto result = xorCode::convertBinaryToBase3(data, 5);
+    auto result = xorCode::convertBinaryToBase3(data, 52);
     std::cout << result << '\n';
     std::cout << xorCode::convertBase3ToNucleotides('A', result) << '\n';
 
