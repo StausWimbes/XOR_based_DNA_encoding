@@ -7,11 +7,11 @@
 
 namespace xorCode {
 
-    std::string &convertToNucleotides(uint8_t *buffer, uint32_t size);
+    std::string &convertBinaryToNucleotides(uint8_t *buffer, uint32_t size);
 
-    std::string &convertToHuffmanBase3(uint8_t *buffer, uint32_t size);
+    std::string &convertBinaryToBase3(uint8_t *buffer, uint32_t size);
 
-    std::string &convertHuffmanToNucleotides(std::string &intermediateCode);
+    std::string &convertBase3ToNucleotides(char prev, const std::string &intermediateCode);
 
 }
 
