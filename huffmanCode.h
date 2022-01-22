@@ -10,15 +10,32 @@ namespace xorCode {
 
     struct TreeNode {
 
+        virtual void fillMap(std::unordered_map<uint8_t, std::string> *map, std::list<char> *curSeq) const = 0;
+
+        virtual uint8_t decode(const std::string &seq, int *pos) const = 0;
+
+    };
+
+    struct Leaf : public TreeNode {
+
         uint8_t byte;
-        bool leaf;
+
+        explicit Leaf(uint8_t byte);
+
+        void fillMap(std::unordered_map<uint8_t, std::string> *map, std::list<char> *curSeq) const override;
+
+        uint8_t decode(const std::string &seq, int *pos) const override;
+    };
+
+    struct Composite : public TreeNode {
+
         TreeNode *left, *middle, *right;
 
-        TreeNode(TreeNode *left, TreeNode *middle, TreeNode *right);
+        Composite(TreeNode *left, TreeNode *middle, TreeNode *right);
 
-        explicit TreeNode(uint8_t digit);
+        void fillMap(std::unordered_map<uint8_t, std::string> *map, std::list<char> *curSeq) const override;
 
-        void fillMap(std::unordered_map<uint8_t, std::string> *map, std::list<char> *curSeq) const;
+        uint8_t decode(const std::string &seq, int *pos) const override;
     };
 
     class HuffmanCode {

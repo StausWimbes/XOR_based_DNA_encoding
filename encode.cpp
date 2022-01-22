@@ -6,8 +6,7 @@
 
 namespace xorCode {
 
-    char *order = new char[4];
-    bool init = false;
+    char *order = new char[]{'A', 'C', 'G', 'T'};
 
     std::string &convertBinaryToNucleotides(uint8_t *buffer, uint32_t size) {
         return convertBase3ToNucleotides('A', convertBinaryToBase3(buffer, size));
@@ -46,13 +45,6 @@ namespace xorCode {
     }
 
     std::string &convertBase3ToNucleotides(const char prev, const std::string &intermediateCode) {
-        if (!init) {
-            init = true;
-            order[0] = 'A';
-            order[1] = 'C';
-            order[2] = 'G';
-            order[3] = 'T';
-        }
         auto result = new std::string();
         auto curPrev = prev;
         for (char t: intermediateCode) {

@@ -2,6 +2,7 @@
 #include <filesystem>
 #include "strands.h"
 #include "encode.h"
+#include "huffmanCode.h"
 
 int main() {
     std::cout << "Working directory: " << std::filesystem::current_path() << "\n";
@@ -16,9 +17,17 @@ int main() {
 
     auto data = new uint8_t[5];
     for (int i = 0; i < 5; ++i) {
-        data[i] = 23;
+        data[i] = 'a' + i;
     }
     auto result = xorCode::convertBinaryToBase3(data, 5);
     std::cout << result << '\n';
     std::cout << xorCode::convertBase3ToNucleotides('A', result) << '\n';
+
+    int pos = 0;
+    auto decoder = xorCode::HuffmanCode::getInstance();
+    std::string result2;
+    while (pos < result.length()) {
+        result2.append(sizeof(char), decoder->decodeToByte(result, &pos));
+    }
+    std::cout << result2 << '\n';
 }
