@@ -12,14 +12,18 @@ int main() {
     for (int i = 0; i < strands.size(); i++) {
         std::cout << "Strand #" << i << " (" << strands[i]->payloadLength << ") with key " << *strands[i]->highAddress
                   << " and address " << strands[i]->lowAddress << ":\n";
-        std::cout << "\"" << strands[i]->payload << "\"\n";
+        auto nucleotides = xorCode::convertBinaryToNucleotides(strands[i]->payload, 5);
+        std::cout << "\"" << nucleotides << "\"\n";
+        auto original = xorCode::convertNucleotidesToBinary(nucleotides);
+        std::cout << "\"" << original << "\"\n";
     }
 
-    auto data = new uint8_t[52];
-    for (int i = 0; i < 52; ++i) {
-        data[i] = 'A' + i;
+    /*
+    auto data = new uint8_t[256];
+    for (int i = 0; i < 256; ++i) {
+        data[i] = i;
     }
-    auto result = xorCode::convertBinaryToBase3(data, 52);
+    auto result = xorCode::convertBinaryToBase3(data, 256);
     std::cout << result << '\n';
     std::cout << xorCode::convertBase3ToNucleotides('A', result) << '\n';
 
@@ -30,4 +34,5 @@ int main() {
         result2.append(sizeof(char), decoder->decodeToByte(result, &pos));
     }
     std::cout << result2 << '\n';
+     */
 }

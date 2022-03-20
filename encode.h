@@ -13,6 +13,12 @@ namespace xorCode {
 
     std::string &convertBase3ToNucleotides(char prev, const std::string &intermediateCode);
 
+    std::string &convertNucleotidesToBinary(const std::string &nucleotides);
+
+    std::string &convertNucleotidesToBase3(char prev, const std::string &nucleotides);
+
+    std::string &convertBase3ToBinary(const std::string &intermediateCode);
+
 }
 
 #endif //XOR_BASED_DNA_ENCODING_ENCODE_H

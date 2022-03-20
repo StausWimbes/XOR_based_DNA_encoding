@@ -3,6 +3,7 @@
 
 #include <string>
 #include <cstdint>
+#include <iostream>
 
 namespace xorCode {
 
@@ -21,35 +22,67 @@ namespace xorCode {
         return *result;
     }
 
-    char getNucleotide(const char &ternary, const char &prev) {
-        int prevIndex;
-        switch (prev) {
+    uint32_t getIndex(const char &nucleotide) {
+        int result;
+        switch (nucleotide) {
             case 'A':
-                prevIndex = 1;
+                result = 1;
                 break;
             case 'C':
-                prevIndex = 2;
+                result = 2;
                 break;
             case 'G':
-                prevIndex = 3;
+                result = 3;
                 break;
             case 'T':
-                prevIndex = 0;
+                result = 0;
                 break;
             default:
-                prevIndex = 1;
+                result = 1;
         }
-        prevIndex += std::stoi(&ternary);
-        prevIndex %= 4;
-        return order[prevIndex];
+        return result;
     }
 
     std::string &convertBase3ToNucleotides(const char prev, const std::string &intermediateCode) {
         auto result = new std::string();
         auto curPrev = prev;
         for (char t: intermediateCode) {
-            curPrev = getNucleotide(t, curPrev);
+            uint32_t prevIndex = getIndex(curPrev);
+            prevIndex += std::stoi(&t);
+            prevIndex %= 4;
+            curPrev = order[prevIndex];
             result->append(sizeof(char), curPrev);
+        }
+        return *result;
+    }
+
+    std::string &convertNucleotidesToBinary(const std::string &nucleotides) {
+        return convertBase3ToBinary(convertNucleotidesToBase3('A', nucleotides));
+    }
+
+    std::string &convertNucleotidesToBase3(char prev, const std::string &nucleotides) {
+        auto result = new std::string();
+        auto curPrev = prev;
+        for (char t: nucleotides) {
+            uint8_t prevIndex = getIndex(curPrev);
+            uint8_t curIndex = getIndex(t);
+            if (curIndex <= prevIndex) {
+                curIndex += 4;
+            }
+            uint8_t res = curIndex - (prevIndex + 1) + '0';
+            result->append(sizeof(char), res);
+            curPrev = t;
+        }
+        return *result;
+    }
+
+    std::string &convertBase3ToBinary(const std::string &intermediateCode) {
+        auto decoder = HuffmanCode::getInstance();
+        auto result = new std::string;
+        int p = 0;
+        int *pos = &p;
+        while (p < intermediateCode.length()) {
+            result->append(sizeof(char), decoder->decodeToByte(intermediateCode, pos));
         }
         return *result;
     }
