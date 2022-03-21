@@ -4,19 +4,33 @@
 #include "encode.h"
 #include "huffmanCode.h"
 
+bool doOutput = false;
+uint32_t length = 5;
+
 int main() {
     std::cout << "Working directory: " << std::filesystem::current_path() << "\n";
-    auto strands = xorCode::createStrands("../test.txt", 5);
+    auto strands = xorCode::createStrands("../test2.txt", length);
     std::cout << "Strands: " << strands.size() << "\n";
+    auto results = new std::vector<std::string>;
 
     for (int i = 0; i < strands.size(); i++) {
-        std::cout << "Strand #" << i << " (" << strands[i]->payloadLength << ") with key " << *strands[i]->highAddress
-                  << " and address " << strands[i]->lowAddress << ":\n";
-        auto nucleotides = xorCode::convertBinaryToNucleotides(strands[i]->payload, 5);
-        std::cout << "\"" << nucleotides << "\"\n";
-        auto original = xorCode::convertNucleotidesToBinary(nucleotides);
-        std::cout << "\"" << original << "\"\n";
+        if (doOutput) {
+            std::cout << "Strand #" << i << " (" << strands[i]->payloadLength << ") with key "
+                      << *strands[i]->highAddress << " and address " << strands[i]->lowAddress << ":\n";
+        }
+        auto nucleotides = xorCode::convertBinaryToNucleotides(strands[i]->payload, length);
+        if (doOutput)
+            std::cout << "\"" << nucleotides << "\"\n";
+        results->push_back(nucleotides);
     }
+
+    std::cout << "Original File: \n";
+    for (auto &result: *results) {
+        auto original = xorCode::convertNucleotidesToBinary(result);
+        if (doOutput)
+            std::cout << original;
+    }
+    std::cout << "Done" << '\n';
 
     /*
     auto data = new uint8_t[256];
