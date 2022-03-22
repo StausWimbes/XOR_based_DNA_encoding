@@ -31,13 +31,15 @@ namespace xorCode {
         while (!end) {
             auto *payload = new unsigned char[length];
             auto readChars = input.readsome(reinterpret_cast<char *>(payload), length);
-            if (readChars != length) {
-                end = true;
-            }
+
             if (readChars == 0) {
                 delete[](payload);
                 end = true;
             } else {
+                if (readChars != length) {
+                    readChars += input.readsome(reinterpret_cast<char *>(payload + readChars), length - readChars);
+                }
+
                 auto newStrand = new strand();
                 newStrand->payloadLength = readChars;
                 newStrand->payload = payload;
