@@ -13,7 +13,10 @@ namespace xorCode {
         uint32_t payloadLength;
         uint8_t *payload;
         uint64_t lowAddress;
-        std::string *highAddress;
+        bool xOr;
+        std::string *primer;
+
+        std::string assemble();
     };
 
     /**
@@ -32,6 +35,8 @@ namespace xorCode {
      * @return the vector of strands
      */
     std::vector<strand *> createStrands(const std::string &key, std::ifstream &input, uint32_t length);
+
+    std::vector<strand *> createXOrStrands(std::vector<strand *> strands);
 
 }
 

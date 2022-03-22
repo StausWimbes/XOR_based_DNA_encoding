@@ -26,7 +26,6 @@ namespace xorCode {
         }
 
         uint64_t address = 0;
-        auto *highAddress = new std::string(key);
         bool end = false;
         while (!end) {
             auto *payload = new unsigned char[length];
@@ -43,8 +42,9 @@ namespace xorCode {
                 auto newStrand = new strand();
                 newStrand->payloadLength = readChars;
                 newStrand->payload = payload;
-                newStrand->highAddress = highAddress;
+                newStrand->xOr = false;
                 newStrand->lowAddress = address;
+                // TODO: create and set primer newStrand->primer = ;
 
                 strands->push_back(newStrand);
 
@@ -53,5 +53,15 @@ namespace xorCode {
         }
 
         return *strands;
+    }
+
+    std::vector<strand *> createXOrStrands(std::vector<strand *> strands) {
+        // TODO: implement
+        return std::vector<strand *>();
+    }
+
+    std::string strand::assemble() {
+        // TODO: implement
+        return std::string();
     }
 }
