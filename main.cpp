@@ -15,10 +15,10 @@ int main() {
 
     for (int i = 0; i < strands.size(); i++) {
         if (doOutput) {
-            std::cout << "Strand #" << i << " (" << strands[i]->payloadLength << ") with key "
-                      << *strands[i]->highAddress << " and address " << strands[i]->lowAddress << ":\n";
+            std::cout << "Strand #" << i << " (" << strands[i]->payloadLength << ") with address "
+                      << strands[i]->lowAddress << ":\n";
         }
-        auto nucleotides = xorCode::convertBinaryToNucleotides(strands[i]->payload, length);
+        auto nucleotides = xorCode::convertBinaryToNucleotides('A', strands[i]->payload, length);
         if (doOutput)
             std::cout << "\"" << nucleotides << "\"\n";
         results->push_back(nucleotides);
@@ -26,7 +26,7 @@ int main() {
 
     std::cout << "Original File: \n";
     for (auto &result: *results) {
-        auto original = xorCode::convertNucleotidesToBinary(result);
+        auto original = xorCode::convertNucleotidesToBinary('A', result);
         if (doOutput)
             std::cout << original;
     }
