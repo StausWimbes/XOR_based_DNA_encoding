@@ -1,24 +1,33 @@
 
 #include "settings.h"
 
+const int MAX_NUCLEOTIDES_PER_BYTE = 6;
+
+// 54 for address + 2 for S Nucleotides + 24 for Primers + MAX_NUCLEOTIDES_PER_BYTE for at least one byte in payload
+const int MIN_STRAND_LENGTH = 80 + MAX_NUCLEOTIDES_PER_BYTE;
 
 int maxStrandLength = 100; // in nucleotides
-int payloadCharLength = 10; // in chars/bytes
+int payloadByteLength = 10; // in bytes
+
+const int MIN_XOR_SIZE = 2;
+const int MIN_XOR_STEP = 1;
 
 int xOrSize = 3; // the amount of strands involved in each xOr
-int xOrStep = 1;
-//int xOrRepeat = 2; // the amount of xOrs a single strand is involved in
+int xOrStep = 3;
 
 int getMaxStrandLength() {
     return maxStrandLength;
 }
 
 void setMaxStrandLength(int length) {
-    // TODO: implement
+    if (length >= MIN_STRAND_LENGTH) {
+        maxStrandLength = length;
+        payloadByteLength = (length - MIN_STRAND_LENGTH + MAX_NUCLEOTIDES_PER_BYTE) / MAX_NUCLEOTIDES_PER_BYTE;
+    }
 }
 
-int getPayloadCharLength() {
-    return payloadCharLength;
+int getPayloadByteLength() {
+    return payloadByteLength;
 }
 
 int getXOrSize() {
@@ -26,7 +35,9 @@ int getXOrSize() {
 }
 
 void setXOrSize(int size) {
-    // TODO: implement
+    if (size >= MIN_XOR_SIZE) {
+        xOrSize = size;
+    }
 }
 
 int getXOrStep() {
@@ -34,5 +45,7 @@ int getXOrStep() {
 }
 
 void setXOrStep(int step) {
-    // TODO: implement
+    if (step >= MIN_XOR_STEP) {
+        xOrStep = step;
+    }
 }
