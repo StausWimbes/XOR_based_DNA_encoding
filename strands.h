@@ -6,6 +6,7 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <memory>
 
 namespace xorCode {
 
@@ -17,7 +18,7 @@ namespace xorCode {
         std::string *primer = new std::string;
         std::string *primerInv = new std::string;
 
-        std::string assemble();
+        std::shared_ptr<std::string> assemble();
     };
 
     /**

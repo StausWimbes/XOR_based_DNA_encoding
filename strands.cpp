@@ -3,6 +3,7 @@
 #include "encode.h"
 #include "settings.h"
 #include <iostream>
+#include <memory>
 
 namespace xorCode {
 
@@ -64,12 +65,12 @@ namespace xorCode {
         return std::vector<strand *>();
     }
 
-    std::string strand::assemble() {
-        auto result = std::string();
-        result.append(*primer);
-        result.append(sizeof(char), 'A');
-        result.append(convertBinaryToNucleotides('A', payload, getPayloadByteLength()));
-        char last = result[result.size() - 1];
+    std::shared_ptr<std::string> strand::assemble() {
+        std::shared_ptr<std::string> result(new std::string);
+        result->append(*primer);
+        result->append(sizeof(char), 'A');
+        result->append(*convertBinaryToNucleotides('A', payload, getPayloadByteLength()));
+        char last = (*result)[result->size() - 1];
         auto address = new uint8_t[9];
         if (xOr) {
             address[0] = 255;
@@ -80,9 +81,9 @@ namespace xorCode {
         for (int i = 0; i < 8; ++i) {
             address[i + 1] = low[i];
         }
-        result.append(convertBinaryToNucleotides(last, address, 9));
-        result.append(sizeof(char), 'A');
-        result.append(*primerInv);
+        result->append(*convertBinaryToNucleotides(last, address, 9));
+        result->append(sizeof(char), 'A');
+        result->append(*primerInv);
         return result;
     }
 }

@@ -13,9 +13,11 @@ int main() {
     std::cout << "Strands: " << strands.size() << "\n";
     auto results = new std::vector<std::string>;
 
+    auto start = std::chrono::high_resolution_clock::now();
+
     for (int i = 0; i < strands.size(); i++) {
-        auto assembled = strands[i]->assemble();
-        auto nucleotides = xorCode::convertBinaryToNucleotides('A', strands[i]->payload, getPayloadByteLength());
+        auto assembled = *strands[i]->assemble();
+        auto nucleotides = *xorCode::convertBinaryToNucleotides('A', strands[i]->payload, getPayloadByteLength());
         if (doOutput) {
             std::cout << "Strand #" << i << " (" << strands[i]->payloadLength << ") with address "
                       << strands[i]->lowAddress << ":\n";
@@ -25,9 +27,14 @@ int main() {
         results->push_back(nucleotides);
     }
 
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
+    std::cout << "Time: " << duration.count() << '\n';
+
+
     std::cout << "Original File: \n";
     for (auto &result: *results) {
-        auto original = xorCode::convertNucleotidesToBinary('A', result);
+        auto original = *xorCode::convertNucleotidesToBinary('A', result);
         if (doOutput)
             std::cout << original;
     }
