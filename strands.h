@@ -26,7 +26,7 @@ namespace xorCode {
      * @param length the length of each payload
      * @return the vector of strands
      */
-    std::vector<strand *> createStrands(const std::string &filePath, uint32_t length);
+    std::vector<strand *> createStrands(const std::string &filePath);
 
     /**
      * Uses `input` to create a vector of strands with a payload length of `length` and high address `key`.
@@ -35,7 +35,7 @@ namespace xorCode {
      * @param length the length of each payload
      * @return the vector of strands
      */
-    std::vector<strand *> createStrands(const std::string &key, std::ifstream &input, uint32_t length);
+    std::vector<strand *> createStrands(const std::string &key, std::ifstream &input);
 
     std::vector<strand *> createXOrStrands(std::vector<strand *> strands);
 

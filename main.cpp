@@ -9,7 +9,7 @@ uint32_t length = 5;
 
 int main() {
     std::cout << "Working directory: " << std::filesystem::current_path() << "\n";
-    auto strands = xorCode::createStrands("../test2.txt", length);
+    auto strands = xorCode::createStrands("../test2.txt");
     std::cout << "Strands: " << strands.size() << "\n";
     auto results = new std::vector<std::string>;
 

@@ -6,11 +6,11 @@
 
 namespace xorCode {
 
-    std::vector<strand *> createStrands(const std::string &filePath, uint32_t length) {
+    std::vector<strand *> createStrands(const std::string &filePath) {
         std::ifstream input(filePath, std::ios::binary);
         if (input.is_open()) {
             std::string key = filePath.substr(filePath.find_last_of("/\\") + 1);
-            auto strands = createStrands(key, input, length);
+            auto strands = createStrands(key, input);
             input.close();
             return strands;
         } else {
@@ -19,7 +19,9 @@ namespace xorCode {
         }
     }
 
-    std::vector<strand *> createStrands(const std::string &key, std::ifstream &input, uint32_t length) {
+    std::vector<strand *> createStrands(const std::string &key, std::ifstream &input) {
+        auto length = getPayloadByteLength();
+
         auto *strands = new std::vector<strand *>();
 
         if (sizeof(uint8_t) != sizeof(char)) {
