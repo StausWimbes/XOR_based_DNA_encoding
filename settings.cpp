@@ -6,14 +6,14 @@ const int MAX_NUCLEOTIDES_PER_BYTE = 6;
 // 54 for address + 2 for S Nucleotides + 24 for Primers + MAX_NUCLEOTIDES_PER_BYTE for at least one byte in payload
 const int MIN_STRAND_LENGTH = 80 + MAX_NUCLEOTIDES_PER_BYTE;
 
-int maxStrandLength = 100; // in nucleotides
-int payloadByteLength = 10; // in bytes
+int maxStrandLength = 110; // in nucleotides
+int payloadByteLength = 5; // in bytes
 
 const int MIN_XOR_SIZE = 2;
 const int MIN_XOR_STEP = 1;
 
 int xOrSize = 3; // the amount of strands involved in each xOr
-int xOrStep = 3;
+int xOrStep = 3; // the difference between the indices of the starting strands for each xOr
 
 int getMaxStrandLength() {
     return maxStrandLength;

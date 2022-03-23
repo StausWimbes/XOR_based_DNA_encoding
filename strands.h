@@ -14,7 +14,8 @@ namespace xorCode {
         uint8_t *payload;
         uint64_t lowAddress;
         bool xOr;
-        std::string *primer;
+        std::string *primer = new std::string;
+        std::string *primerInv = new std::string;
 
         std::string assemble();
     };

@@ -6,7 +6,7 @@ int getMaxStrandLength();
 
 void setMaxStrandLength(int length);
 
-int getPayloadCharLength();
+int getPayloadByteLength();
 
 int getXOrSize();
 

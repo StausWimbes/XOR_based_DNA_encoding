@@ -18,9 +18,12 @@ int main() {
             std::cout << "Strand #" << i << " (" << strands[i]->payloadLength << ") with address "
                       << strands[i]->lowAddress << ":\n";
         }
+        auto assembled = strands[i]->assemble();
         auto nucleotides = xorCode::convertBinaryToNucleotides('A', strands[i]->payload, length);
-        if (doOutput)
+        if (doOutput) {
+            std::cout << assembled << " (" << assembled.length() << ')' << '\n';
             std::cout << "\"" << nucleotides << "\"\n";
+        }
         results->push_back(nucleotides);
     }
 

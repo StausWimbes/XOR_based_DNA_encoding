@@ -1,5 +1,7 @@
 
 #include "strands.h"
+#include "encode.h"
+#include "settings.h"
 #include <iostream>
 
 namespace xorCode {
@@ -44,7 +46,7 @@ namespace xorCode {
                 newStrand->payload = payload;
                 newStrand->xOr = false;
                 newStrand->lowAddress = address;
-                // TODO: create and set primer newStrand->primer = ;
+                // TODO: create and set primer and primerInv newStrand->primer = ;
 
                 strands->push_back(newStrand);
 
@@ -61,7 +63,24 @@ namespace xorCode {
     }
 
     std::string strand::assemble() {
-        // TODO: implement
-        return std::string();
+        auto result = std::string();
+        result.append(*primer);
+        result.append(sizeof(char), 'A');
+        result.append(convertBinaryToNucleotides('A', payload, getPayloadByteLength()));
+        char last = result[result.size() - 1];
+        auto address = new uint8_t[9];
+        if (xOr) {
+            address[0] = 255;
+        } else {
+            address[0] = 0;
+        }
+        auto low = reinterpret_cast<uint8_t *>(&lowAddress);
+        for (int i = 0; i < 8; ++i) {
+            address[i + 1] = low[i];
+        }
+        result.append(convertBinaryToNucleotides(last, address, 9));
+        result.append(sizeof(char), 'A');
+        result.append(*primerInv);
+        return result;
     }
 }
