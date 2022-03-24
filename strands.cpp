@@ -57,12 +57,47 @@ namespace xorCode {
             }
         }
 
+        // create and add XOR strands
+        auto xorStrands = createXOrStrands(strands);
+        strands->insert(strands->end(), xorStrands->begin(), xorStrands->end());
+
         return *strands;
     }
 
-    std::vector<strand *> createXOrStrands(std::vector<strand *> strands) {
-        // TODO: implement
-        return std::vector<strand *>();
+    std::shared_ptr<std::vector<strand *>> createXOrStrands(std::vector<strand *> *strands) {
+        auto size = getXOrSize();
+        auto step = getXOrStep();
+
+        uint64_t strandsCount = strands->size();
+        uint64_t xOrStrandsCount = strandsCount - (size - 1); // number of strands with step size 1
+        xOrStrandsCount /= step + (xOrStrandsCount % step == 0 ? 0 : 1); // number of strands with correct step size
+
+        std::shared_ptr<std::vector<strand *>> xOrStrands(new std::vector<strand *>(xOrStrandsCount));
+
+        for (uint64_t i = 0; i < xOrStrandsCount; i++) {
+            auto start = i * step; // inclusive
+            auto end = start + size; // exclusive
+            auto length = strands->at(i)->payloadLength;
+
+            auto *payload = new unsigned char[length];
+            for (uint64_t b = 0; b < length; b++) {
+                payload[b] = strands->at(start)->payload[b];
+                for (uint64_t s = start + 1; s < end; s++) {
+                    payload[b] = payload[b] xor strands->at(s)->payload[b];
+                }
+            }
+
+            auto newStrand = new strand();
+            newStrand->payloadLength = length;
+            newStrand->payload = payload;
+            newStrand->xOr = true;
+            newStrand->lowAddress = start;
+            newStrand->primer = strands->at(start)->primer;
+            newStrand->primerInv = strands->at(start)->primerInv;
+            xOrStrands->at(i) = newStrand;
+        }
+
+        return xOrStrands;
     }
 
     std::shared_ptr<std::string> strand::assemble() {
