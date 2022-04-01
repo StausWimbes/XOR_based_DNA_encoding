@@ -70,7 +70,8 @@ namespace xorCode {
 
         uint64_t strandsCount = strands->size();
         uint64_t xOrStrandsCount = strandsCount - (size - 1); // number of strands with step size 1
-        xOrStrandsCount /= step + (xOrStrandsCount % step == 0 ? 0 : 1); // number of strands with correct step size
+        xOrStrandsCount = (xOrStrandsCount / step) +
+                          (xOrStrandsCount % step == 0 ? 0 : 1); // number of strands with correct step size
 
         std::shared_ptr<std::vector<strand *>> xOrStrands(new std::vector<strand *>(xOrStrandsCount));
 
