@@ -46,7 +46,7 @@ namespace xorCode {
 
                 auto newStrand = new strand();
                 newStrand->payloadLength = readChars;
-                newStrand->payload = payload;
+                newStrand->payload = payload; // TODO: call convertToNucleotideFunction
                 newStrand->xOr = false;
                 newStrand->lowAddress = address;
                 // TODO: create and set primer and primerInv newStrand->primer = ;
@@ -84,7 +84,7 @@ namespace xorCode {
             for (uint64_t b = 0; b < length; b++) {
                 payload[b] = strands->at(start)->payload[b];
                 for (uint64_t s = start + 1; s < end; s++) {
-                    payload[b] = payload[b] xor strands->at(s)->payload[b];
+                    payload[b] = payload[b] xor strands->at(s)->payload[b]; // TODO: create xOr based on nucleotides
                 }
             }
 
@@ -105,7 +105,8 @@ namespace xorCode {
         std::shared_ptr<std::string> result(new std::string);
         result->append(*primer);
         result->append(sizeof(char), 'A');
-        result->append(*convertBinaryToNucleotides('A', payload, getPayloadByteLength()));
+        result->append(*convertBinaryToNucleotides('A', payload,
+                                                   getPayloadByteLength())); // TODO: dont call convertToNucleotideFunction
         char last = (*result)[result->size() - 1];
         auto address = new uint8_t[9];
         if (xOr) {

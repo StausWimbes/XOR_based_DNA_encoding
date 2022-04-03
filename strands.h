@@ -12,7 +12,7 @@ namespace xorCode {
 
     struct strand {
         uint32_t payloadLength;
-        uint8_t *payload;
+        uint8_t *payload; // TODO: change to nucleotide string
         uint64_t lowAddress;
         bool xOr;
         std::string *primer = new std::string;

@@ -4,7 +4,7 @@
 
 namespace xorCode {
 
-    class StrandDecode {
+    class StrandDecoder {
 
     private:
 
@@ -22,7 +22,7 @@ namespace xorCode {
 
     public:
 
-        StrandDecode(std::string &fileName, std::vector<std::string> &strands) {
+        StrandDecoder(std::string &fileName, std::vector<std::string> &strands) {
             this->fileName = fileName;
             this->strands = strands;
             cleanedStrands = new std::vector<std::string>;
@@ -30,7 +30,7 @@ namespace xorCode {
             xOrStrands = new std::unordered_map<uint64_t, strand>;
         }
 
-        ~StrandDecode() {
+        ~StrandDecoder() {
             delete cleanedStrands;
             delete payLoadStrands;
             delete xOrStrands;
@@ -42,11 +42,17 @@ namespace xorCode {
          * 3. Doppelte Strands entfernen
          */
         void filterStrands() {
+            // TODO: Create Primers
+            std::string primer = "";
+            std::string invPrimer = "";
+            for (auto strand: strands) {
+                strand.starts_with(primer);
 
+            }
         }
 
         /*
-         * 4. Strands in Binär umwandeln
+         * 4. Addressen in Binär umwandeln
 	     * 4.1 Bei Fehlern wird Strand weggeschmissen
          * 5. Aufteilen in xOr und Payload Strands
          * 6. Payload Strands sortieren nach index
@@ -64,7 +70,8 @@ namespace xorCode {
         }
 
         /*
-         * 9. Payloads zusammenfassen
+         * 9. Payloads in binär umwandeln
+         * 10. Payloads zusammenfassen
          */
         std::vector<uint8_t> assemble() {
 
@@ -74,7 +81,7 @@ namespace xorCode {
     };
 
     std::vector<uint8_t> decode(std::string fileName, std::vector<std::string> strands) {
-        auto d = StrandDecode(fileName, strands);
+        auto d = StrandDecoder(fileName, strands);
         d.filterStrands();
         d.decodeStrands();
         d.checkXOrs();
