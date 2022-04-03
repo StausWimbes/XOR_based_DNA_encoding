@@ -1,51 +1,55 @@
 
 #include "settings.h"
 
-const int MAX_NUCLEOTIDES_PER_BYTE = 6;
+namespace xorCode {
 
-// 54 for address + 2 for S Nucleotides + 24 for Primers + MAX_NUCLEOTIDES_PER_BYTE for at least one byte in payload
-const int MIN_STRAND_LENGTH = 80 + MAX_NUCLEOTIDES_PER_BYTE;
+    const int MAX_NUCLEOTIDES_PER_BYTE = 6;
 
-int maxStrandLength = 110; // in nucleotides
-int payloadByteLength = 5; // in bytes
+    // 54 for address + 2 for S Nucleotides + 24 for Primers + MAX_NUCLEOTIDES_PER_BYTE for at least one byte in payload
+    const int MIN_STRAND_LENGTH = 80 + MAX_NUCLEOTIDES_PER_BYTE;
 
-const int MIN_XOR_SIZE = 2;
-const int MIN_XOR_STEP = 1;
+    int maxStrandLength = 110; // in nucleotides
+    int payloadByteLength = 5; // in bytes
 
-int xOrSize = 3; // the amount of strands involved in each xOr
-int xOrStep = 3; // the difference between the indices of the starting strands for each xOr
+    const int MIN_XOR_SIZE = 2;
+    const int MIN_XOR_STEP = 1;
 
-int getMaxStrandLength() {
-    return maxStrandLength;
-}
+    int xOrSize = 3; // the amount of strands involved in each xOr
+    int xOrStep = 3; // the difference between the indices of the starting strands for each xOr
 
-void setMaxStrandLength(int length) {
-    if (length >= MIN_STRAND_LENGTH) {
-        maxStrandLength = length;
-        payloadByteLength = (length - MIN_STRAND_LENGTH + MAX_NUCLEOTIDES_PER_BYTE) / MAX_NUCLEOTIDES_PER_BYTE;
+    int getMaxStrandLength() {
+        return maxStrandLength;
     }
-}
 
-int getPayloadByteLength() {
-    return payloadByteLength;
-}
-
-int getXOrSize() {
-    return xOrSize;
-}
-
-void setXOrSize(int size) {
-    if (size >= MIN_XOR_SIZE) {
-        xOrSize = size;
+    void setMaxStrandLength(int length) {
+        if (length >= MIN_STRAND_LENGTH) {
+            maxStrandLength = length;
+            payloadByteLength = (length - MIN_STRAND_LENGTH + MAX_NUCLEOTIDES_PER_BYTE) / MAX_NUCLEOTIDES_PER_BYTE;
+        }
     }
-}
 
-int getXOrStep() {
-    return xOrStep;
-}
-
-void setXOrStep(int step) {
-    if (step >= MIN_XOR_STEP) {
-        xOrStep = step;
+    int getPayloadByteLength() {
+        return payloadByteLength;
     }
+
+    int getXOrSize() {
+        return xOrSize;
+    }
+
+    void setXOrSize(int size) {
+        if (size >= MIN_XOR_SIZE) {
+            xOrSize = size;
+        }
+    }
+
+    int getXOrStep() {
+        return xOrStep;
+    }
+
+    void setXOrStep(int step) {
+        if (step >= MIN_XOR_STEP) {
+            xOrStep = step;
+        }
+    }
+
 }

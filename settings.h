@@ -2,18 +2,22 @@
 #ifndef XOR_BASED_DNA_ENCODING_SETTINGS_H
 #define XOR_BASED_DNA_ENCODING_SETTINGS_H
 
-int getMaxStrandLength();
+namespace xorCode {
 
-void setMaxStrandLength(int length);
+    int getMaxStrandLength();
 
-int getPayloadByteLength();
+    void setMaxStrandLength(int length);
 
-int getXOrSize();
+    int getPayloadByteLength();
 
-void setXOrSize(int size);
+    int getXOrSize();
 
-int getXOrStep();
+    void setXOrSize(int size);
 
-void setXOrStep(int step);
+    int getXOrStep();
+
+    void setXOrStep(int step);
+
+}
 
 #endif //XOR_BASED_DNA_ENCODING_SETTINGS_H
