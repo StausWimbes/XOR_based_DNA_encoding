@@ -1,7 +1,7 @@
 #include <iostream>
 #include <filesystem>
 #include "strands.h"
-#include "encode.h"
+#include "nucleotides.h"
 #include "settings.h"
 #include "huffmanCode.h"
 
@@ -34,7 +34,7 @@ int main() {
 
     std::cout << "Original File: \n";
     for (auto &result: *results) {
-        auto original = *xorCode::convertNucleotidesToBinary('A', result);
+        auto original = *xorCode::convertNucleotidesToBinary('A', result, xorCode::getPayloadByteLength());
         if (doOutput)
             std::cout << original;
     }

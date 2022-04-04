@@ -41,6 +41,10 @@ namespace xorCode {
     }
 
     uint8_t Composite::decode(const std::string &seq, int *pos) const {
+        if (*pos >= seq.length()) {
+            ++(*pos);
+            return 0;
+        }
         switch (seq.at(*pos)) {
             case '0':
                 ++(*pos);

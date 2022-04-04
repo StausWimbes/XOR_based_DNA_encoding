@@ -1,6 +1,6 @@
 
 #include "strands.h"
-#include "encode.h"
+#include "nucleotides.h"
 #include "settings.h"
 #include <iostream>
 #include <memory>
@@ -100,25 +100,6 @@ namespace xorCode {
         }
 
         return xOrStrands;
-    }
-
-    void invertNucleotides(std::string &nucleotides) {
-        for (char &c: nucleotides) {
-            switch (c) {
-                case 'A':
-                    c = 'T';
-                    break;
-                case 'C':
-                    c = 'G';
-                    break;
-                case 'G':
-                    c = 'C';
-                    break;
-                case 'T':
-                    c = 'A';
-                    break;
-            }
-        }
     }
 
     std::shared_ptr<std::string> strand::assemble() {

@@ -1,6 +1,7 @@
 
 #include "strandDecode.h"
 #include "strands.h"
+#include "nucleotides.h"
 #include <unordered_map>
 #include <unordered_set>
 
