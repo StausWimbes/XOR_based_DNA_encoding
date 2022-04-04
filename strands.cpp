@@ -45,8 +45,8 @@ namespace xorCode {
                 }
 
                 auto newStrand = new strand();
-                newStrand->payloadLength = readChars;
-                newStrand->payload = payload; // TODO: call convertToNucleotideFunction
+                //newStrand->payloadLength = readChars;
+                newStrand->payload = convertBinaryToNucleotides('A', payload, getPayloadByteLength());
                 newStrand->xOr = false;
                 newStrand->lowAddress = address;
                 // TODO: create and set primer and primerInv newStrand->primer = ;
@@ -78,18 +78,19 @@ namespace xorCode {
         for (uint64_t i = 0; i < xOrStrandsCount; i++) {
             auto start = i * step; // inclusive
             auto end = start + size; // exclusive
-            auto length = strands->at(i)->payloadLength;
+            auto length = strands->at(i)->payload->length();
 
-            auto *payload = new unsigned char[length];
+            std::shared_ptr<std::string> payload = std::make_shared<std::string>(length, 'A');
+            //auto *payload = new unsigned char[length];
             for (uint64_t b = 0; b < length; b++) {
-                payload[b] = strands->at(start)->payload[b];
+                payload->at(b) = strands->at(start)->payload->at(b);
                 for (uint64_t s = start + 1; s < end; s++) {
-                    payload[b] = payload[b] xor strands->at(s)->payload[b]; // TODO: create xOr based on nucleotides
+                    //payload[b] = payload[b] xor strands->at(s)->payload[b]; // TODO: create xOr based on nucleotides
                 }
             }
 
             auto newStrand = new strand();
-            newStrand->payloadLength = length;
+            //newStrand->payloadLength = length;
             newStrand->payload = payload;
             newStrand->xOr = true;
             newStrand->lowAddress = start;
@@ -127,8 +128,7 @@ namespace xorCode {
         // add S nucleotide for detecting if strand is inverted
         result->append(sizeof(char), 'A');
         // add payload nucleotides
-        result->append(*convertBinaryToNucleotides('A', payload,
-                                                   getPayloadByteLength())); // TODO: dont call convertToNucleotideFunction
+        result->append(*payload);
         // add address
         char last = result->at(result->size() - 1);
         auto address = new uint8_t[9];

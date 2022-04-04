@@ -17,10 +17,9 @@ int main() {
 
     for (int i = 0; i < strands.size(); i++) {
         auto assembled = *strands[i]->assemble();
-        auto nucleotides = *xorCode::convertBinaryToNucleotides('A', strands[i]->payload,
-                                                                xorCode::getPayloadByteLength());
+        auto nucleotides = *(strands[i]->payload);
         if (doOutput) {
-            std::cout << "Strand #" << i << " (" << strands[i]->payloadLength << ") with address "
+            std::cout << "Strand #" << i << " (" << strands[i]->payload->length() << ") with address "
                       << strands[i]->lowAddress << ":\n";
             std::cout << assembled << " (" << assembled.length() << ')' << '\n';
             std::cout << "\"" << nucleotides << "\"\n";

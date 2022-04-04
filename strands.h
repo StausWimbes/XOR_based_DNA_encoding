@@ -3,6 +3,7 @@
 #define XOR_BASED_DNA_ENCODING_STRANDS_H
 
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <fstream>
 #include <vector>
@@ -11,12 +12,11 @@
 namespace xorCode {
 
     struct strand {
-        uint32_t payloadLength;
-        uint8_t *payload; // TODO: change to nucleotide string
+        std::shared_ptr<std::string> payload;
         uint64_t lowAddress;
         bool xOr;
-        std::string *primer = new std::string;
-        std::string *primerInv = new std::string;
+        std::shared_ptr<std::string> primer = std::make_shared<std::string>();
+        std::shared_ptr<std::string> primerInv = std::make_shared<std::string>();
 
         std::shared_ptr<std::string> assemble();
     };
