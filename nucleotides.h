@@ -18,7 +18,10 @@ namespace xorCode {
 
     std::shared_ptr<std::string> convertBinaryToNucleotides(char prev, uint8_t *buffer, uint32_t size);
 
-    std::shared_ptr<std::string>
+    std::shared_ptr<uint8_t[]>
+    convertNucleotidesToBinary(char prev, const std::string &nucleotides, uint32_t startIndex, uint32_t numOfBytes);
+
+    std::shared_ptr<uint8_t[]>
     convertNucleotidesToBinary(char prev, const std::string &nucleotides, uint32_t numOfBytes);
 
 }

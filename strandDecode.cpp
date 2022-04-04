@@ -1,6 +1,7 @@
 
 #include "strandDecode.h"
 #include "strands.h"
+#include "settings.h"
 #include "nucleotides.h"
 #include <unordered_map>
 #include <unordered_set>
@@ -78,6 +79,31 @@ namespace xorCode {
          * 6. Payload Strands sortieren nach index
          */
         void decodeStrands() {
+            int addressLength = 9 * MAX_NUCLEOTIDES_PER_BYTE;
+            for (auto strand: *cleanedStrands) {
+                auto cur = new xorCode::strand;
+                char prev = strand[strand.length() - addressLength - 1];
+                auto address = convertNucleotidesToBinary(prev, strand, strand.length() - addressLength, 9);
+                if (address == nullptr) {
+                    continue;
+                }
+                cur->lowAddress = *reinterpret_cast<uint64_t *>(address.get() + 1);
+                uint8_t xOr = address[0];
+                if (xOr != 0 && xOr != 255) {
+                    continue;
+                }
+                cur->xOr = xOr == 255;
+                cur->payload = std::make_shared<std::string>(strand.begin(), strand.end() - addressLength);
+                // TODO: figure out a way to store duplicates
+                if (cur->xOr) {
+                    xOrStrands->at(cur->lowAddress) = *cur;
+                } else {
+                    if (cur->lowAddress > highestPayloadIndex) {
+                        highestPayloadIndex = cur->lowAddress;
+                    }
+                    payLoadStrands->at(cur->lowAddress) = *cur;
+                }
+            }
 
         }
 

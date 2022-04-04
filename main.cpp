@@ -34,9 +34,12 @@ int main() {
 
     std::cout << "Original File: \n";
     for (auto &result: *results) {
-        auto original = *xorCode::convertNucleotidesToBinary('A', result, xorCode::getPayloadByteLength());
-        if (doOutput)
-            std::cout << original;
+        auto original = xorCode::convertNucleotidesToBinary('A', result, xorCode::getPayloadByteLength());
+        if (doOutput) {
+            for (int i = 0; i < xorCode::getPayloadByteLength(); ++i) {
+                std::cout << original[i];
+            }
+        }
     }
     std::cout << "Done" << '\n';
 }

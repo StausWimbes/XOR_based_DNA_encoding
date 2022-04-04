@@ -85,10 +85,12 @@ namespace xorCode {
         return convertBase3ToNucleotides(prev, convertBinaryToBase3(buffer, size));
     }
 
-    std::shared_ptr<std::string> convertNucleotidesToBase3(char prev, const std::string &nucleotides) {
+    std::shared_ptr<std::string>
+    convertNucleotidesToBase3(char prev, const std::string &nucleotides, uint32_t startIndex) {
         std::shared_ptr<std::string> result(new std::string);
         auto curPrev = prev;
-        for (char t: nucleotides) {
+        for (uint32_t i = startIndex; i < nucleotides.length(); ++i) {
+            char t = nucleotides[i];
             uint8_t prevIndex = getIndex(curPrev);
             uint8_t curIndex = getIndex(t);
             if (curIndex <= prevIndex) {
@@ -101,15 +103,16 @@ namespace xorCode {
         return result;
     }
 
-    std::shared_ptr<std::string>
+    std::shared_ptr<uint8_t[]>
     convertBase3ToBinary(const std::shared_ptr<std::string> &intermediateCode, uint32_t numOfBytes) {
         auto decoder = HuffmanCode::getInstance();
-        std::shared_ptr<std::string> result(new std::string);
+        std::shared_ptr<uint8_t[]> result(new uint8_t[numOfBytes]);
         int p = 0;
         int *pos = &p;
         int bytesRead = 0;
         while (p < intermediateCode->length() && bytesRead < numOfBytes) {
-            result->append(sizeof(char), decoder->decodeToByte(*intermediateCode, pos));
+            result[bytesRead] = decoder->decodeToByte(*intermediateCode, pos);
+            //result->append(sizeof(char), decoder->decodeToByte(*intermediateCode, pos));
             ++bytesRead;
         }
         if (p > intermediateCode->length()) {
@@ -118,9 +121,14 @@ namespace xorCode {
         return result;
     }
 
-    std::shared_ptr<std::string>
+    std::shared_ptr<uint8_t[]>
+    convertNucleotidesToBinary(char prev, const std::string &nucleotides, uint32_t startIndex, uint32_t numOfBytes) {
+        return convertBase3ToBinary(convertNucleotidesToBase3(prev, nucleotides, startIndex), numOfBytes);
+    }
+
+    std::shared_ptr<uint8_t[]>
     convertNucleotidesToBinary(char prev, const std::string &nucleotides, uint32_t numOfBytes) {
-        return convertBase3ToBinary(convertNucleotidesToBase3(prev, nucleotides), numOfBytes);
+        return convertNucleotidesToBinary(prev, nucleotides, 0, numOfBytes);
     }
 
 }
