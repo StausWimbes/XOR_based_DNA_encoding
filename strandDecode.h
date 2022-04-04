@@ -5,8 +5,6 @@
 #include <cstdint>
 #include <vector>
 #include <string>
-#include <memory>
-#include <unordered_map>
 
 namespace xorCode {
 

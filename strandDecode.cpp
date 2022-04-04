@@ -1,6 +1,8 @@
 
 #include "strandDecode.h"
 #include "strands.h"
+#include <unordered_map>
+#include <unordered_set>
 
 namespace xorCode {
 
@@ -11,7 +13,7 @@ namespace xorCode {
         std::string fileName;
         std::vector<std::string> strands;
 
-        std::vector<std::string> *cleanedStrands;
+        std::unordered_set<std::string> *cleanedStrands;
 
         // map of all payload strands. key is the index of the strand
         std::unordered_map<uint64_t, strand> *payLoadStrands;
@@ -25,7 +27,7 @@ namespace xorCode {
         StrandDecoder(std::string &fileName, std::vector<std::string> &strands) {
             this->fileName = fileName;
             this->strands = strands;
-            cleanedStrands = new std::vector<std::string>;
+            cleanedStrands = new std::unordered_set<std::string>;
             payLoadStrands = new std::unordered_map<uint64_t, strand>;
             xOrStrands = new std::unordered_map<uint64_t, strand>;
         }
@@ -43,11 +45,28 @@ namespace xorCode {
          */
         void filterStrands() {
             // TODO: Create Primers
-            std::string primer = "";
-            std::string invPrimer = "";
+            std::string primer;
+            std::string invPrimer;
+            std::string revPrimer = std::string(primer.rbegin(), primer.rend());
             for (auto strand: strands) {
-                strand.starts_with(primer);
-
+                // check if strand is inverted
+                if (strand[primer.size()] == 'T') {
+                    invertNucleotides(strand);
+                } else if (strand[primer.size()] != 'A') {
+                    continue;
+                }
+                // check if strand is reversed
+                if (strand.ends_with(revPrimer)) {
+                    std::reverse(strand.begin(), strand.end());
+                }
+                // check if primers are correct
+                if (!strand.starts_with(primer) || !strand.ends_with(invPrimer)) {
+                    // remove primers and S nucleotides
+                    cleanedStrands->insert(std::string(
+                            strand.begin() + primer.length() + 1,
+                            strand.end() - invPrimer.length() - 1
+                    ));
+                }
             }
         }
 
