@@ -40,6 +40,8 @@ namespace xorCode {
 
     std::shared_ptr<std::vector<strand *>> createXOrStrands(std::vector<strand *> *strands);
 
+    void invertNucleotides(std::string &nucleotides);
+
 }
 
 #endif //XOR_BASED_DNA_ENCODING_STRANDS_H

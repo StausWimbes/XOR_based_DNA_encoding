@@ -101,6 +101,25 @@ namespace xorCode {
         return xOrStrands;
     }
 
+    void invertNucleotides(std::string &nucleotides) {
+        for (char &c: nucleotides) {
+            switch (c) {
+                case 'A':
+                    c = 'T';
+                    break;
+                case 'C':
+                    c = 'G';
+                    break;
+                case 'G':
+                    c = 'C';
+                    break;
+                case 'T':
+                    c = 'A';
+                    break;
+            }
+        }
+    }
+
     std::shared_ptr<std::string> strand::assemble() {
         std::shared_ptr<std::string> result(new std::string);
         result->append(*primer);
