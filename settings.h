@@ -4,6 +4,8 @@
 
 namespace xorCode {
 
+    const int MAX_NUCLEOTIDES_PER_BYTE = 6;
+
     int getMaxStrandLength();
 
     void setMaxStrandLength(int length);

@@ -122,11 +122,15 @@ namespace xorCode {
 
     std::shared_ptr<std::string> strand::assemble() {
         std::shared_ptr<std::string> result(new std::string);
+        // add primer
         result->append(*primer);
+        // add S nucleotide for detecting if strand is inverted
         result->append(sizeof(char), 'A');
+        // add payload nucleotides
         result->append(*convertBinaryToNucleotides('A', payload,
                                                    getPayloadByteLength())); // TODO: dont call convertToNucleotideFunction
-        char last = (*result)[result->size() - 1];
+        // add address
+        char last = result->at(result->size() - 1);
         auto address = new uint8_t[9];
         if (xOr) {
             address[0] = 255;
@@ -137,8 +141,26 @@ namespace xorCode {
         for (int i = 0; i < 8; ++i) {
             address[i + 1] = low[i];
         }
-        result->append(*convertBinaryToNucleotides(last, address, 9));
+        auto addressNucleotides = convertBinaryToNucleotides(last, address, 9);
+        result->append(*addressNucleotides);
+        // pad address to always have a length of 9 * MAX_NUCLEOTIDES_PER_BYTE
+        int remaining = (9 * MAX_NUCLEOTIDES_PER_BYTE) - addressNucleotides->length();
+        last = result->at(result->length() - 1);
+        char next = 'C';
+        if (last == 'C') {
+            next = 'T';
+        }
+        for (int i = 0; i < remaining; ++i) {
+            result->append(sizeof(char), next);
+            if (next == 'C') {
+                next = 'T';
+            } else {
+                next = 'C';
+            }
+        }
+        // add another S nucleotide
         result->append(sizeof(char), 'A');
+        // add inverted primer
         result->append(*primerInv);
         return result;
     }
