@@ -4,6 +4,7 @@
 #include "nucleotides.h"
 #include "settings.h"
 #include "huffmanCode.h"
+#include "strandDecode.h"
 
 bool doOutput = true;
 
@@ -24,7 +25,7 @@ int main() {
             std::cout << assembled << " (" << assembled.length() << ')' << '\n';
             std::cout << "\"" << nucleotides << "\"\n";
         }
-        results->push_back(nucleotides);
+        results->push_back(assembled);
     }
 
     auto end = std::chrono::high_resolution_clock::now();
@@ -33,6 +34,8 @@ int main() {
 
 
     std::cout << "Original File: \n";
+    xorCode::decode("test.txt", *results);
+    /*
     for (auto &result: *results) {
         auto original = xorCode::convertNucleotidesToBinary('A', result, xorCode::getPayloadByteLength());
         if (doOutput) {
@@ -41,5 +44,6 @@ int main() {
             }
         }
     }
+     */
     std::cout << "Done" << '\n';
 }
