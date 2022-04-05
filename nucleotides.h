@@ -8,19 +8,83 @@
 
 namespace xorCode {
 
+    /**
+     * Returns the nucleotide associated with the given number according to the following mapping:
+     * 0 -> 'A', 1 -> 'C', 2 -> 'G', 3 -> 'T'.
+     * This is the exact inverse function to getIndex().
+     * @param index A number between 0 and 3.
+     * @return A char representation of a nucleotide.
+     */
     char getNucleotide(uint32_t index);
 
+    /**
+     * Returns the number associated with the given nucleotide according to the following mapping:
+     * 'A' -> 0, 'C' -> 1, 'G' -> 2, 'T' -> 3.
+     * This is the exact inverse function to getNucleotide().
+     * @param nucleotide A char representation of a nucleotide.
+     * @return A number between 0 and 3.
+     */
     uint32_t getIndex(const char &nucleotide);
 
+    /**
+     * Inverts every nucleotide in the given string according to the following pairs:
+     * ('A', 'T'), ('C', 'G').
+     * For example the string "ACTAG" would be turned into "TGATC".
+     * @param nucleotides The string that should be inverted.
+     */
     void invertNucleotides(std::string &nucleotides);
 
+    /**
+     * Performs an xor operation on the given nucleotides.
+     * @param n1 A char representation of the first nucleotide.
+     * @param n2 A char representation of the second nucleotide.
+     * @return A char representation of the nucleotide that is the result of the xor operation.
+     */
     char getXOrNucleotide(const char &n1, const char &n2);
 
+    /**
+     * Takes an array of uint8_t and turns it into a string of nucleotides. This is done by first turning each uint8_t
+     * into a string of 5 or 6 ternary digits using a prefix encoding. Each of those digits is then turned into a
+     * nucleotide using a rotating encoding that makes sure that no two consecutive nucleotides are the same.
+     * This is the exact inverse function of convertNucleotidesToBinary().
+     * @param prev A char representation of a nucleotide. This is used as the previous nucleotide
+     *             for the rotating encoding.
+     * @param buffer A pointer to the first uint8_t in the input array.
+     * @param size The size of the input array.
+     * @return The resulting string of nucleotides.
+     */
     std::shared_ptr<std::string> convertBinaryToNucleotides(char prev, uint8_t *buffer, uint32_t size);
 
+    /**
+     * Takes a string of nucleotides and turns a part of it starting at 'startIndex' into an array of uint8_t of size
+     * 'numOfBytes'. This is done by first turning each nucleotide into a ternary digit according to a rotary encoding.
+     * Then each string of 5 or 6 ternary digits is turned into one uint8_t using a prefix encoding. If the string
+     * can be turned into more than 'numOfBytes' uint8_t then only the first 'numOfBytes' uint8_t will be returned.
+     * This is the exact inverse function of convertBinaryToNucleotides().
+     * @param prev A char representation of a nucleotide. This is used as the previous nucleotide
+     *             for the rotating encoding.
+     * @param nucleotides A string of nucleotides.
+     * @param startIndex The index at which the conversion should start.
+     * @param numOfBytes The number of uint8_t that should be converted.
+     * @return An array of uint8_t with length 'numOfBytes'. If the string cannot be converted into at least 'numOfBytes'
+     * many uint8_t then the nullptr is returned instead.
+     */
     std::shared_ptr<uint8_t[]>
     convertNucleotidesToBinary(char prev, const std::string &nucleotides, uint32_t startIndex, uint32_t numOfBytes);
 
+    /**
+     * Takes a string of nucleotides and turns a part of it into an array of uint8_t of size 'numOfBytes'.
+     * This is done by first turning each nucleotide into a ternary digit according to a rotary encoding.
+     * Then each string of 5 or 6 ternary digits is turned into one uint8_t using a prefix encoding. If the string
+     * can be turned into more than 'numOfBytes' uint8_t then only the first 'numOfBytes' uint8_t will be returned.
+     * This is the exact inverse function of convertBinaryToNucleotides().
+     * @param prev A char representation of a nucleotide. This is used as the previous nucleotide
+     *             for the rotating encoding.
+     * @param nucleotides A string of nucleotides.
+     * @param numOfBytes The number of uint8_t that should be converted.
+     * @return An array of uint8_t with length 'numOfBytes'. If the string cannot be converted into at least 'numOfBytes'
+     * many uint8_t then the nullptr is returned instead.
+     */
     std::shared_ptr<uint8_t[]>
     convertNucleotidesToBinary(char prev, const std::string &nucleotides, uint32_t numOfBytes);
 
