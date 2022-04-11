@@ -21,7 +21,7 @@ namespace xorCode {
         // map of all payload strands. key is the index of the strand
         std::unordered_map<uint64_t, strand> *payLoadStrands;
         // the highest index of the strands in the map
-        std::uint64_t highestPayloadIndex = 0;
+        uint64_t highestPayloadIndex = 0;
         // map of all xOr strands. key is the index of the strand
         std::unordered_map<uint64_t, strand> *xOrStrands;
 
@@ -117,25 +117,23 @@ namespace xorCode {
         }
 
         /*
-         * 9. Payloads in binär umwandeln
-         * 10. Payloads zusammenfassen
+         * Converts the payloads to binary and stores the resulting bytes in a vector.
          */
         std::vector<uint8_t> assemble() {
-            // temporary code for testing
-            // TODO: replace this code
+            auto result = new std::vector<uint8_t>();
+
             for (int i = 0; i <= highestPayloadIndex; ++i) {
                 if (!payLoadStrands->contains(i)) {
+                    // TODO: stop decoding?
                     continue;
                 }
+
                 auto original = convertNucleotidesToBinary('A', *(payLoadStrands->at(i).payload),
                                                            xorCode::getPayloadByteLength());
-                for (int j = 0; j < xorCode::getPayloadByteLength(); ++j) {
-                    std::cout << original[j];
-                }
+                result->insert(result->end(), original.get(), original.get() + xorCode::getPayloadByteLength());
             }
-            return {};
+            return *result;
         }
-
 
     };
 

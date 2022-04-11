@@ -34,7 +34,12 @@ int main() {
 
 
     std::cout << "Original File: \n";
-    xorCode::decode("test.txt", *results);
+    auto original = xorCode::decode("test.txt", *results);
+    for (unsigned char i: original) {
+        std::cout << i;
+    }
+    std::cout << "\n";
+
     /*
     for (auto &result: *results) {
         auto original = xorCode::convertNucleotidesToBinary('A', result, xorCode::getPayloadByteLength());
