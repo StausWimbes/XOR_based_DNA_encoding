@@ -128,8 +128,10 @@ namespace xorCode {
                     continue;
                 }
 
+                // decode payload
                 auto original = convertNucleotidesToBinary('A', *(payLoadStrands->at(i).payload),
                                                            xorCode::getPayloadByteLength());
+                // append payload
                 result->insert(result->end(), original.get(), original.get() + xorCode::getPayloadByteLength());
             }
             return *result;
