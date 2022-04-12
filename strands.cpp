@@ -78,14 +78,12 @@ namespace xorCode {
         for (uint64_t i = 0; i < xOrStrandsCount; i++) {
             auto start = i * step; // inclusive
             auto end = start + size; // exclusive
-            auto length = strands->at(i)->payload->length();
+            auto length = strands->at(i)->payload->length(); // TODO not all strands have the same nucleotide length
 
             std::shared_ptr<std::string> payload = std::make_shared<std::string>(length, 'A');
-            //auto *payload = new unsigned char[length];
             for (uint64_t b = 0; b < length; b++) {
-                payload->at(b) = strands->at(start)->payload->at(b);
                 for (uint64_t s = start + 1; s < end; s++) {
-                    //payload[b] = payload[b] xor strands->at(s)->payload[b]; // TODO: create xOr based on nucleotides
+                    getXOrNucleotide(payload->at(b), payload->at(b) = strands->at(s)->payload->at(b));
                 }
             }
 
