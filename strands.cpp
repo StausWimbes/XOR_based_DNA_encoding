@@ -76,7 +76,7 @@ namespace xorCode {
             auto end = start + size; // exclusive
 
             // determine max payload length
-            auto maxLength = strands->at(i)->payload->length();
+            auto maxLength = strands->at(start)->payload->length();
             for (uint64_t strand = start + 1; strand < end; strand++) {
                 if (strands->at(strand)->payload->length() > maxLength) {
                     maxLength = strands->at(strand)->payload->length();
