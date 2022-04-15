@@ -3,34 +3,29 @@
 
 #include <string>
 #include <cstdint>
-#include <iostream>
 #include <memory>
 
 namespace xorCode {
 
     char *order = new char[]{'A', 'C', 'G', 'T'};
 
-    char getNucleotide(const uint32_t index) {
+    char getNucleotide(const uint8_t index) {
         return order[index];
     }
 
-    uint32_t getIndex(const char &nucleotide) {
-        int result = 0;
+    uint8_t getIndex(const char &nucleotide) {
         switch (nucleotide) {
             case 'A':
-                result = 0;
-                break;
+                return 0;
             case 'C':
-                result = 1;
-                break;
+                return 1;
             case 'G':
-                result = 2;
-                break;
+                return 2;
             case 'T':
-                result = 3;
-                break;
+                return 3;
+            default:
+                return 0;
         }
-        return result;
     }
 
     void invertNucleotides(std::string &nucleotides) {
@@ -52,10 +47,10 @@ namespace xorCode {
         }
     }
 
-    char getXOrNucleotide(const char &n1, const char &n2) {
-        uint32_t i1 = getIndex(n1);
-        uint32_t i2 = getIndex(n2);
-        return getNucleotide(n1 xor n2);
+    char getXOrNucleotide(const char &nucleotide1, const char &nucleotide2) {
+        uint32_t index1 = getIndex(nucleotide1);
+        uint32_t index2 = getIndex(nucleotide2);
+        return getNucleotide(index1 xor index2);
     }
 
     std::shared_ptr<std::string> convertBinaryToBase3(uint8_t *buffer, uint32_t size) {

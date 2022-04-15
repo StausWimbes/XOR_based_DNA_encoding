@@ -15,7 +15,7 @@ namespace xorCode {
      * @param index A number between 0 and 3.
      * @return A char representation of a nucleotide.
      */
-    char getNucleotide(uint32_t index);
+    char getNucleotide(uint8_t index);
 
     /**
      * Returns the number associated with the given nucleotide according to the following mapping:
@@ -24,7 +24,7 @@ namespace xorCode {
      * @param nucleotide A char representation of a nucleotide.
      * @return A number between 0 and 3.
      */
-    uint32_t getIndex(const char &nucleotide);
+    uint8_t getIndex(const char &nucleotide);
 
     /**
      * Inverts every nucleotide in the given string according to the following pairs:
@@ -35,12 +35,20 @@ namespace xorCode {
     void invertNucleotides(std::string &nucleotides);
 
     /**
-     * Performs an xor operation on the given nucleotides.
-     * @param n1 A char representation of the first nucleotide.
-     * @param n2 A char representation of the second nucleotide.
+     * Performs an xor operation on the given nucleotides. The xor operation is based on the nucleotides indices:
+     *
+     * xor    | A (00)   C (01)   G (10)   T (11)
+     * ------- ----------------------------------
+     * A (00) | A (00)   C (01)   G (10)   T (11)
+     * C (01) | C (01)   A (00)   T (11)   G (10)
+     * G (10) | G (10)   T (11)   A (00)   C (01)
+     * T (11) | T (11)   G (10)   C (01)   A (00)
+     *
+     * @param nucleotide1 A char representation of the first nucleotide.
+     * @param nucleotide2 A char representation of the second nucleotide.
      * @return A char representation of the nucleotide that is the result of the xor operation.
      */
-    char getXOrNucleotide(const char &n1, const char &n2);
+    char getXOrNucleotide(const char &nucleotide1, const char &nucleotide2);
 
     /**
      * Takes an array of uint8_t and turns it into a string of nucleotides. This is done by first turning each uint8_t
