@@ -14,10 +14,10 @@ namespace xorCode {
             auto strands = createStrands(key, input);
             input.close();
             return strands;
-        } else {
-            std::cout << "Unable to open file!\n";
-            return *new std::vector<strand *>();
         }
+
+        std::cout << "Unable to open file!\n";
+        return *new std::vector<strand *>();
     }
 
     std::vector<strand *> createStrands(const std::string &key, std::ifstream &input) {
@@ -44,8 +44,7 @@ namespace xorCode {
                     readChars += input.readsome(reinterpret_cast<char *>(payload + readChars), length - readChars);
                 }
 
-                auto newStrand = new strand();
-                //newStrand->payloadLength = readChars;
+                auto *newStrand = new strand();
                 newStrand->payload = convertBinaryToNucleotides('A', payload, getPayloadByteLength());
                 newStrand->xOr = false;
                 newStrand->lowAddress = address;
@@ -120,13 +119,13 @@ namespace xorCode {
         result->append(*payload);
         // add address
         char last = result->at(result->size() - 1);
-        auto address = new uint8_t[9];
+        auto *address = new uint8_t[9];
         if (xOr) {
             address[0] = 255;
         } else {
             address[0] = 0;
         }
-        auto low = reinterpret_cast<uint8_t *>(&lowAddress);
+        auto *low = reinterpret_cast<uint8_t *>(&lowAddress);
         for (int i = 0; i < 8; ++i) {
             address[i + 1] = low[i];
         }
