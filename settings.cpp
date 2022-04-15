@@ -50,4 +50,15 @@ namespace xorCode {
         }
     }
 
+    uint64_t getXorStrandsCount(uint64_t strandsCount) {
+        auto size = getXOrSize();
+        auto step = getXOrStep();
+
+        // number of strands with step size 1
+        uint64_t xOrStrandsCount = strandsCount - (size - 1);
+
+        // number of strands with correct step size
+        return (xOrStrandsCount / step) + (xOrStrandsCount % step == 0 ? 0 : 1);
+    }
+
 }

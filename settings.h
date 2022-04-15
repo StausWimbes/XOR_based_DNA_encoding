@@ -2,6 +2,8 @@
 #ifndef XOR_BASED_DNA_ENCODING_SETTINGS_H
 #define XOR_BASED_DNA_ENCODING_SETTINGS_H
 
+#include <cstdint>
+
 namespace xorCode {
 
     const int MAX_NUCLEOTIDES_PER_BYTE = 6;
@@ -19,6 +21,8 @@ namespace xorCode {
     int getXOrStep();
 
     void setXOrStep(int step);
+
+    uint64_t getXorStrandsCount(uint64_t strandsCount);
 
 }
 

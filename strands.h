@@ -38,7 +38,7 @@ namespace xorCode {
      */
     std::vector<strand *> createStrands(const std::string &key, std::ifstream &input);
 
-    std::shared_ptr<std::vector<strand *>> createXOrStrands(std::vector<strand *> *strands);
+    std::shared_ptr<std::vector<strand *>> createXorStrands(std::vector<strand *> *strands);
 
 }
 

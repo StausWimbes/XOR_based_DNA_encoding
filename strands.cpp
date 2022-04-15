@@ -57,26 +57,21 @@ namespace xorCode {
         }
 
         // create and add XOR strands
-        auto xorStrands = createXOrStrands(strands);
+        auto xorStrands = createXorStrands(strands);
         strands->insert(strands->end(), xorStrands->begin(), xorStrands->end());
 
         return *strands;
     }
 
-    std::shared_ptr<std::vector<strand *>> createXOrStrands(std::vector<strand *> *strands) {
+    std::shared_ptr<std::vector<strand *>> createXorStrands(std::vector<strand *> *strands) {
         auto size = getXOrSize();
         auto step = getXOrStep();
-
-        // number of strands with step size 1
-        uint64_t xOrStrandsCount = strands->size() - (size - 1);
-
-        // number of strands with correct step size
-        xOrStrandsCount = (xOrStrandsCount / step) + (xOrStrandsCount % step == 0 ? 0 : 1);
+        auto xorStrandsCount = getXorStrandsCount(strands->size());
 
         // xor strands
-        std::shared_ptr<std::vector<strand *>> xOrStrands(new std::vector<strand *>(xOrStrandsCount));
+        std::shared_ptr<std::vector<strand *>> xOrStrands(new std::vector<strand *>(xorStrandsCount));
 
-        for (uint64_t i = 0; i < xOrStrandsCount; i++) {
+        for (uint64_t i = 0; i < xorStrandsCount; i++) {
             auto start = i * step; // inclusive
             auto end = start + size; // exclusive
 
