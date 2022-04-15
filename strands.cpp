@@ -68,28 +68,38 @@ namespace xorCode {
         auto size = getXOrSize();
         auto step = getXOrStep();
 
-        uint64_t strandsCount = strands->size();
-        uint64_t xOrStrandsCount = strandsCount - (size - 1); // number of strands with step size 1
-        xOrStrandsCount = (xOrStrandsCount / step) +
-                          (xOrStrandsCount % step == 0 ? 0 : 1); // number of strands with correct step size
+        // number of strands with step size 1
+        uint64_t xOrStrandsCount = strands->size() - (size - 1);
 
+        // number of strands with correct step size
+        xOrStrandsCount = (xOrStrandsCount / step) + (xOrStrandsCount % step == 0 ? 0 : 1);
+
+        // xor strands
         std::shared_ptr<std::vector<strand *>> xOrStrands(new std::vector<strand *>(xOrStrandsCount));
 
         for (uint64_t i = 0; i < xOrStrandsCount; i++) {
             auto start = i * step; // inclusive
             auto end = start + size; // exclusive
-            auto length = strands->at(i)->payload->length(); // TODO not all strands have the same nucleotide length
 
-            std::shared_ptr<std::string> payload = std::make_shared<std::string>(length, 'A');
-            for (uint64_t b = 0; b < length; b++) {
-                for (uint64_t s = start + 1; s < end; s++) {
-                    getXOrNucleotide(payload->at(b), payload->at(b) = strands->at(s)->payload->at(b));
+            // determine max payload length
+            auto maxLength = strands->at(i)->payload->length();
+            for (uint64_t strand = start + 1; strand < end; strand++) {
+                if (strands->at(strand)->payload->length() > maxLength) {
+                    maxLength = strands->at(strand)->payload->length();
                 }
             }
 
-            auto newStrand = new strand();
-            //newStrand->payloadLength = length;
-            newStrand->payload = payload;
+            // create xor payload
+            std::shared_ptr<std::string> xorPayload = std::make_shared<std::string>(maxLength, 'A');
+            for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
+                auto payload = strands->at(strandIndex)->payload;
+                for (uint64_t byte = 0; byte < payload->length(); byte++) {
+                    xorPayload->at(byte) = getXOrNucleotide(xorPayload->at(byte), payload->at(byte));
+                }
+            }
+
+            auto *newStrand = new strand();
+            newStrand->payload = xorPayload;
             newStrand->xOr = true;
             newStrand->lowAddress = start;
             newStrand->primer = strands->at(start)->primer;
