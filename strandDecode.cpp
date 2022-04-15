@@ -5,7 +5,6 @@
 #include "nucleotides.h"
 #include <unordered_map>
 #include <unordered_set>
-#include <iostream>
 
 namespace xorCode {
 
@@ -48,8 +47,8 @@ namespace xorCode {
          */
         void filterStrands() {
             // TODO: Create Primers
-            std::string primer = "";
-            std::string invPrimer = "";
+            std::string primer;
+            std::string invPrimer;
             std::string revPrimer = std::string(primer.rbegin(), primer.rend());
             for (auto strand: strands) {
                 // check if strand is inverted
@@ -82,7 +81,7 @@ namespace xorCode {
         void decodeStrands() {
             int addressLength = 9 * MAX_NUCLEOTIDES_PER_BYTE;
             for (auto strand: *cleanedStrands) {
-                auto cur = new xorCode::strand;
+                auto *cur = new xorCode::strand;
                 char prev = strand[strand.length() - addressLength - 1];
                 auto address = convertNucleotidesToBinary(prev, strand, strand.length() - addressLength, 9);
                 if (address == nullptr) {
@@ -116,11 +115,11 @@ namespace xorCode {
 
         }
 
-        /*
+        /**
          * Converts the payloads to binary and stores the resulting bytes in a vector.
          */
         std::vector<uint8_t> assemble() {
-            auto result = new std::vector<uint8_t>();
+            auto *result = new std::vector<uint8_t>();
 
             for (int i = 0; i <= highestPayloadIndex; ++i) {
                 if (!payLoadStrands->contains(i)) {
@@ -140,10 +139,10 @@ namespace xorCode {
     };
 
     std::vector<uint8_t> decode(std::string fileName, std::vector<std::string> strands) {
-        auto d = StrandDecoder(fileName, strands);
-        d.filterStrands();
-        d.decodeStrands();
-        d.checkXOrs();
-        return d.assemble();
+        auto decoder = StrandDecoder(fileName, strands);
+        decoder.filterStrands();
+        decoder.decodeStrands();
+        decoder.checkXOrs();
+        return decoder.assemble();
     }
 }
