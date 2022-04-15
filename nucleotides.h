@@ -9,6 +9,14 @@
 namespace xorCode {
 
     /**
+     * Returns whether the given character is a nucleotide.
+     *
+     * @param nucleotide the character to be checked
+     * @return true if the given character is one of 'A', 'C', 'G', 'T'; false otherwise
+     */
+    bool isNucleotide(char &nucleotide);
+
+    /**
      * Returns the nucleotide associated with the given number according to the following mapping:
      * 0 -> 'A', 1 -> 'C', 2 -> 'G', 3 -> 'T'.
      * This is the exact inverse function to getIndex().

@@ -9,6 +9,10 @@ namespace xorCode {
 
     char *order = new char[]{'A', 'C', 'G', 'T'};
 
+    bool isNucleotide(char &nucleotide) {
+        return nucleotide == 'A' || nucleotide == 'C' || nucleotide == 'G' || nucleotide == 'T';
+    }
+
     char getNucleotide(const uint8_t index) {
         return order[index];
     }
