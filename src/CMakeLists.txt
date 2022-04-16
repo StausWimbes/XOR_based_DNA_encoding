@@ -14,4 +14,4 @@ set(SOURCE_FILES
         strandDecode.cpp
         )
 
-add_library(xorCode SHARED ${SOURCE_FILES} ${HEADER_FILES})
+add_library(xorCode STATIC ${SOURCE_FILES} ${HEADER_FILES})
