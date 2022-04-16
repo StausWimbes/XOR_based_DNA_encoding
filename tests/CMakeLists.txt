@@ -19,5 +19,5 @@ set(SOURCE_FILES
 add_executable(runTests ${SOURCE_FILES})
 
 
-target_link_libraries(runTests XOR_based_DNA_encoding)
+target_link_libraries(runTests xorCode)
 target_link_libraries(runTests gtest gtest_main)

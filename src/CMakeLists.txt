@@ -14,4 +14,4 @@ set(SOURCE_FILES
         strandDecode.cpp
         )
 
-add_library(XOR_based_DNA_encoding SHARED ${SOURCE_FILES} ${HEADER_FILES})
+add_library(xorCode SHARED ${SOURCE_FILES} ${HEADER_FILES})

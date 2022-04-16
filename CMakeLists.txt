@@ -8,14 +8,14 @@ set(SOURCE_FILES
         main.cpp
         )
 
-add_executable(XOR_based_DNA_encoding_run ${SOURCE_FILES})
+add_executable(xorCode_run ${SOURCE_FILES})
 
 
 include_directories(src)
 add_subdirectory(src)
 
 
-target_link_libraries(XOR_based_DNA_encoding_run XOR_based_DNA_encoding)
+target_link_libraries(xorCode_run xorCode)
 
 
 add_subdirectory(tests)
