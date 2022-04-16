@@ -10,7 +10,7 @@ bool doOutput = true;
 
 int main() {
     std::cout << "Working directory: " << std::filesystem::current_path() << "\n";
-    auto strands = xorCode::createStrands("../test.txt");
+    auto strands = xorCode::createStrands("../../data/test.txt");
     std::cout << "Strands: " << strands.size() << "\n";
     auto results = new std::vector<std::string>;
 
