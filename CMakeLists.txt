@@ -10,3 +10,5 @@ include_directories(src)
 add_subdirectory(src)
 
 target_link_libraries(XOR_based_DNA_encoding_run XOR_based_DNA_encoding)
+
+add_subdirectory(tests)
