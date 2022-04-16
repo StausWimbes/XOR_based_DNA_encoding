@@ -17,12 +17,12 @@ namespace xorCode {
 
         std::unordered_set<std::string> *cleanedStrands;
 
-        // map of all payload strands. key is the index of the strand
+        // map of all payload strands. key is the index (low address) of the strand
         std::unordered_map<uint64_t, strand> *payLoadStrands;
         // the highest index of the strands in the map
         uint64_t highestPayloadIndex = 0;
-        // map of all xOr strands. key is the index of the strand
-        std::unordered_map<uint64_t, strand> *xOrStrands;
+        // map of all xor strands. key is the index (low address) of the strand
+        std::unordered_map<uint64_t, strand> *xorStrands;
 
     public:
 
@@ -31,13 +31,13 @@ namespace xorCode {
             this->strands = strands;
             cleanedStrands = new std::unordered_set<std::string>;
             payLoadStrands = new std::unordered_map<uint64_t, strand>;
-            xOrStrands = new std::unordered_map<uint64_t, strand>;
+            xorStrands = new std::unordered_map<uint64_t, strand>;
         }
 
         ~StrandDecoder() {
             delete cleanedStrands;
             delete payLoadStrands;
-            delete xOrStrands;
+            delete xorStrands;
         }
 
         /*
@@ -96,7 +96,10 @@ namespace xorCode {
                 cur->payload = std::make_shared<std::string>(strand.begin(), strand.end() - addressLength);
                 // TODO: figure out a way to store duplicates
                 if (cur->xOr) {
-                    xOrStrands->insert({cur->lowAddress, *cur});
+                    if (cur->lowAddress + getXOrSize() - 1 > highestPayloadIndex) {
+                        highestPayloadIndex = cur->lowAddress + getXOrSize() - 1;
+                    }
+                    xorStrands->insert({cur->lowAddress, *cur});
                 } else {
                     if (cur->lowAddress > highestPayloadIndex) {
                         highestPayloadIndex = cur->lowAddress;
@@ -107,12 +110,134 @@ namespace xorCode {
 
         }
 
-        /*
-         * 7. Bestehende Strands mit xOr überprüfen
-         * 8. Gucken welche Indizes fehlen und diese versuchen mit xOr Strands herzustellen
+        /**
+         * Validates existing strands and attempts to correct possible mutations as well as restore lost strands
          */
-        void checkXOrs() {
+        void checkAndRestore() {
+            auto size = getXOrSize();
+            auto step = getXOrStep();
+            auto xorStrandsCount = getXorStrandsCount(highestPayloadIndex + 1);
+            if (xorStrands->size() > xorStrandsCount) {
+                xorStrandsCount = xorStrands->size();
+            }
 
+            std::unordered_set<uint64_t> correctStrands{};
+
+            // first check for correct strands
+            for (uint64_t i = 0; i < xorStrandsCount; i++) {
+                auto start = i * step; // inclusive
+                auto end = start + size; // exclusive
+
+                if (!xorStrands->contains(start)) { // no xor strand -> can't check
+                    continue;
+                }
+                auto xorStrand = xorStrands->at(start);
+
+                // determine max payload length
+                uint64_t maxLength = 0;
+                for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
+                    if (payLoadStrands->contains(strandIndex)) {
+                        if (payLoadStrands->at(strandIndex).payload->length() > maxLength) {
+                            maxLength = payLoadStrands->at(strandIndex).payload->length();
+                        }
+                    } else { // at least one strandIndex is missing -> can't check
+                        goto firstCheckLoop; // continue outerLoop
+                    }
+                }
+                if (xorStrand.payload->length() > maxLength) {
+                    maxLength = xorStrand.payload->length();
+                }
+
+                // recreate xor payload and compare
+                {
+                    std::string xorPayload(maxLength, 'A');
+                    for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
+                        auto payload = payLoadStrands->at(strandIndex).payload;
+                        for (uint64_t byte = 0; byte < payload->length(); byte++) {
+                            xorPayload.at(byte) = getXOrNucleotide(xorPayload.at(byte), payload->at(byte));
+                        }
+                    }
+
+                    if (*xorStrand.payload == xorPayload) {
+                        for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
+                            correctStrands.insert(strandIndex);
+                        }
+                    }
+                }
+
+                firstCheckLoop:;
+            }
+
+            // find incorrect or missing strands
+            std::unordered_set<uint64_t> incorrectStrands{};
+            for (uint64_t strandIndex = 0; strandIndex < highestPayloadIndex; strandIndex++) {
+                if (!correctStrands.contains(strandIndex)) {
+                    incorrectStrands.insert(strandIndex);
+                }
+            }
+
+            // restore incorrect strands
+            uint64_t lastCount = 0;
+            while (lastCount != incorrectStrands.size()) {
+                lastCount = incorrectStrands.size();
+
+                for (auto restoreIndex: incorrectStrands) {
+
+                    for (uint64_t i = 0; i < xorStrandsCount; i++) {
+                        auto start = i * step; // inclusive
+                        auto end = start + size; // exclusive
+
+                        if (restoreIndex < start || end <= restoreIndex || !xorStrands->contains(start)) {
+                            continue;
+                        }
+
+                        uint32_t missingStrandsCount = 0;
+                        for (auto j = start; j < end; j++) {
+                            if (!correctStrands.contains(j)) {
+                                missingStrandsCount++;
+                            }
+                        }
+                        if (missingStrandsCount > 1) { // more strands than only the current strand are incorrect
+                            continue;
+                        }
+
+                        // found fitting xor batch -> restore strand
+                        auto xorStrand = xorStrands->at(start);
+                        auto maxLength = xorStrand.payload->length();
+
+                        // recreate payload
+                        std::shared_ptr<std::string> restoredPayload = std::make_shared<std::string>(
+                                *xorStrand.payload);
+                        for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
+                            if (strandIndex == restoreIndex) {
+                                continue;
+                            }
+                            auto payload = payLoadStrands->at(strandIndex).payload;
+                            for (uint64_t byte = 0; byte < payload->length(); byte++) {
+                                restoredPayload->at(byte) = getXOrNucleotide(restoredPayload->at(byte),
+                                                                             payload->at(byte));
+                            }
+                        }
+
+
+                        auto *restoredStrand = new strand();
+                        restoredStrand->payload = restoredPayload;
+                        restoredStrand->xOr = false;
+                        restoredStrand->lowAddress = restoreIndex;
+                        restoredStrand->primer = xorStrand.primer;
+                        restoredStrand->primerInv = xorStrand.primerInv;
+                        auto const result = payLoadStrands->insert({restoreIndex, *restoredStrand});
+                        if (not result.second) { result.first->second = *restoredStrand; }
+
+                        incorrectStrands.erase(restoreIndex);
+                        // TODO consider adding new strands to correct strands set
+
+                        goto nextTry;
+                    }
+                }
+
+                nextTry:;
+            }
         }
 
         /**
@@ -142,7 +267,7 @@ namespace xorCode {
         auto decoder = StrandDecoder(fileName, strands);
         decoder.filterStrands();
         decoder.decodeStrands();
-        decoder.checkXOrs();
+        decoder.checkAndRestore();
         return decoder.assemble();
     }
 }
