@@ -51,7 +51,7 @@ namespace xorCode {
         }
     }
 
-    char getXOrNucleotide(const char &nucleotide1, const char &nucleotide2) {
+    char getXorNucleotide(const char &nucleotide1, const char &nucleotide2) {
         uint32_t index1 = getIndex(nucleotide1);
         uint32_t index2 = getIndex(nucleotide2);
         return getNucleotide(index1 xor index2);

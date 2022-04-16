@@ -154,7 +154,7 @@ namespace xorCode {
                     for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
                         auto payload = payLoadStrands->at(strandIndex).payload;
                         for (uint64_t byte = 0; byte < payload->length(); byte++) {
-                            xorPayload.at(byte) = getXOrNucleotide(xorPayload.at(byte), payload->at(byte));
+                            xorPayload.at(byte) = getXorNucleotide(xorPayload.at(byte), payload->at(byte));
                         }
                     }
 
@@ -214,7 +214,7 @@ namespace xorCode {
                             }
                             auto payload = payLoadStrands->at(strandIndex).payload;
                             for (uint64_t byte = 0; byte < payload->length(); byte++) {
-                                restoredPayload->at(byte) = getXOrNucleotide(restoredPayload->at(byte),
+                                restoredPayload->at(byte) = getXorNucleotide(restoredPayload->at(byte),
                                                                              payload->at(byte));
                             }
                         }

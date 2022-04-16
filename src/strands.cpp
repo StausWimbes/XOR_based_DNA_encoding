@@ -86,7 +86,7 @@ namespace xorCode {
             for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
                 auto payload = strands->at(strandIndex)->payload;
                 for (uint64_t byte = 0; byte < payload->length(); byte++) {
-                    xorPayload->at(byte) = getXOrNucleotide(xorPayload->at(byte), payload->at(byte));
+                    xorPayload->at(byte) = getXorNucleotide(xorPayload->at(byte), payload->at(byte));
                 }
             }
 

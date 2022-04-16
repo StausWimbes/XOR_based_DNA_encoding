@@ -56,7 +56,7 @@ namespace xorCode {
      * @param nucleotide2 A char representation of the second nucleotide.
      * @return A char representation of the nucleotide that is the result of the xor operation.
      */
-    char getXOrNucleotide(const char &nucleotide1, const char &nucleotide2);
+    char getXorNucleotide(const char &nucleotide1, const char &nucleotide2);
 
     /**
      * Takes an array of uint8_t and turns it into a string of nucleotides. This is done by first turning each uint8_t
