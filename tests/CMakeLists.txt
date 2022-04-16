@@ -11,7 +11,13 @@ FetchContent_Declare(
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
-add_executable(runTests nucleotidesTest.cpp)
+
+set(SOURCE_FILES
+        nucleotidesTest.cpp
+        )
+
+add_executable(runTests ${SOURCE_FILES})
+
 
 target_link_libraries(runTests XOR_based_DNA_encoding)
 target_link_libraries(runTests gtest gtest_main)
