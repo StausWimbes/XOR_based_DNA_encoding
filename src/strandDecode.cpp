@@ -5,6 +5,7 @@
 #include "nucleotides.h"
 #include <unordered_map>
 #include <unordered_set>
+#include <queue>
 
 namespace xorCode {
 
@@ -169,10 +170,10 @@ namespace xorCode {
             }
 
             // find incorrect or missing strands
-            std::unordered_set<uint64_t> incorrectStrands{};
+            std::queue<uint64_t> incorrectStrands{};
             for (uint64_t strandIndex = 0; strandIndex < highestPayloadIndex; strandIndex++) {
                 if (!correctStrands.contains(strandIndex)) {
-                    incorrectStrands.insert(strandIndex);
+                    incorrectStrands.push(strandIndex);
                 }
             }
 
@@ -181,7 +182,9 @@ namespace xorCode {
             while (lastCount != incorrectStrands.size()) {
                 lastCount = incorrectStrands.size();
 
-                for (auto restoreIndex: incorrectStrands) {
+                for (uint64_t lookedAt = 0; lookedAt < lastCount; lookedAt++) {
+                    auto restoreIndex = incorrectStrands.front();
+                    incorrectStrands.pop();
 
                     for (uint64_t i = 0; i < xorStrandsCount; i++) {
                         auto start = i * step; // inclusive
@@ -228,11 +231,12 @@ namespace xorCode {
                         auto const result = payLoadStrands->insert({restoreIndex, *restoredStrand});
                         if (not result.second) { result.first->second = *restoredStrand; }
 
-                        incorrectStrands.erase(restoreIndex);
                         correctStrands.insert(restoreIndex);
 
                         goto nextTry;
                     }
+
+                    incorrectStrands.push(restoreIndex);
                 }
 
                 nextTry:;
