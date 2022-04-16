@@ -7,7 +7,6 @@
 #include <string>
 #include <fstream>
 #include <vector>
-#include <memory>
 
 namespace xorCode {
 

@@ -30,7 +30,7 @@ namespace xorCode {
             return *strands;
         }
 
-        uint64_t address = 0;
+        uint64_t index = 0;
         bool end = false;
         while (!end) {
             auto *payload = new unsigned char[length];
@@ -40,19 +40,17 @@ namespace xorCode {
                 delete[](payload);
                 end = true;
             } else {
-                if (readChars != length) {
-                    readChars += input.readsome(reinterpret_cast<char *>(payload + readChars), length - readChars);
+                if (readChars != length) { // buffer might have been exhausted without reaching EOF
+                    input.readsome(reinterpret_cast<char *>(payload + readChars), length - readChars);
                 }
 
                 auto *newStrand = new strand();
                 newStrand->payload = convertBinaryToNucleotides('A', payload, getPayloadByteLength());
                 newStrand->xOr = false;
-                newStrand->lowAddress = address;
+                newStrand->lowAddress = index++;
                 // TODO: create and set primer and primerInv newStrand->primer = ;
 
                 strands->push_back(newStrand);
-
-                address += readChars;
             }
         }
 
