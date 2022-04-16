@@ -203,7 +203,6 @@ namespace xorCode {
 
                         // found fitting xor batch -> restore strand
                         auto xorStrand = xorStrands->at(start);
-                        auto maxLength = xorStrand.payload->length();
 
                         // recreate payload
                         std::shared_ptr<std::string> restoredPayload = std::make_shared<std::string>(
@@ -230,7 +229,7 @@ namespace xorCode {
                         if (not result.second) { result.first->second = *restoredStrand; }
 
                         incorrectStrands.erase(restoreIndex);
-                        // TODO consider adding new strands to correct strands set
+                        correctStrands.insert(restoreIndex);
 
                         goto nextTry;
                     }
