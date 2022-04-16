@@ -1,4 +1,3 @@
-
 #include "strandDecode.h"
 #include "strands.h"
 #include "settings.h"

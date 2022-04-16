@@ -1,4 +1,3 @@
-
 #include "settings.h"
 
 namespace xorCode {

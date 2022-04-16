@@ -1,6 +1,5 @@
-
-#ifndef XOR_BASED_DNA_ENCODING_SETTINGS_H
-#define XOR_BASED_DNA_ENCODING_SETTINGS_H
+#ifndef XOR_CODE_SETTINGS_H
+#define XOR_CODE_SETTINGS_H
 
 #include <cstdint>
 
@@ -26,4 +25,4 @@ namespace xorCode {
 
 }
 
-#endif //XOR_BASED_DNA_ENCODING_SETTINGS_H
+#endif //XOR_CODE_SETTINGS_H

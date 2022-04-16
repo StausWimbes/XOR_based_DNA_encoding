@@ -1,5 +1,5 @@
-#ifndef XOR_BASED_DNA_ENCODING_HUFFMANCODE_H
-#define XOR_BASED_DNA_ENCODING_HUFFMANCODE_H
+#ifndef XOR_CODE_HUFFMANCODE_H
+#define XOR_CODE_HUFFMANCODE_H
 
 #include <unordered_map>
 #include <list>
@@ -63,4 +63,4 @@ namespace xorCode {
 
 }
 
-#endif //XOR_BASED_DNA_ENCODING_HUFFMANCODE_H
+#endif //XOR_CODE_HUFFMANCODE_H

@@ -1,5 +1,5 @@
-#ifndef XOR_BASED_DNA_ENCODING_NUCLEOTIDES_H
-#define XOR_BASED_DNA_ENCODING_NUCLEOTIDES_H
+#ifndef XOR_CODE_NUCLEOTIDES_H
+#define XOR_CODE_NUCLEOTIDES_H
 
 #include <string>
 #include <cstdint>
@@ -106,4 +106,4 @@ namespace xorCode {
 
 }
 
-#endif //XOR_BASED_DNA_ENCODING_NUCLEOTIDES_H
+#endif //XOR_CODE_NUCLEOTIDES_H

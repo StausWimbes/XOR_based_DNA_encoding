@@ -1,6 +1,5 @@
-
-#ifndef XOR_BASED_DNA_ENCODING_STRANDDECODE_H
-#define XOR_BASED_DNA_ENCODING_STRANDDECODE_H
+#ifndef XOR_CODE_STRANDDECODE_H
+#define XOR_CODE_STRANDDECODE_H
 
 #include <cstdint>
 #include <vector>
@@ -12,4 +11,4 @@ namespace xorCode {
 
 }
 
-#endif //XOR_BASED_DNA_ENCODING_STRANDDECODE_H
+#endif //XOR_CODE_STRANDDECODE_H

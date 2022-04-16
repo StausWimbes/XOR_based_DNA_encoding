@@ -1,4 +1,3 @@
-
 #include "strands.h"
 #include "nucleotides.h"
 #include "settings.h"

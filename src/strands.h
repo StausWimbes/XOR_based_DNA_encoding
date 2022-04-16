@@ -1,6 +1,5 @@
-
-#ifndef XOR_BASED_DNA_ENCODING_STRANDS_H
-#define XOR_BASED_DNA_ENCODING_STRANDS_H
+#ifndef XOR_CODE_STRANDS_H
+#define XOR_CODE_STRANDS_H
 
 #include <cstdint>
 #include <memory>
@@ -41,4 +40,4 @@ namespace xorCode {
 
 }
 
-#endif //XOR_BASED_DNA_ENCODING_STRANDS_H
+#endif //XOR_CODE_STRANDS_H
