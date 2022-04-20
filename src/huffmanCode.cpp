@@ -22,6 +22,15 @@ namespace xorCode {
         return byte;
     }
 
+    void ExtraLeaf::fillMap(std::unordered_map<uint8_t, std::string> *map, std::list<char> *curSeq) const {
+        // do nothing
+    }
+
+    uint8_t ExtraLeaf::decode(const std::string &seq, int *pos) const {
+        *pos = seq.length() + 1;
+        return 0;
+    }
+
     Composite::Composite(TreeNode *left, TreeNode *middle, TreeNode *right) {
         this->left = left;
         this->middle = middle;
@@ -79,7 +88,7 @@ namespace xorCode {
             ++byte;
         }
         // add an extra node so that every node later on will have exactly three children
-        q.push(new Leaf(255));
+        q.push(new ExtraLeaf());
         while (q.size() > 1) {
             auto n1 = q.front();
             q.pop();
