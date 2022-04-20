@@ -70,7 +70,7 @@ namespace xorCode {
      * @param size The size of the input array.
      * @return The resulting string of nucleotides.
      */
-    std::list<char> convertBinaryToNucleotides(char prev, uint8_t *buffer, uint32_t size);
+    void convertBinaryToNucleotides(char prev, std::list<uint8_t> &buffer, std::list<char> &output);
 
     /**
      * Takes a string of nucleotides and turns a part of it starting at 'startIndex' into an array of uint8_t of size

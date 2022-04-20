@@ -30,27 +30,18 @@ namespace xorCode {
         }
 
         uint64_t index = 0;
-        bool end = false;
-        while (!end) {
-            auto *payload = new unsigned char[length];
-            auto readChars = input.readsome(reinterpret_cast<char *>(payload), length);
-
-            if (readChars == 0) {
-                delete[](payload);
-                end = true;
-            } else {
-                if (readChars != length) { // buffer might have been exhausted without reaching EOF
-                    input.readsome(reinterpret_cast<char *>(payload + readChars), length - readChars);
-                }
-
-                auto *newStrand = new strand();
-                newStrand->payload = convertBinaryToNucleotides('A', payload, getPayloadByteLength());
-                newStrand->xOr = false;
-                newStrand->lowAddress = index++;
-                // TODO: create and set primer and primerInv newStrand->primer = ;
-
-                strands->push_back(newStrand);
+        while (!input.eof()) {
+            std::list<uint8_t> payload;
+            for (int i = 0; i < length && !input.eof(); ++i) {
+                payload.push_back(input.get());
             }
+            auto *newStrand = new strand();
+            convertBinaryToNucleotides('A', payload, newStrand->payload);
+            newStrand->xOr = false;
+            newStrand->lowAddress = index++;
+            // TODO: create and set primer and primerInv newStrand->primer = ;
+
+            strands->push_back(newStrand);
         }
 
         // create and add XOR strands
@@ -119,22 +110,20 @@ namespace xorCode {
         }
         // add address
         char last = result.back();
-        auto *address = new uint8_t[9];
+        std::list<uint8_t> address;
         if (xOr) {
-            address[0] = 255;
+            address.push_back(255);
         } else {
-            address[0] = 0;
+            address.push_back(0);
         }
         auto *low = reinterpret_cast<uint8_t *>(&lowAddress);
         for (int i = 0; i < 8; ++i) {
-            address[i + 1] = low[i];
+            address.push_back(low[i]);
         }
-        auto addressNucleotides = convertBinaryToNucleotides(last, address, 9);
-        for (char c: addressNucleotides) {
-            result.push_back(c);
-        }
+        auto prev = result.size();
+        convertBinaryToNucleotides(last, address, result);
         // pad address to always have a length of 9 * MAX_NUCLEOTIDES_PER_BYTE
-        int remaining = (9 * MAX_NUCLEOTIDES_PER_BYTE) - addressNucleotides.size();
+        int remaining = (9 * MAX_NUCLEOTIDES_PER_BYTE) - (result.size() - prev);
         last = result.back();
         char next = 'C';
         if (last == 'C') {

@@ -57,32 +57,20 @@ namespace xorCode {
         return getNucleotide(index1 xor index2);
     }
 
-    std::list<char> convertBinaryToBase3(uint8_t *buffer, uint32_t size) {
+    void convertBinaryToNucleotides(char prev, std::list<uint8_t> &buffer, std::list<char> &output) {
+        auto curPrev = prev;
         auto encoder = HuffmanCode::getInstance();
-        std::list<char> result;
-        for (int i = 0; i < size; ++i) {
-            for (char c: encoder->encodeByte(buffer[i])) {
-                result.push_back(c);
+        for (uint8_t byte: buffer) {
+            // encode byte as base 3
+            for (char c: encoder->encodeByte(byte)) {
+                // convert base 3 digit c into nucleotide
+                uint32_t prevIndex = getIndex(curPrev) + 1;
+                prevIndex += std::stoi(&c);
+                prevIndex %= 4;
+                curPrev = getNucleotide(prevIndex);
+                output.push_back(curPrev);
             }
         }
-        return result;
-    }
-
-    std::list<char> convertBase3ToNucleotides(const char prev, const std::list<char> &intermediateCode) {
-        std::list<char> result;
-        auto curPrev = prev;
-        for (char t: intermediateCode) {
-            uint32_t prevIndex = getIndex(curPrev) + 1;
-            prevIndex += std::stoi(&t);
-            prevIndex %= 4;
-            curPrev = getNucleotide(prevIndex);
-            result.push_back(curPrev);
-        }
-        return result;
-    }
-
-    std::list<char> convertBinaryToNucleotides(char prev, uint8_t *buffer, uint32_t size) {
-        return convertBase3ToNucleotides(prev, convertBinaryToBase3(buffer, size));
     }
 
     std::shared_ptr<std::string>
