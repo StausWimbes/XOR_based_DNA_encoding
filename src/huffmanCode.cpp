@@ -18,17 +18,16 @@ namespace xorCode {
         (*map)[byte] = value;
     }
 
-    uint8_t Leaf::decode(const std::string &seq, int &pos) const {
-        return byte;
+    void Leaf::decode(iter &itBegin, iter &itEnd, std::list<uint8_t> &output) const {
+        output.push_back(byte);
     }
 
     void ExtraLeaf::fillMap(std::unordered_map<uint8_t, std::string> *map, std::list<char> *curSeq) const {
-        // do nothing
+        // do nothing because these leafs are duplicates to fill up the tree
     }
 
-    uint8_t ExtraLeaf::decode(const std::string &seq, int &pos) const {
-        pos = seq.length() + 1;
-        return 0;
+    void ExtraLeaf::decode(iter &itBegin, iter &itEnd, std::list<uint8_t> &output) const {
+        itBegin = itEnd;
     }
 
     Composite::Composite(TreeNode *left, TreeNode *middle, TreeNode *right) {
@@ -49,24 +48,22 @@ namespace xorCode {
         curSeq->pop_back();
     }
 
-    uint8_t Composite::decode(const std::string &seq, int &pos) const {
-        if (pos >= seq.length()) {
-            ++pos;
-            return 0;
-        }
-        switch (seq.at(pos)) {
-            case '0':
-                ++pos;
-                return left->decode(seq, pos);
-            case '1':
-                ++pos;
-                return middle->decode(seq, pos);
-            case '2':
-                ++pos;
-                return right->decode(seq, pos);
-            default:
-                ++pos;
-                return left->decode(seq, pos);
+    void Composite::decode(iter &itBegin, iter &itEnd, std::list<uint8_t> &output) const {
+        if (itBegin != itEnd) {
+            switch (*itBegin) {
+                case '0':
+                    ++itBegin;
+                    return left->decode(itBegin, itEnd, output);
+                case '1':
+                    ++itBegin;
+                    return middle->decode(itBegin, itEnd, output);
+                case '2':
+                    ++itBegin;
+                    return right->decode(itBegin, itEnd, output);
+                default:
+                    ++itBegin;
+                    return left->decode(itBegin, itEnd, output);
+            }
         }
     }
 
@@ -108,7 +105,7 @@ namespace xorCode {
         return (*map)[byte];
     }
 
-    uint8_t HuffmanCode::decodeToByte(const std::string &seq, int &pos) {
-        return root->decode(seq, pos);
+    void HuffmanCode::decodeToByte(iter &itBegin, iter &itEnd, std::list<uint8_t> &output) {
+        root->decode(itBegin, itEnd, output);
     }
 }

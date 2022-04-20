@@ -96,12 +96,14 @@ namespace xorCode {
         std::list<uint8_t> result;
         int pos = 0;
         int bytesRead = 0;
-        while (pos < intermediateCode->length() && bytesRead < numOfBytes) {
-            uint8_t byte = decoder->decodeToByte(*intermediateCode, pos);
-            if (pos > intermediateCode->length()) {
-                break;
-            }
-            result.push_back(byte);
+        std::list<char> list;
+        for (char c: *intermediateCode) {
+            list.push_back(c);
+        }
+        auto itBegin = list.begin();
+        auto itEnd = list.end();
+        while (itBegin != itEnd && bytesRead < numOfBytes) {
+            decoder->decodeToByte(itBegin, itEnd, result);
             ++bytesRead;
         }
         return result;
