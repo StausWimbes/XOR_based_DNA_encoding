@@ -73,22 +73,27 @@ namespace xorCode {
             auto end = start + size; // exclusive
 
             // determine max payload length
-            auto maxLength = strands->at(start)->payload->length();
+            auto maxLength = strands->at(start)->payload.size();
             for (uint64_t strand = start + 1; strand < end; strand++) {
-                if (strands->at(strand)->payload->length() > maxLength) {
-                    maxLength = strands->at(strand)->payload->length();
+                if (strands->at(strand)->payload.size() > maxLength) {
+                    maxLength = strands->at(strand)->payload.size();
                 }
             }
 
             // create xor payload
-            std::shared_ptr<std::string> xorPayload = std::make_shared<std::string>(maxLength, 'A');
+            auto xorPayloadString = std::string(maxLength, 'A');
             for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
                 auto payload = strands->at(strandIndex)->payload;
-                for (uint64_t byte = 0; byte < payload->length(); byte++) {
-                    xorPayload->at(byte) = getXorNucleotide(xorPayload->at(byte), payload->at(byte));
+                uint64_t byte = 0;
+                for (char c: payload) {
+                    xorPayloadString.at(byte) = getXorNucleotide(xorPayloadString.at(byte), c);
+                    ++byte;
                 }
             }
-
+            std::list<char> xorPayload;
+            for (char c: xorPayloadString) {
+                xorPayload.push_back(c);
+            }
             auto *newStrand = new strand();
             newStrand->payload = xorPayload;
             newStrand->xOr = true;
@@ -108,7 +113,9 @@ namespace xorCode {
         // add S nucleotide for detecting if strand is inverted
         result->append(sizeof(char), 'A');
         // add payload nucleotides
-        result->append(*payload);
+        for (char c: payload) {
+            result->append(sizeof(char), c);
+        }
         // add address
         char last = result->at(result->size() - 1);
         auto *address = new uint8_t[9];
@@ -122,9 +129,11 @@ namespace xorCode {
             address[i + 1] = low[i];
         }
         auto addressNucleotides = convertBinaryToNucleotides(last, address, 9);
-        result->append(*addressNucleotides);
+        for (char c: addressNucleotides) {
+            result->append(sizeof(char), c);
+        }
         // pad address to always have a length of 9 * MAX_NUCLEOTIDES_PER_BYTE
-        int remaining = (9 * MAX_NUCLEOTIDES_PER_BYTE) - addressNucleotides->length();
+        int remaining = (9 * MAX_NUCLEOTIDES_PER_BYTE) - addressNucleotides.size();
         last = result->at(result->length() - 1);
         char next = 'C';
         if (last == 'C') {

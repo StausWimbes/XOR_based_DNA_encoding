@@ -15,12 +15,16 @@ int main() {
 
     for (int i = 0; i < strands.size(); i++) {
         auto assembled = *strands[i]->assemble();
-        auto nucleotides = *(strands[i]->payload);
+        auto nucleotides = strands[i]->payload;
         if (doOutput) {
-            std::cout << "Strand #" << i << " (" << strands[i]->payload->length() << ") with address "
+            std::cout << "Strand #" << i << " (" << strands[i]->payload.size() << ") with address "
                       << strands[i]->lowAddress << ":\n";
             std::cout << assembled << " (" << assembled.length() << ')' << '\n';
-            std::cout << "\"" << nucleotides << "\"\n";
+            std::cout << "\"";
+            for (char c: nucleotides) {
+                std::cout << c;
+            }
+            std::cout << "\"\n";
         }
         results->push_back(assembled);
     }

@@ -9,7 +9,7 @@ namespace xorCode {
 
     char *order = new char[]{'A', 'C', 'G', 'T'};
 
-    bool isNucleotide(char &nucleotide) {
+    bool isNucleotide(char nucleotide) {
         return nucleotide == 'A' || nucleotide == 'C' || nucleotide == 'G' || nucleotide == 'T';
     }
 
@@ -17,7 +17,7 @@ namespace xorCode {
         return order[index];
     }
 
-    uint8_t getIndex(const char &nucleotide) {
+    uint8_t getIndex(const char nucleotide) {
         switch (nucleotide) {
             case 'A':
                 return 0;
@@ -51,36 +51,37 @@ namespace xorCode {
         }
     }
 
-    char getXorNucleotide(const char &nucleotide1, const char &nucleotide2) {
+    char getXorNucleotide(const char nucleotide1, const char nucleotide2) {
         uint32_t index1 = getIndex(nucleotide1);
         uint32_t index2 = getIndex(nucleotide2);
         return getNucleotide(index1 xor index2);
     }
 
-    std::shared_ptr<std::string> convertBinaryToBase3(uint8_t *buffer, uint32_t size) {
+    std::list<char> convertBinaryToBase3(uint8_t *buffer, uint32_t size) {
         auto encoder = HuffmanCode::getInstance();
-        std::shared_ptr<std::string> result(new std::string);
+        std::list<char> result;
         for (int i = 0; i < size; ++i) {
-            (*result) += encoder->encodeByte(buffer[i]);
+            for (char c: encoder->encodeByte(buffer[i])) {
+                result.push_back(c);
+            }
         }
         return result;
     }
 
-    std::shared_ptr<std::string>
-    convertBase3ToNucleotides(const char prev, const std::shared_ptr<std::string> &intermediateCode) {
-        std::shared_ptr<std::string> result(new std::string);
+    std::list<char> convertBase3ToNucleotides(const char prev, const std::list<char> &intermediateCode) {
+        std::list<char> result;
         auto curPrev = prev;
-        for (char t: *intermediateCode) {
+        for (char t: intermediateCode) {
             uint32_t prevIndex = getIndex(curPrev) + 1;
             prevIndex += std::stoi(&t);
             prevIndex %= 4;
             curPrev = getNucleotide(prevIndex);
-            result->append(sizeof(char), curPrev);
+            result.push_back(curPrev);
         }
         return result;
     }
 
-    std::shared_ptr<std::string> convertBinaryToNucleotides(char prev, uint8_t *buffer, uint32_t size) {
+    std::list<char> convertBinaryToNucleotides(char prev, uint8_t *buffer, uint32_t size) {
         return convertBase3ToNucleotides(prev, convertBinaryToBase3(buffer, size));
     }
 
@@ -102,29 +103,28 @@ namespace xorCode {
         return result;
     }
 
-    std::shared_ptr<uint8_t[]>
-    convertBase3ToBinary(const std::shared_ptr<std::string> &intermediateCode, uint32_t numOfBytes) {
+    std::list<uint8_t> convertBase3ToBinary(const std::shared_ptr<std::string> &intermediateCode, uint32_t numOfBytes) {
         auto decoder = HuffmanCode::getInstance();
-        std::shared_ptr<uint8_t[]> result(new uint8_t[numOfBytes]);
+        std::list<uint8_t> result;
         int pos = 0;
         int bytesRead = 0;
         while (pos < intermediateCode->length() && bytesRead < numOfBytes) {
-            result[bytesRead] = decoder->decodeToByte(*intermediateCode, pos);
-            //result->append(sizeof(char), decoder->decodeToByte(*intermediateCode, pos));
+            uint8_t byte = decoder->decodeToByte(*intermediateCode, pos);
+            if (pos > intermediateCode->length()) {
+                break;
+            }
+            result.push_back(byte);
             ++bytesRead;
-        }
-        if (pos > intermediateCode->length()) {
-            return nullptr;
         }
         return result;
     }
 
-    std::shared_ptr<uint8_t[]>
+    std::list<uint8_t>
     convertNucleotidesToBinary(char prev, const std::string &nucleotides, uint32_t startIndex, uint32_t numOfBytes) {
         return convertBase3ToBinary(convertNucleotidesToBase3(prev, nucleotides, startIndex), numOfBytes);
     }
 
-    std::shared_ptr<uint8_t[]>
+    std::list<uint8_t>
     convertNucleotidesToBinary(char prev, const std::string &nucleotides, uint32_t numOfBytes) {
         return convertNucleotidesToBinary(prev, nucleotides, 0, numOfBytes);
     }

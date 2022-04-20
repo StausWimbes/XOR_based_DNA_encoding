@@ -2,6 +2,7 @@
 #define XOR_CODE_NUCLEOTIDES_H
 
 #include <string>
+#include <list>
 #include <cstdint>
 #include <fstream>
 #include <memory>
@@ -14,7 +15,7 @@ namespace xorCode {
      * @param nucleotide the character to be checked
      * @return true if the given character is one of 'A', 'C', 'G', 'T'; false otherwise
      */
-    bool isNucleotide(char &nucleotide);
+    bool isNucleotide(char nucleotide);
 
     /**
      * Returns the nucleotide associated with the given number according to the following mapping:
@@ -32,7 +33,7 @@ namespace xorCode {
      * @param nucleotide A char representation of a nucleotide.
      * @return A number between 0 and 3.
      */
-    uint8_t getIndex(const char &nucleotide);
+    uint8_t getIndex(char nucleotide);
 
     /**
      * Inverts every nucleotide in the given string according to the following pairs:
@@ -56,7 +57,7 @@ namespace xorCode {
      * @param nucleotide2 A char representation of the second nucleotide.
      * @return A char representation of the nucleotide that is the result of the xor operation.
      */
-    char getXorNucleotide(const char &nucleotide1, const char &nucleotide2);
+    char getXorNucleotide(char nucleotide1, char nucleotide2);
 
     /**
      * Takes an array of uint8_t and turns it into a string of nucleotides. This is done by first turning each uint8_t
@@ -69,7 +70,7 @@ namespace xorCode {
      * @param size The size of the input array.
      * @return The resulting string of nucleotides.
      */
-    std::shared_ptr<std::string> convertBinaryToNucleotides(char prev, uint8_t *buffer, uint32_t size);
+    std::list<char> convertBinaryToNucleotides(char prev, uint8_t *buffer, uint32_t size);
 
     /**
      * Takes a string of nucleotides and turns a part of it starting at 'startIndex' into an array of uint8_t of size
@@ -85,7 +86,7 @@ namespace xorCode {
      * @return An array of uint8_t with length 'numOfBytes'. If the string cannot be converted into at least 'numOfBytes'
      * many uint8_t then the nullptr is returned instead.
      */
-    std::shared_ptr<uint8_t[]>
+    std::list<uint8_t>
     convertNucleotidesToBinary(char prev, const std::string &nucleotides, uint32_t startIndex, uint32_t numOfBytes);
 
     /**
@@ -101,8 +102,7 @@ namespace xorCode {
      * @return An array of uint8_t with length 'numOfBytes'. If the string cannot be converted into at least 'numOfBytes'
      * many uint8_t then the nullptr is returned instead.
      */
-    std::shared_ptr<uint8_t[]>
-    convertNucleotidesToBinary(char prev, const std::string &nucleotides, uint32_t numOfBytes);
+    std::list<uint8_t> convertNucleotidesToBinary(char prev, const std::string &nucleotides, uint32_t numOfBytes);
 
 }
 

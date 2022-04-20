@@ -6,11 +6,12 @@
 #include <string>
 #include <fstream>
 #include <vector>
+#include <list>
 
 namespace xorCode {
 
     struct strand {
-        std::shared_ptr<std::string> payload;
+        std::list<char> payload;
         uint64_t lowAddress;
         bool xOr;
         std::shared_ptr<std::string> primer = std::make_shared<std::string>();

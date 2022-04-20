@@ -84,16 +84,33 @@ namespace xorCode {
                 auto *cur = new xorCode::strand;
                 char prev = strand[strand.length() - addressLength - 1];
                 auto address = convertNucleotidesToBinary(prev, strand, strand.length() - addressLength, 9);
-                if (address == nullptr) {
+                if (address.size() != 9) {
                     continue;
                 }
-                cur->lowAddress = *reinterpret_cast<uint64_t *>(address.get() + 1);
-                uint8_t xOr = address[0];
+                auto lowAddress = new uint8_t[8];
+                int i = -1;
+                for (uint8_t b: address) {
+                    if (i < 0) {
+                        ++i;
+                        continue;
+                    }
+                    lowAddress[i] = b;
+                    ++i;
+                }
+                cur->lowAddress = *reinterpret_cast<uint64_t *>(lowAddress);
+                uint8_t xOr = address.front();
                 if (xOr != 0 && xOr != 255) {
                     continue;
                 }
                 cur->xOr = xOr == 255;
-                cur->payload = std::make_shared<std::string>(strand.begin(), strand.end() - addressLength);
+                std::list<char> payload;
+                int length = strand.length() - addressLength;
+                for (char c: strand) {
+                    if (length <= 0) break;
+                    payload.push_back(c);
+                    ++length;
+                }
+                cur->payload = payload;
                 // TODO: figure out a way to store duplicates
                 if (cur->xOr) {
                     if (cur->lowAddress + getXOrSize() - 1 > highestPayloadIndex) {
@@ -137,15 +154,15 @@ namespace xorCode {
                 uint64_t maxLength = 0;
                 for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
                     if (payLoadStrands->contains(strandIndex)) {
-                        if (payLoadStrands->at(strandIndex).payload->length() > maxLength) {
-                            maxLength = payLoadStrands->at(strandIndex).payload->length();
+                        if (payLoadStrands->at(strandIndex).payload.size() > maxLength) {
+                            maxLength = payLoadStrands->at(strandIndex).payload.size();
                         }
                     } else { // at least one strandIndex is missing -> can't check
                         goto firstCheckLoop; // continue outerLoop
                     }
                 }
-                if (xorStrand.payload->length() > maxLength) {
-                    maxLength = xorStrand.payload->length();
+                if (xorStrand.payload.size() > maxLength) {
+                    maxLength = xorStrand.payload.size();
                 }
 
                 // recreate xor payload and compare
@@ -153,12 +170,20 @@ namespace xorCode {
                     std::string xorPayload(maxLength, 'A');
                     for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
                         auto payload = payLoadStrands->at(strandIndex).payload;
-                        for (uint64_t byte = 0; byte < payload->length(); byte++) {
-                            xorPayload.at(byte) = getXorNucleotide(xorPayload.at(byte), payload->at(byte));
+                        uint64_t byte = 0;
+                        for (char c: payload) {
+                            xorPayload.at(byte) = getXorNucleotide(xorPayload.at(byte), c);
+                            ++byte;
                         }
                     }
-
-                    if (*xorStrand.payload == xorPayload) {
+                    bool isEqual = true;
+                    uint64_t byte = 0;
+                    for (char c: xorStrand.payload) {
+                        if (!isEqual) break;
+                        isEqual = xorPayload.at(byte) == c;
+                        ++byte;
+                    }
+                    if (isEqual) {
                         for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
                             correctStrands.insert(strandIndex);
                         }
@@ -175,7 +200,6 @@ namespace xorCode {
                     incorrectStrands.push(strandIndex);
                 }
             }
-
             // restore incorrect strands
             uint64_t lastCount = 0;
             while (lastCount != incorrectStrands.size()) {
@@ -207,19 +231,28 @@ namespace xorCode {
                         auto xorStrand = xorStrands->at(start);
 
                         // recreate payload
-                        std::shared_ptr<std::string> restoredPayload = std::make_shared<std::string>(
-                                *xorStrand.payload);
+                        std::string restoredPayloadString = std::string(xorStrand.payload.size(), 'A');
+                        int index = 0;
+                        for (char c: xorStrand.payload) {
+                            restoredPayloadString.at(index) = c;
+                            ++index;
+                        }
                         for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
                             if (strandIndex == restoreIndex) {
                                 continue;
                             }
                             auto payload = payLoadStrands->at(strandIndex).payload;
-                            for (uint64_t byte = 0; byte < payload->length(); byte++) {
-                                restoredPayload->at(byte) = getXorNucleotide(restoredPayload->at(byte),
-                                                                             payload->at(byte));
+                            uint64_t byte = 0;
+                            for (char c: payload) {
+                                restoredPayloadString.at(byte) = getXorNucleotide(restoredPayloadString.at(byte), c);
+                                ++byte;
                             }
                         }
 
+                        std::list<char> restoredPayload;
+                        for (char c: restoredPayloadString) {
+                            restoredPayload.push_back(c);
+                        }
 
                         auto *restoredStrand = new strand();
                         restoredStrand->payload = restoredPayload;
@@ -255,10 +288,16 @@ namespace xorCode {
                 }
 
                 // decode payload
-                auto original = convertNucleotidesToBinary('A', *(payLoadStrands->at(i).payload),
-                                                           xorCode::getPayloadByteLength());
+                auto payload = payLoadStrands->at(i).payload;
+                auto payloadString = std::string(payload.size(), 'A');
+                int byte = 0;
+                for (char c: payload) {
+                    payloadString.at(byte) = c;
+                    ++byte;
+                }
+                auto original = convertNucleotidesToBinary('A', payloadString, xorCode::getPayloadByteLength());
                 // append payload
-                result->insert(result->end(), original.get(), original.get() + xorCode::getPayloadByteLength());
+                result->insert(result->end(), original.begin(), original.end());
             }
             return *result;
         }
