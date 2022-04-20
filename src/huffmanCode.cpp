@@ -18,7 +18,7 @@ namespace xorCode {
         (*map)[byte] = value;
     }
 
-    uint8_t Leaf::decode(const std::string &seq, int *pos) const {
+    uint8_t Leaf::decode(const std::string &seq, int &pos) const {
         return byte;
     }
 
@@ -26,8 +26,8 @@ namespace xorCode {
         // do nothing
     }
 
-    uint8_t ExtraLeaf::decode(const std::string &seq, int *pos) const {
-        *pos = seq.length() + 1;
+    uint8_t ExtraLeaf::decode(const std::string &seq, int &pos) const {
+        pos = seq.length() + 1;
         return 0;
     }
 
@@ -49,23 +49,23 @@ namespace xorCode {
         curSeq->pop_back();
     }
 
-    uint8_t Composite::decode(const std::string &seq, int *pos) const {
-        if (*pos >= seq.length()) {
-            ++(*pos);
+    uint8_t Composite::decode(const std::string &seq, int &pos) const {
+        if (pos >= seq.length()) {
+            ++pos;
             return 0;
         }
-        switch (seq.at(*pos)) {
+        switch (seq.at(pos)) {
             case '0':
-                ++(*pos);
+                ++pos;
                 return left->decode(seq, pos);
             case '1':
-                ++(*pos);
+                ++pos;
                 return middle->decode(seq, pos);
             case '2':
-                ++(*pos);
+                ++pos;
                 return right->decode(seq, pos);
             default:
-                ++(*pos);
+                ++pos;
                 return left->decode(seq, pos);
         }
     }
@@ -108,7 +108,7 @@ namespace xorCode {
         return (*map)[byte];
     }
 
-    uint8_t HuffmanCode::decodeToByte(const std::string &seq, int *pos) {
+    uint8_t HuffmanCode::decodeToByte(const std::string &seq, int &pos) {
         return root->decode(seq, pos);
     }
 }

@@ -106,15 +106,14 @@ namespace xorCode {
     convertBase3ToBinary(const std::shared_ptr<std::string> &intermediateCode, uint32_t numOfBytes) {
         auto decoder = HuffmanCode::getInstance();
         std::shared_ptr<uint8_t[]> result(new uint8_t[numOfBytes]);
-        int p = 0;
-        int *pos = &p;
+        int pos = 0;
         int bytesRead = 0;
-        while (p < intermediateCode->length() && bytesRead < numOfBytes) {
+        while (pos < intermediateCode->length() && bytesRead < numOfBytes) {
             result[bytesRead] = decoder->decodeToByte(*intermediateCode, pos);
             //result->append(sizeof(char), decoder->decodeToByte(*intermediateCode, pos));
             ++bytesRead;
         }
-        if (p > intermediateCode->length()) {
+        if (pos > intermediateCode->length()) {
             return nullptr;
         }
         return result;

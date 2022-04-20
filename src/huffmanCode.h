@@ -12,7 +12,7 @@ namespace xorCode {
 
         virtual void fillMap(std::unordered_map<uint8_t, std::string> *map, std::list<char> *curSeq) const = 0;
 
-        virtual uint8_t decode(const std::string &seq, int *pos) const = 0;
+        virtual uint8_t decode(const std::string &seq, int &pos) const = 0;
 
     };
 
@@ -24,14 +24,14 @@ namespace xorCode {
 
         void fillMap(std::unordered_map<uint8_t, std::string> *map, std::list<char> *curSeq) const override;
 
-        uint8_t decode(const std::string &seq, int *pos) const override;
+        uint8_t decode(const std::string &seq, int &pos) const override;
     };
 
     struct ExtraLeaf : public TreeNode {
 
         void fillMap(std::unordered_map<uint8_t, std::string> *map, std::list<char> *curSeq) const override;
 
-        uint8_t decode(const std::string &seq, int *pos) const override;
+        uint8_t decode(const std::string &seq, int &pos) const override;
     };
 
     struct Composite : public TreeNode {
@@ -42,7 +42,7 @@ namespace xorCode {
 
         void fillMap(std::unordered_map<uint8_t, std::string> *map, std::list<char> *curSeq) const override;
 
-        uint8_t decode(const std::string &seq, int *pos) const override;
+        uint8_t decode(const std::string &seq, int &pos) const override;
     };
 
     class HuffmanCode {
@@ -64,7 +64,7 @@ namespace xorCode {
 
         const std::string &encodeByte(uint8_t byte);
 
-        uint8_t decodeToByte(const std::string &seq, int *pos);
+        uint8_t decodeToByte(const std::string &seq, int &pos);
 
     };
 
