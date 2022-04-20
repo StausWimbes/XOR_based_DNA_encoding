@@ -17,7 +17,7 @@ namespace xorCode {
         std::shared_ptr<std::string> primer = std::make_shared<std::string>();
         std::shared_ptr<std::string> primerInv = std::make_shared<std::string>();
 
-        std::shared_ptr<std::string> assemble();
+        std::list<char> assemble();
     };
 
     /**

@@ -14,19 +14,22 @@ int main() {
     auto start = std::chrono::high_resolution_clock::now();
 
     for (int i = 0; i < strands.size(); i++) {
-        auto assembled = *strands[i]->assemble();
+        auto assembled = strands[i]->assemble();
         auto nucleotides = strands[i]->payload;
         if (doOutput) {
             std::cout << "Strand #" << i << " (" << strands[i]->payload.size() << ") with address "
                       << strands[i]->lowAddress << ":\n";
-            std::cout << assembled << " (" << assembled.length() << ')' << '\n';
+            for (char c: assembled) {
+                std::cout << c;
+            }
+            std::cout << " (" << assembled.size() << ')' << '\n';
             std::cout << "\"";
             for (char c: nucleotides) {
                 std::cout << c;
             }
             std::cout << "\"\n";
         }
-        results->push_back(assembled);
+        results->push_back(std::string(assembled.begin(), assembled.end()));
     }
 
     auto end = std::chrono::high_resolution_clock::now();

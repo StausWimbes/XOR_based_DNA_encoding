@@ -106,18 +106,19 @@ namespace xorCode {
         return xOrStrands;
     }
 
-    std::shared_ptr<std::string> strand::assemble() {
-        std::shared_ptr<std::string> result(new std::string);
+    std::list<char> strand::assemble() {
+        std::list<char> result;
+        //std::shared_ptr<std::string> result(new std::string);
         // add primer
-        result->append(*primer);
+        result.insert(result.end(), primer->begin(), primer->end());
         // add S nucleotide for detecting if strand is inverted
-        result->append(sizeof(char), 'A');
+        result.push_back('A');
         // add payload nucleotides
         for (char c: payload) {
-            result->append(sizeof(char), c);
+            result.push_back(c);
         }
         // add address
-        char last = result->at(result->size() - 1);
+        char last = result.back();
         auto *address = new uint8_t[9];
         if (xOr) {
             address[0] = 255;
@@ -130,17 +131,17 @@ namespace xorCode {
         }
         auto addressNucleotides = convertBinaryToNucleotides(last, address, 9);
         for (char c: addressNucleotides) {
-            result->append(sizeof(char), c);
+            result.push_back(c);
         }
         // pad address to always have a length of 9 * MAX_NUCLEOTIDES_PER_BYTE
         int remaining = (9 * MAX_NUCLEOTIDES_PER_BYTE) - addressNucleotides.size();
-        last = result->at(result->length() - 1);
+        last = result.back();
         char next = 'C';
         if (last == 'C') {
             next = 'T';
         }
         for (int i = 0; i < remaining; ++i) {
-            result->append(sizeof(char), next);
+            result.push_back(next);
             if (next == 'C') {
                 next = 'T';
             } else {
@@ -148,9 +149,9 @@ namespace xorCode {
             }
         }
         // add another S nucleotide
-        result->append(sizeof(char), 'A');
+        result.push_back('A');
         // add inverted primer
-        result->append(*primerInv);
+        result.insert(result.end(), primerInv->begin(), primerInv->end());
         return result;
     }
 }
