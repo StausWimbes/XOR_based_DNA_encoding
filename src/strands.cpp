@@ -99,7 +99,6 @@ namespace xorCode {
 
     std::list<char> strand::assemble() {
         std::list<char> result;
-        //std::shared_ptr<std::string> result(new std::string);
         // add primer
         result.insert(result.end(), primer->begin(), primer->end());
         // add S nucleotide for detecting if strand is inverted

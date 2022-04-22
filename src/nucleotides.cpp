@@ -1,20 +1,27 @@
 #include "nucleotides.h"
 #include "huffmanCode.h"
 
-#include <string>
 #include <cstdint>
-#include <memory>
 
 namespace xorCode {
-
-    char *order = new char[]{'A', 'C', 'G', 'T'};
 
     bool isNucleotide(char nucleotide) {
         return nucleotide == 'A' || nucleotide == 'C' || nucleotide == 'G' || nucleotide == 'T';
     }
 
     char getNucleotide(const uint8_t index) {
-        return order[index];
+        switch (index) {
+            case 0:
+                return 'A';
+            case 1:
+                return 'C';
+            case 2:
+                return 'G';
+            case 3:
+                return 'T';
+            default:
+                return 'A';
+        }
     }
 
     uint8_t getIndex(const char nucleotide) {
@@ -32,7 +39,7 @@ namespace xorCode {
         }
     }
 
-    void invertNucleotides(std::string &nucleotides) {
+    void invertNucleotides(std::list<char> &nucleotides) {
         for (char &c: nucleotides) {
             switch (c) {
                 case 'A':
@@ -65,7 +72,7 @@ namespace xorCode {
             for (char c: encoder->encodeByte(byte)) {
                 // convert base 3 digit c into nucleotide
                 uint32_t prevIndex = getIndex(curPrev) + 1;
-                prevIndex += std::stoi(&c);
+                prevIndex += c - '0';
                 prevIndex %= 4;
                 curPrev = getNucleotide(prevIndex);
                 output.push_back(curPrev);
@@ -73,37 +80,31 @@ namespace xorCode {
         }
     }
 
-    std::list<uint8_t>
-    convertNucleotidesToBinary(char prev, const std::string &nucleotides, uint32_t startIndex, uint32_t numOfBytes) {
+    void
+    convertNucleotidesToBinary(char prev, iter itBegin, iter itEnd, uint32_t numOfBytes, std::list<uint8_t> &output) {
         // decode to base 3
         std::list<char> base3;
         auto curPrev = prev;
-        for (uint32_t i = startIndex; i < nucleotides.length(); ++i) {
-            char t = nucleotides[i];
+        while (itBegin != itEnd) {
+            char t = *itBegin;
             uint8_t prevIndex = getIndex(curPrev);
             uint8_t curIndex = getIndex(t);
             if (curIndex <= prevIndex) {
                 curIndex += 4;
             }
-            uint8_t res = curIndex - (prevIndex + 1) + '0';
-            base3.push_back(res);
+            base3.push_back(char(curIndex - (prevIndex + 1) + '0'));
             curPrev = t;
+            ++itBegin;
         }
         // decode to binary
         auto decoder = HuffmanCode::getInstance();
-        std::list<uint8_t> binary;
         int bytesRead = 0;
-        auto itBegin = base3.begin();
-        auto itEnd = base3.end();
-        while (itBegin != itEnd && bytesRead < numOfBytes) {
-            decoder->decodeToByte(itBegin, itEnd, binary);
+        auto itBeginBase3 = base3.begin();
+        auto itEndBase3 = base3.end();
+        while (itBeginBase3 != itEndBase3 && bytesRead < numOfBytes) {
+            decoder->decodeToByte(itBeginBase3, itEndBase3, output);
             ++bytesRead;
         }
-        return binary;
-    }
-
-    std::list<uint8_t> convertNucleotidesToBinary(char prev, const std::string &nucleotides, uint32_t numOfBytes) {
-        return convertNucleotidesToBinary(prev, nucleotides, 0, numOfBytes);
     }
 
 }

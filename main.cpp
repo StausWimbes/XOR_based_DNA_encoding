@@ -9,7 +9,7 @@ int main() {
     std::cout << "Working directory: " << std::filesystem::current_path() << "\n";
     auto strands = xorCode::createStrands("../data/test.txt");
     std::cout << "Strands: " << strands.size() << "\n";
-    auto *results = new std::vector<std::string>;
+    auto *results = new std::vector<std::list<char>>;
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -29,7 +29,7 @@ int main() {
             }
             std::cout << "\"\n";
         }
-        results->push_back(std::string(assembled.begin(), assembled.end()));
+        results->push_back(assembled);
     }
 
     auto end = std::chrono::high_resolution_clock::now();

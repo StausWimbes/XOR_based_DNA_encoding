@@ -13,9 +13,9 @@ namespace xorCode {
     private:
 
         std::string fileName;
-        std::vector<std::string> strands;
+        std::vector<std::list<char>> strands;
 
-        std::unordered_set<std::string> *cleanedStrands;
+        std::list<std::list<char>> *cleanedStrands;
 
         // map of all payload strands. key is the index (low address) of the strand
         std::unordered_map<uint64_t, strand> *payLoadStrands;
@@ -26,10 +26,10 @@ namespace xorCode {
 
     public:
 
-        StrandDecoder(std::string &fileName, std::vector<std::string> &strands) {
+        StrandDecoder(std::string &fileName, std::vector<std::list<char>> &strands) {
             this->fileName = fileName;
             this->strands = strands;
-            cleanedStrands = new std::unordered_set<std::string>;
+            cleanedStrands = new std::list<std::list<char>>;
             payLoadStrands = new std::unordered_map<uint64_t, strand>;
             xorStrands = new std::unordered_map<uint64_t, strand>;
         }
@@ -47,27 +47,43 @@ namespace xorCode {
          */
         void filterStrands() {
             // TODO: Create Primers
-            std::string primer;
-            std::string invPrimer;
-            std::string revPrimer = std::string(primer.rbegin(), primer.rend());
+            std::list<char> primer;
+            std::list<char> invPrimer;
+            std::list<char> revPrimer;
+            std::reverse_copy(primer.begin(), primer.end(), revPrimer.end());
             for (auto strand: strands) {
+                auto itStart = strand.begin();
+                auto itEnd = strand.end();
+                for (int i = 0; i < primer.size(); ++i) {
+                    ++itStart;
+                    --itEnd;
+                }
                 // check if strand is inverted
-                if (strand[primer.size()] == 'T') {
+                if (*itStart == 'T') {
                     invertNucleotides(strand);
-                } else if (strand[primer.size()] != 'A') {
+                } else if (*itStart != 'A') {
                     continue;
                 }
                 // check if strand is reversed
-                if (strand.ends_with(revPrimer)) {
-                    //std::reverse(strand.begin(), strand.end());
+                if (std::equal(itEnd, strand.end(), revPrimer.begin())) {
+                    // TODO: uncomment once primers are created strand.reverse();
                 }
                 // check if primers are correct
-                if (strand.starts_with(primer) && strand.ends_with(invPrimer)) {
-                    // remove primers and S nucleotides
-                    cleanedStrands->insert(std::string(
-                            strand.begin() + primer.length() + 1,
-                            strand.end() - invPrimer.length() - 1
-                    ));
+                bool correct = true;
+                while (correct && !primer.empty() && !strand.empty()) {
+                    correct = primer.front() == strand.front();
+                    primer.pop_front();
+                    strand.pop_front();
+                }
+                strand.pop_front();
+                while (correct && !invPrimer.empty() && !strand.empty()) {
+                    correct = primer.back() == strand.back();
+                    primer.pop_back();
+                    strand.pop_back();
+                }
+                strand.pop_back();
+                if (correct) {
+                    cleanedStrands->push_back(strand);
                 }
             }
         }
@@ -79,36 +95,43 @@ namespace xorCode {
          * 6. Payload Strands sortieren nach index
          */
         void decodeStrands() {
-            int addressLength = 9 * MAX_NUCLEOTIDES_PER_BYTE;
-            for (auto strand: *cleanedStrands) {
+            int addressLengthBytes = 9;
+            int addressLength = addressLengthBytes * MAX_NUCLEOTIDES_PER_BYTE;
+            for (auto &strand: *cleanedStrands) {
+                auto it = strand.end();
+                for (int i = 0; i < addressLength + 1; ++i) {
+                    --it;
+                }
+                // it now points to the char right before the address
                 auto *cur = new xorCode::strand;
-                char prev = strand[strand.length() - addressLength - 1];
-                auto address = convertNucleotidesToBinary(prev, strand, strand.length() - addressLength, 9);
-                if (address.size() != 9) {
+                char prev = *it;
+                ++it; // it now points to the first char of the address
+                std::list<uint8_t> address;
+                convertNucleotidesToBinary(prev, it, strand.end(), addressLengthBytes, address);
+                if (address.size() != addressLengthBytes) {
                     continue;
                 }
-                auto lowAddress = new uint8_t[8];
-                int i = -1;
-                for (uint8_t b: address) {
-                    if (i < 0) {
-                        ++i;
-                        continue;
-                    }
-                    lowAddress[i] = b;
-                    ++i;
-                }
-                cur->lowAddress = *reinterpret_cast<uint64_t *>(lowAddress);
+                // get xOr byte from address
                 uint8_t xOr = address.front();
+                address.pop_front();
                 if (xOr != 0 && xOr != 255) {
                     continue;
                 }
                 cur->xOr = xOr == 255;
+                // get lowAddress from address
+                auto lowAddress = new uint8_t[8];
+                for (int i = 0; i < 8; ++i) {
+                    lowAddress[i] = address.front();
+                    address.pop_front();
+                }
+                cur->lowAddress = *reinterpret_cast<uint64_t *>(lowAddress);
+
                 std::list<char> payload;
-                int length = strand.length() - addressLength;
+                int length = strand.size() - addressLength;
                 for (char c: strand) {
                     if (length <= 0) break;
                     payload.push_back(c);
-                    ++length;
+                    --length;
                 }
                 cur->payload = payload;
                 // TODO: figure out a way to store duplicates
@@ -278,8 +301,8 @@ namespace xorCode {
         /**
          * Converts the payloads to binary and stores the resulting bytes in a vector.
          */
-        std::vector<uint8_t> assemble() {
-            auto *result = new std::vector<uint8_t>();
+        std::list<uint8_t> assemble() {
+            std::list<uint8_t> result;
 
             for (int i = 0; i <= highestPayloadIndex; ++i) {
                 if (!payLoadStrands->contains(i)) {
@@ -287,24 +310,16 @@ namespace xorCode {
                     continue;
                 }
 
-                // decode payload
+                // decode and append payload
                 auto payload = payLoadStrands->at(i).payload;
-                auto payloadString = std::string(payload.size(), 'A');
-                int byte = 0;
-                for (char c: payload) {
-                    payloadString.at(byte) = c;
-                    ++byte;
-                }
-                auto original = convertNucleotidesToBinary('A', payloadString, xorCode::getPayloadByteLength());
-                // append payload
-                result->insert(result->end(), original.begin(), original.end());
+                convertNucleotidesToBinary('A', payload.begin(), payload.end(), getPayloadByteLength(), result);
             }
-            return *result;
+            return result;
         }
 
     };
 
-    std::vector<uint8_t> decode(std::string fileName, std::vector<std::string> strands) {
+    std::list<uint8_t> decode(std::string fileName, std::vector<std::list<char>> &strands) {
         auto decoder = StrandDecoder(fileName, strands);
         decoder.filterStrands();
         decoder.decodeStrands();

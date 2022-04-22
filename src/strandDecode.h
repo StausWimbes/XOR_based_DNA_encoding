@@ -3,11 +3,11 @@
 
 #include <cstdint>
 #include <vector>
-#include <string>
+#include <list>
 
 namespace xorCode {
 
-    std::vector<uint8_t> decode(std::string fileName, std::vector<std::string> strands);
+    std::list<uint8_t> decode(std::string fileName, std::vector<std::list<char>> &strands);
 
 }
 

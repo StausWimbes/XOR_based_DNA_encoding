@@ -1,11 +1,9 @@
 #ifndef XOR_CODE_NUCLEOTIDES_H
 #define XOR_CODE_NUCLEOTIDES_H
 
-#include <string>
 #include <list>
 #include <cstdint>
-#include <fstream>
-#include <memory>
+#include "huffmanCode.h"
 
 namespace xorCode {
 
@@ -41,7 +39,7 @@ namespace xorCode {
      * For example the string "ACTAG" would be turned into "TGATC".
      * @param nucleotides The string that should be inverted.
      */
-    void invertNucleotides(std::string &nucleotides);
+    void invertNucleotides(std::list<char> &nucleotides);
 
     /**
      * Performs an xor operation on the given nucleotides. The xor operation is based on the nucleotides indices:
@@ -86,23 +84,9 @@ namespace xorCode {
      * @return An array of uint8_t with length 'numOfBytes'. If the string cannot be converted into at least 'numOfBytes'
      * many uint8_t then the nullptr is returned instead.
      */
-    std::list<uint8_t>
-    convertNucleotidesToBinary(char prev, const std::string &nucleotides, uint32_t startIndex, uint32_t numOfBytes);
+    void
+    convertNucleotidesToBinary(char prev, iter itBegin, iter itEnd, uint32_t numOfBytes, std::list<uint8_t> &output);
 
-    /**
-     * Takes a string of nucleotides and turns a part of it into an array of uint8_t of size 'numOfBytes'.
-     * This is done by first turning each nucleotide into a ternary digit according to a rotary encoding.
-     * Then each string of 5 or 6 ternary digits is turned into one uint8_t using a prefix encoding. If the string
-     * can be turned into more than 'numOfBytes' uint8_t then only the first 'numOfBytes' uint8_t will be returned.
-     * This is the exact inverse function of convertBinaryToNucleotides().
-     * @param prev A char representation of a nucleotide. This is used as the previous nucleotide
-     *             for the rotating encoding.
-     * @param nucleotides A string of nucleotides.
-     * @param numOfBytes The number of uint8_t that should be converted.
-     * @return An array of uint8_t with length 'numOfBytes'. If the string cannot be converted into at least 'numOfBytes'
-     * many uint8_t then the nullptr is returned instead.
-     */
-    std::list<uint8_t> convertNucleotidesToBinary(char prev, const std::string &nucleotides, uint32_t numOfBytes);
 
 }
 
