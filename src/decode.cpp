@@ -1,7 +1,7 @@
-#include "strandDecode.h"
-#include "strands.h"
+#include "decode.h"
+#include "encode.h"
 #include "settings.h"
-#include "nucleotides.h"
+#include "nucleotideUtils.h"
 #include <unordered_map>
 #include <unordered_set>
 #include <queue>

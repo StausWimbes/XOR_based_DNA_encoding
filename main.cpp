@@ -1,15 +1,15 @@
 #include <iostream>
 #include <filesystem>
-#include "strands.h"
-#include "strandDecode.h"
+#include "encode.h"
+#include "decode.h"
 #include "settings.h"
 
-bool doOutput = true;
+bool doOutput = false;
 
 int main() {
     using namespace xorCode;
     std::cout << "Working directory: " << std::filesystem::current_path() << "\n";
-    auto strands = createStrands("../data/test.txt");
+    auto strands = createStrands("../data/test2.txt");
     std::cout << "Strands: " << strands.size() << "\n";
     auto *results = new std::vector<types::nucleotides>;
 

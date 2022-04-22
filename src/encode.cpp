@@ -1,5 +1,5 @@
-#include "strands.h"
-#include "nucleotides.h"
+#include "encode.h"
+#include "nucleotideUtils.h"
 #include "settings.h"
 #include <iostream>
 #include <memory>

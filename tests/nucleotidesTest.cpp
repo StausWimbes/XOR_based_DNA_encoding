@@ -1,5 +1,5 @@
 #include "gtest/gtest.h"
-#include "nucleotides.h"
+#include "nucleotideUtils.h"
 
 TEST(NucleotideTest, IsNucleotide) {
     char nuc;

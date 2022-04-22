@@ -1,4 +1,4 @@
-#include "nucleotides.h"
+#include "nucleotideUtils.h"
 #include "huffmanCode.h"
 #include "settings.h"
 
