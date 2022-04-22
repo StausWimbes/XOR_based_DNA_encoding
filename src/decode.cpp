@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <queue>
+#include <iostream>
 
 namespace xorCode {
 
@@ -13,9 +14,9 @@ namespace xorCode {
     private:
 
         std::string fileName;
-        std::vector<std::list<char>> strands;
+        std::vector<types::nucleotides> strands;
 
-        std::list<std::list<char>> *cleanedStrands;
+        std::list<types::nucleotides> *cleanedStrands;
 
         // map of all payload strands. key is the index (low address) of the strand
         std::unordered_map<uint64_t, strand> *payLoadStrands;
@@ -26,10 +27,10 @@ namespace xorCode {
 
     public:
 
-        StrandDecoder(std::string &fileName, std::vector<std::list<char>> &strands) {
+        StrandDecoder(std::string &fileName, std::vector<types::nucleotides> &strands) {
             this->fileName = fileName;
             this->strands = strands;
-            cleanedStrands = new std::list<std::list<char>>;
+            cleanedStrands = new std::list<types::nucleotides>;
             payLoadStrands = new std::unordered_map<uint64_t, strand>;
             xorStrands = new std::unordered_map<uint64_t, strand>;
         }
@@ -47,9 +48,9 @@ namespace xorCode {
          */
         void filterStrands() {
             // TODO: Create Primers
-            std::list<char> primer;
-            std::list<char> invPrimer;
-            std::list<char> revPrimer;
+            types::nucleotides primer;
+            types::nucleotides invPrimer;
+            types::nucleotides revPrimer;
             std::reverse_copy(primer.begin(), primer.end(), revPrimer.end());
             for (auto strand: strands) {
                 auto itStart = strand.begin();
@@ -70,20 +71,21 @@ namespace xorCode {
                 }
                 // check if primers are correct
                 bool correct = true;
-                while (correct && !primer.empty() && !strand.empty()) {
-                    correct = primer.front() == strand.front();
-                    primer.pop_front();
-                    strand.pop_front();
+                itStart = strand.begin();
+                for (char c: primer) {
+                    correct = c == *itStart;
+                    ++itStart;
                 }
-                strand.pop_front();
-                while (correct && !invPrimer.empty() && !strand.empty()) {
-                    correct = primer.back() == strand.back();
-                    primer.pop_back();
-                    strand.pop_back();
+                ++itStart;
+                itEnd = strand.end();
+                for (int i = invPrimer.size() - 1; i >= 0; --i) {
+                    --itEnd;
+                    correct = revPrimer[i] == *itEnd;
                 }
-                strand.pop_back();
+                --itEnd;
                 if (correct) {
-                    cleanedStrands->push_back(strand);
+                    auto cleaned = types::nucleotides(itStart, itEnd);
+                    cleanedStrands->push_back(cleaned);
                 }
             }
         }
@@ -106,14 +108,13 @@ namespace xorCode {
                 auto *cur = new xorCode::strand;
                 char prev = *it;
                 ++it; // it now points to the first char of the address
-                std::list<uint8_t> address;
+                types::bytes address;
                 convertNucleotidesToBinary(prev, it, strand.end(), addressLengthBytes, address);
                 if (address.size() != addressLengthBytes) {
                     continue;
                 }
                 // get xOr byte from address
-                uint8_t xOr = address.front();
-                address.pop_front();
+                uint8_t xOr = address.at(0);
                 if (xOr != 0 && xOr != 255) {
                     continue;
                 }
@@ -121,12 +122,11 @@ namespace xorCode {
                 // get lowAddress from address
                 auto lowAddress = new uint8_t[8];
                 for (int i = 0; i < 8; ++i) {
-                    lowAddress[i] = address.front();
-                    address.pop_front();
+                    lowAddress[i] = address.at(i + 1);
                 }
                 cur->lowAddress = *reinterpret_cast<uint64_t *>(lowAddress);
 
-                std::list<char> payload;
+                types::nucleotides payload;
                 int length = strand.size() - addressLength;
                 for (char c: strand) {
                     if (length <= 0) break;

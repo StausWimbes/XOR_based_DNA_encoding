@@ -2,16 +2,16 @@
 #define XOR_CODE_SETTINGS_H
 
 #include <cstdint>
-#include <list>
+#include <vector>
 
 namespace xorCode {
 
     namespace types {
 
-        typedef std::list<char>::iterator iter;
-        typedef std::list<uint8_t> bytes;
-        typedef std::list<char> ternaries;
-        typedef std::list<char> nucleotides;
+        typedef std::vector<char>::iterator iter;
+        typedef std::vector<uint8_t> bytes;
+        typedef std::vector<char> ternaries;
+        typedef std::vector<char> nucleotides;
 
     }
 

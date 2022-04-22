@@ -36,11 +36,12 @@ namespace xorCode {
             auto length = getPayloadByteLength();
 
             uint64_t index = 0;
-            while (!inputBytes->empty()) {
-                std::list<uint8_t> payload;
-                for (int i = 0; i < length && !inputBytes->empty(); ++i) {
-                    payload.push_back(inputBytes->front());
-                    inputBytes->pop_front();
+            int i = 0;
+            while (i < inputBytes->size()) {
+                types::bytes payload;
+                for (int j = 0; j < length && i < inputBytes->size(); ++j) {
+                    payload.push_back(inputBytes->at(i));
+                    ++i;
                 }
                 auto *newStrand = new strand();
                 convertBinaryToNucleotides('A', payload, newStrand->payload);
@@ -79,7 +80,7 @@ namespace xorCode {
                         ++byte;
                     }
                 }
-                std::list<char> xorPayload;
+                types::nucleotides xorPayload;
                 for (char c: xorPayloadString) {
                     xorPayload.push_back(c);
                 }
@@ -107,7 +108,7 @@ namespace xorCode {
                 }
                 // add address
                 char last = result.back();
-                std::list<uint8_t> address;
+                types::bytes address;
                 if (s->xOr) {
                     address.push_back(255);
                 } else {

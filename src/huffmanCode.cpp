@@ -96,7 +96,7 @@ namespace xorCode {
             q.push(new Composite(n1, n2, n3));
         }
         root = q.front();
-        auto *curSeq = new std::list<char>;
+        auto *curSeq = new types::ternaries;
         map = new std::unordered_map<uint8_t, std::string>;
         root->fillMap(map, curSeq);
     }
