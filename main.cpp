@@ -4,12 +4,12 @@
 #include "decode.h"
 #include "settings.h"
 
-bool doOutput = false;
+bool doOutput = true;
 
 int main() {
     using namespace xorCode;
     std::cout << "Working directory: " << std::filesystem::current_path() << "\n";
-    auto strands = createStrands("../data/test2.txt");
+    auto strands = createStrands("../data/test.txt");
     std::cout << "Strands: " << strands.size() << "\n";
     auto *results = new std::vector<types::nucleotides>;
 
