@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <vector>
 #include <list>
+#include <string>
 
 namespace xorCode {
 
