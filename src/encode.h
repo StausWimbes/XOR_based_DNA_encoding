@@ -2,6 +2,7 @@
 #define XOR_CODE_STRANDS_H
 
 #include "settings.h"
+#include "nucleotideUtils.h"
 
 #include <cstdint>
 #include <memory>
@@ -18,28 +19,11 @@ namespace xorCode {
         bool xOr;
         std::shared_ptr<std::string> primer = std::make_shared<std::string>();
         std::shared_ptr<std::string> primerInv = std::make_shared<std::string>();
-
-        types::nucleotides assemble();
     };
 
-    /**
-     * Uses the file located at `filePath` to create a vector of strands with a payload length of `length` and the name of the file as the high address.
-     * @param filePath location of the file
-     * @param length the length of each payload
-     * @return the vector of strands
-     */
-    std::vector<strand *> createStrands(const std::string &filePath);
+    std::vector<types::nucleotides> encode(const std::string &key, std::ifstream &input);
 
-    /**
-     * Uses `input` to create a vector of strands with a payload length of `length` and high address `key`.
-     * @param key the high address for the strands
-     * @param input the input stream
-     * @param length the length of each payload
-     * @return the vector of strands
-     */
-    std::vector<strand *> createStrands(const std::string &key, std::ifstream &input);
-
-    std::shared_ptr<std::vector<strand *>> createXorStrands(std::vector<strand *> *strands);
+    std::vector<types::nucleotides> encode(const std::string &filePath);
 
 }
 

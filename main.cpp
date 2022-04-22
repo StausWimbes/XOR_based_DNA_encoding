@@ -9,27 +9,17 @@ bool doOutput = true;
 int main() {
     using namespace xorCode;
     std::cout << "Working directory: " << std::filesystem::current_path() << "\n";
-    auto strands = createStrands("../data/test.txt");
+    auto strands = encode("../data/test.txt");
     std::cout << "Strands: " << strands.size() << "\n";
     auto *results = new std::vector<types::nucleotides>;
-
     auto start = std::chrono::high_resolution_clock::now();
 
-    for (int i = 0; i < strands.size(); i++) {
-        auto assembled = strands[i]->assemble();
-        auto nucleotides = strands[i]->payload;
+    for (const auto &assembled: strands) {
         if (doOutput) {
-            std::cout << "Strand #" << i << " (" << strands[i]->payload.size() << ") with address "
-                      << strands[i]->lowAddress << ":\n";
             for (char c: assembled) {
                 std::cout << c;
             }
             std::cout << " (" << assembled.size() << ')' << '\n';
-            std::cout << "\"";
-            for (char c: nucleotides) {
-                std::cout << c;
-            }
-            std::cout << "\"\n";
         }
         results->push_back(assembled);
     }
