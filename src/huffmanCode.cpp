@@ -10,23 +10,23 @@ namespace xorCode {
         this->byte = byte;
     }
 
-    void Leaf::fillMap(std::unordered_map<uint8_t, std::string> *map, std::list<char> *curSeq) const {
+    void Leaf::fillMap(std::unordered_map<uint8_t, std::string> *map, types::ternaries *seq) const {
         std::string value;
-        for (auto c: *curSeq) {
+        for (auto c: *seq) {
             value.append(sizeof(char), c);
         }
         (*map)[byte] = value;
     }
 
-    void Leaf::decode(iter &itBegin, iter &itEnd, std::list<uint8_t> &output) const {
-        output.push_back(byte);
+    void Leaf::decode(types::iter &itBegin, types::iter &itEnd, types::bytes &out) const {
+        out.push_back(byte);
     }
 
-    void ExtraLeaf::fillMap(std::unordered_map<uint8_t, std::string> *map, std::list<char> *curSeq) const {
+    void ExtraLeaf::fillMap(std::unordered_map<uint8_t, std::string> *map, types::ternaries *seq) const {
         // do nothing because these leafs are duplicates to fill up the tree
     }
 
-    void ExtraLeaf::decode(iter &itBegin, iter &itEnd, std::list<uint8_t> &output) const {
+    void ExtraLeaf::decode(types::iter &itBegin, types::iter &itEnd, types::bytes &out) const {
         itBegin = itEnd;
     }
 
@@ -36,33 +36,33 @@ namespace xorCode {
         this->right = right;
     }
 
-    void Composite::fillMap(std::unordered_map<uint8_t, std::string> *map, std::list<char> *curSeq) const {
-        curSeq->push_back('0');
-        left->fillMap(map, curSeq);
-        curSeq->pop_back();
-        curSeq->push_back('1');
-        middle->fillMap(map, curSeq);
-        curSeq->pop_back();
-        curSeq->push_back('2');
-        right->fillMap(map, curSeq);
-        curSeq->pop_back();
+    void Composite::fillMap(std::unordered_map<uint8_t, std::string> *map, types::ternaries *seq) const {
+        seq->push_back('0');
+        left->fillMap(map, seq);
+        seq->pop_back();
+        seq->push_back('1');
+        middle->fillMap(map, seq);
+        seq->pop_back();
+        seq->push_back('2');
+        right->fillMap(map, seq);
+        seq->pop_back();
     }
 
-    void Composite::decode(iter &itBegin, iter &itEnd, std::list<uint8_t> &output) const {
+    void Composite::decode(types::iter &itBegin, types::iter &itEnd, types::bytes &out) const {
         if (itBegin != itEnd) {
             switch (*itBegin) {
                 case '0':
                     ++itBegin;
-                    return left->decode(itBegin, itEnd, output);
+                    return left->decode(itBegin, itEnd, out);
                 case '1':
                     ++itBegin;
-                    return middle->decode(itBegin, itEnd, output);
+                    return middle->decode(itBegin, itEnd, out);
                 case '2':
                     ++itBegin;
-                    return right->decode(itBegin, itEnd, output);
+                    return right->decode(itBegin, itEnd, out);
                 default:
                     ++itBegin;
-                    return left->decode(itBegin, itEnd, output);
+                    return left->decode(itBegin, itEnd, out);
             }
         }
     }
@@ -105,7 +105,7 @@ namespace xorCode {
         return (*map)[byte];
     }
 
-    void HuffmanCode::decodeToByte(iter &itBegin, iter &itEnd, std::list<uint8_t> &output) {
-        root->decode(itBegin, itEnd, output);
+    void HuffmanCode::decodeToByte(types::iter &itBegin, types::iter &itEnd, types::bytes &out) {
+        root->decode(itBegin, itEnd, out);
     }
 }

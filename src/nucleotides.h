@@ -3,7 +3,7 @@
 
 #include <list>
 #include <cstdint>
-#include "huffmanCode.h"
+#include "settings.h"
 
 namespace xorCode {
 
@@ -37,9 +37,9 @@ namespace xorCode {
      * Inverts every nucleotide in the given string according to the following pairs:
      * ('A', 'T'), ('C', 'G').
      * For example the string "ACTAG" would be turned into "TGATC".
-     * @param nucleotides The string that should be inverted.
+     * @param seq The string that should be inverted.
      */
-    void invertNucleotides(std::list<char> &nucleotides);
+    void invertNucleotides(types::nucleotides &seq);
 
     /**
      * Performs an xor operation on the given nucleotides. The xor operation is based on the nucleotides indices:
@@ -68,7 +68,7 @@ namespace xorCode {
      * @param size The size of the input array.
      * @return The resulting string of nucleotides.
      */
-    void convertBinaryToNucleotides(char prev, std::list<uint8_t> &buffer, std::list<char> &output);
+    void convertBinaryToNucleotides(char prev, types::bytes &buffer, types::nucleotides &out);
 
     /**
      * Takes a string of nucleotides and turns a part of it starting at 'startIndex' into an array of uint8_t of size
@@ -85,7 +85,8 @@ namespace xorCode {
      * many uint8_t then the nullptr is returned instead.
      */
     void
-    convertNucleotidesToBinary(char prev, iter itBegin, iter itEnd, uint32_t numOfBytes, std::list<uint8_t> &output);
+    convertNucleotidesToBinary(char prev, types::iter itBegin, types::iter itEnd, uint32_t numOfBytes,
+                               types::bytes &out);
 
 
 }

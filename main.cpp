@@ -2,14 +2,16 @@
 #include <filesystem>
 #include "strands.h"
 #include "strandDecode.h"
+#include "settings.h"
 
 bool doOutput = true;
 
 int main() {
+    using namespace xorCode;
     std::cout << "Working directory: " << std::filesystem::current_path() << "\n";
-    auto strands = xorCode::createStrands("../data/test.txt");
+    auto strands = createStrands("../data/test.txt");
     std::cout << "Strands: " << strands.size() << "\n";
-    auto *results = new std::vector<std::list<char>>;
+    auto *results = new std::vector<types::nucleotides>;
 
     auto start = std::chrono::high_resolution_clock::now();
 
@@ -38,7 +40,7 @@ int main() {
 
 
     std::cout << "Original File: \n";
-    auto original = xorCode::decode("test.txt", *results);
+    auto original = decode("test.txt", *results);
     for (unsigned char character: original) {
         std::cout << character;
     }

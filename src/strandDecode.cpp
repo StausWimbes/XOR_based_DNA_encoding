@@ -272,7 +272,7 @@ namespace xorCode {
                             }
                         }
 
-                        std::list<char> restoredPayload;
+                        types::nucleotides restoredPayload;
                         for (char c: restoredPayloadString) {
                             restoredPayload.push_back(c);
                         }
@@ -301,8 +301,8 @@ namespace xorCode {
         /**
          * Converts the payloads to binary and stores the resulting bytes in a vector.
          */
-        std::list<uint8_t> assemble() {
-            std::list<uint8_t> result;
+        types::bytes assemble() {
+            types::bytes result;
 
             for (int i = 0; i <= highestPayloadIndex; ++i) {
                 if (!payLoadStrands->contains(i)) {
@@ -319,7 +319,7 @@ namespace xorCode {
 
     };
 
-    std::list<uint8_t> decode(std::string fileName, std::vector<std::list<char>> &strands) {
+    types::bytes decode(std::string fileName, std::vector<types::nucleotides> &strands) {
         auto decoder = StrandDecoder(fileName, strands);
         decoder.filterStrands();
         decoder.decodeStrands();

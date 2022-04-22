@@ -1,6 +1,8 @@
 #ifndef XOR_CODE_STRANDS_H
 #define XOR_CODE_STRANDS_H
 
+#include "settings.h"
+
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -11,13 +13,13 @@
 namespace xorCode {
 
     struct strand {
-        std::list<char> payload;
+        types::nucleotides payload;
         uint64_t lowAddress;
         bool xOr;
         std::shared_ptr<std::string> primer = std::make_shared<std::string>();
         std::shared_ptr<std::string> primerInv = std::make_shared<std::string>();
 
-        std::list<char> assemble();
+        types::nucleotides assemble();
     };
 
     /**

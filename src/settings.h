@@ -2,8 +2,18 @@
 #define XOR_CODE_SETTINGS_H
 
 #include <cstdint>
+#include <list>
 
 namespace xorCode {
+
+    namespace types {
+
+        typedef std::list<char>::iterator iter;
+        typedef std::list<uint8_t> bytes;
+        typedef std::list<char> ternaries;
+        typedef std::list<char> nucleotides;
+
+    }
 
     const int MAX_NUCLEOTIDES_PER_BYTE = 6;
 

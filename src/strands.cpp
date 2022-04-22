@@ -97,7 +97,7 @@ namespace xorCode {
         return xOrStrands;
     }
 
-    std::list<char> strand::assemble() {
+    types::nucleotides strand::assemble() {
         std::list<char> result;
         // add primer
         result.insert(result.end(), primer->begin(), primer->end());

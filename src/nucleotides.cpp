@@ -1,5 +1,6 @@
 #include "nucleotides.h"
 #include "huffmanCode.h"
+#include "settings.h"
 
 #include <cstdint>
 
@@ -24,7 +25,7 @@ namespace xorCode {
         }
     }
 
-    uint8_t getIndex(const char nucleotide) {
+    uint8_t getIndex(char nucleotide) {
         switch (nucleotide) {
             case 'A':
                 return 0;
@@ -39,8 +40,8 @@ namespace xorCode {
         }
     }
 
-    void invertNucleotides(std::list<char> &nucleotides) {
-        for (char &c: nucleotides) {
+    void invertNucleotides(types::nucleotides &seq) {
+        for (char &c: seq) {
             switch (c) {
                 case 'A':
                     c = 'T';
@@ -64,7 +65,7 @@ namespace xorCode {
         return getNucleotide(index1 xor index2);
     }
 
-    void convertBinaryToNucleotides(char prev, std::list<uint8_t> &buffer, std::list<char> &output) {
+    void convertBinaryToNucleotides(char prev, types::bytes &buffer, types::nucleotides &out) {
         auto curPrev = prev;
         auto encoder = HuffmanCode::getInstance();
         for (uint8_t byte: buffer) {
@@ -75,15 +76,16 @@ namespace xorCode {
                 prevIndex += c - '0';
                 prevIndex %= 4;
                 curPrev = getNucleotide(prevIndex);
-                output.push_back(curPrev);
+                out.push_back(curPrev);
             }
         }
     }
 
     void
-    convertNucleotidesToBinary(char prev, iter itBegin, iter itEnd, uint32_t numOfBytes, std::list<uint8_t> &output) {
+    convertNucleotidesToBinary(char prev, types::iter itBegin, types::iter itEnd, uint32_t numOfBytes,
+                               types::bytes &out) {
         // decode to base 3
-        std::list<char> base3;
+        types::ternaries base3;
         auto curPrev = prev;
         while (itBegin != itEnd) {
             char t = *itBegin;
@@ -102,7 +104,7 @@ namespace xorCode {
         auto itBeginBase3 = base3.begin();
         auto itEndBase3 = base3.end();
         while (itBeginBase3 != itEndBase3 && bytesRead < numOfBytes) {
-            decoder->decodeToByte(itBeginBase3, itEndBase3, output);
+            decoder->decodeToByte(itBeginBase3, itEndBase3, out);
             ++bytesRead;
         }
     }
