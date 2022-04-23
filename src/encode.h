@@ -15,7 +15,10 @@ namespace xorCode {
 
     struct strand {
         types::nucleotides payload;
-        uint64_t lowAddress;
+        union {
+            uint64_t lowAddress;
+            std::array<uint8_t, 8> lowAddressArray;
+        };
         bool xOr;
         std::shared_ptr<std::string> primer = std::make_shared<std::string>();
         std::shared_ptr<std::string> primerInv = std::make_shared<std::string>();

@@ -53,37 +53,32 @@ namespace xorCode {
             types::nucleotides revPrimer;
             std::reverse_copy(primer.begin(), primer.end(), revPrimer.end());
             for (auto strand: strands) {
-                auto itStart = strand.begin();
-                auto itEnd = strand.end();
-                for (int i = 0; i < primer.size(); ++i) {
-                    ++itStart;
-                    --itEnd;
-                }
                 // check if strand is inverted
-                if (*itStart == 'T') {
+                if (strand[primer.size()] == 'T') {
                     invertNucleotides(strand);
-                } else if (*itStart != 'A') {
+                } else if (strand[primer.size()] != 'A') {
                     continue;
                 }
                 // check if strand is reversed
-                if (std::equal(itEnd, strand.end(), revPrimer.begin())) {
+                if (std::equal(revPrimer.begin(), revPrimer.end(), strand.end() - revPrimer.size())) {
                     // TODO: uncomment once primers are created strand.reverse();
                 }
                 // check if primers are correct
                 bool correct = true;
-                itStart = strand.begin();
+                auto itStart = strand.begin();
                 for (char c: primer) {
                     correct = c == *itStart;
                     ++itStart;
                 }
                 ++itStart;
-                itEnd = strand.end();
+                auto itEnd = strand.end();
                 for (int i = invPrimer.size() - 1; i >= 0; --i) {
                     --itEnd;
                     correct = revPrimer[i] == *itEnd;
                 }
                 --itEnd;
                 if (correct) {
+                    // remove primers and 'A' nucleotides
                     auto cleaned = types::nucleotides(itStart, itEnd);
                     cleanedStrands->push_back(cleaned);
                 }
@@ -100,11 +95,8 @@ namespace xorCode {
             int addressLengthBytes = 9;
             int addressLength = addressLengthBytes * MAX_NUCLEOTIDES_PER_BYTE;
             for (auto &strand: *cleanedStrands) {
-                auto it = strand.end();
-                for (int i = 0; i < addressLength + 1; ++i) {
-                    --it;
-                }
                 // it now points to the char right before the address
+                auto it = strand.end() - addressLength - 1;
                 auto *cur = new xorCode::strand;
                 char prev = *it;
                 ++it; // it now points to the first char of the address
@@ -120,20 +112,14 @@ namespace xorCode {
                 }
                 cur->xOr = xOr == 255;
                 // get lowAddress from address
-                auto lowAddress = new uint8_t[8];
                 for (int i = 0; i < 8; ++i) {
-                    lowAddress[i] = address.at(i + 1);
+                    cur->lowAddressArray[i] = address.at(i + 1);
                 }
-                cur->lowAddress = *reinterpret_cast<uint64_t *>(lowAddress);
-
-                types::nucleotides payload;
+                // extract payload from strand
                 int length = strand.size() - addressLength;
-                for (char c: strand) {
-                    if (length <= 0) break;
-                    payload.push_back(c);
-                    --length;
+                for (int i = 0; i < length; ++i) {
+                    cur->payload.push_back(strand[i]);
                 }
-                cur->payload = payload;
                 // TODO: figure out a way to store duplicates
                 if (cur->xOr) {
                     if (cur->lowAddress + getXOrSize() - 1 > highestPayloadIndex) {
@@ -190,23 +176,15 @@ namespace xorCode {
 
                 // recreate xor payload and compare
                 {
-                    std::string xorPayload(maxLength, 'A');
+                    auto xorPayload = types::nucleotides(maxLength, 'A');
                     for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
                         auto payload = payLoadStrands->at(strandIndex).payload;
-                        uint64_t byte = 0;
-                        for (char c: payload) {
-                            xorPayload.at(byte) = getXorNucleotide(xorPayload.at(byte), c);
-                            ++byte;
+                        for (int j = 0; j < payload.size(); ++j) {
+                            xorPayload[j] = getXorNucleotide(xorPayload[j], payload[j]);
                         }
                     }
-                    bool isEqual = true;
-                    uint64_t byte = 0;
-                    for (char c: xorStrand.payload) {
-                        if (!isEqual) break;
-                        isEqual = xorPayload.at(byte) == c;
-                        ++byte;
-                    }
-                    if (isEqual) {
+                    if (std::equal(xorStrand.payload.begin(), xorStrand.payload.end(), xorPayload.begin())) {
+                        // all strands that were involved in the xOr are correct
                         for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
                             correctStrands.insert(strandIndex);
                         }
@@ -227,11 +205,11 @@ namespace xorCode {
             uint64_t lastCount = 0;
             while (lastCount != incorrectStrands.size()) {
                 lastCount = incorrectStrands.size();
-
+                // go through all strands in the queue exactly once
                 for (uint64_t lookedAt = 0; lookedAt < lastCount; lookedAt++) {
                     auto restoreIndex = incorrectStrands.front();
                     incorrectStrands.pop();
-
+                    // restore this strand if possible
                     for (uint64_t i = 0; i < xorStrandsCount; i++) {
                         auto start = i * step; // inclusive
                         auto end = start + size; // exclusive

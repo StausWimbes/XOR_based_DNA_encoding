@@ -62,6 +62,13 @@ namespace xorCode {
                 auto start = i * step; // inclusive
                 auto end = start + size; // exclusive
 
+                // create xOr strand with address start
+                auto *newStrand = new strand();
+                newStrand->xOr = true;
+                newStrand->lowAddress = start;
+                newStrand->primer = strands->at(start)->primer;
+                newStrand->primerInv = strands->at(start)->primerInv;
+
                 // determine max payload length
                 auto maxLength = strands->at(start)->payload.size();
                 for (uint64_t strand = start + 1; strand < end; strand++) {
@@ -71,25 +78,13 @@ namespace xorCode {
                 }
 
                 // create xor payload
-                auto xorPayloadString = std::string(maxLength, 'A');
+                newStrand->payload = types::nucleotides(maxLength, 'A');
                 for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
                     auto payload = strands->at(strandIndex)->payload;
-                    uint64_t byte = 0;
-                    for (char c: payload) {
-                        xorPayloadString.at(byte) = getXorNucleotide(xorPayloadString.at(byte), c);
-                        ++byte;
+                    for (int j = 0; j < payload.size(); ++j) {
+                        newStrand->payload[j] = getXorNucleotide(newStrand->payload[j], payload[j]);
                     }
                 }
-                types::nucleotides xorPayload;
-                for (char c: xorPayloadString) {
-                    xorPayload.push_back(c);
-                }
-                auto *newStrand = new strand();
-                newStrand->payload = xorPayload;
-                newStrand->xOr = true;
-                newStrand->lowAddress = start;
-                newStrand->primer = strands->at(start)->primer;
-                newStrand->primerInv = strands->at(start)->primerInv;
                 strands->push_back(newStrand);
             }
         }
@@ -107,24 +102,21 @@ namespace xorCode {
                     result.push_back(c);
                 }
                 // add address
-                char last = result.back();
                 types::bytes address;
                 if (s->xOr) {
                     address.push_back(255);
                 } else {
                     address.push_back(0);
                 }
-                auto *low = reinterpret_cast<uint8_t *>(&(s->lowAddress));
                 for (int i = 0; i < 8; ++i) {
-                    address.push_back(low[i]);
+                    address.push_back(s->lowAddressArray[i]);
                 }
-                auto prev = result.size();
-                convertBinaryToNucleotides(last, address, result);
+                auto prevSize = result.size();
+                convertBinaryToNucleotides(result.back(), address, result);
                 // pad address to always have a length of 9 * MAX_NUCLEOTIDES_PER_BYTE
-                int remaining = (9 * MAX_NUCLEOTIDES_PER_BYTE) - (result.size() - prev);
-                last = result.back();
+                auto remaining = (9 * MAX_NUCLEOTIDES_PER_BYTE) - (result.size() - prevSize);
                 char next = 'C';
-                if (last == 'C') {
+                if (result.back() == 'C') {
                     next = 'T';
                 }
                 for (int i = 0; i < remaining; ++i) {
