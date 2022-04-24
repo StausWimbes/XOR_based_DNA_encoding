@@ -46,9 +46,6 @@ namespace xorCode {
                     payload.push_back(inputBytes->at(i));
                     ++i;
                 }
-                for (uint8_t b: payload) {
-                    std::cout << int(b) << '\n';
-                }
                 auto *newStrand = new strand();
                 convertBinaryToNucleotides('A', payload, length - payload.size(), newStrand->payload);
                 newStrand->xOr = false;
