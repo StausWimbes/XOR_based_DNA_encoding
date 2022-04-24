@@ -20,7 +20,10 @@ namespace xorCode {
         Encoder(const std::string &key, std::ifstream &input) {
             this->key = key;
             while (!input.eof()) {
-                inputBytes->push_back(input.get());
+                auto cur = input.get();
+                if (!input.eof()) {
+                    inputBytes->push_back(cur);
+                }
             }
         }
 
@@ -42,6 +45,9 @@ namespace xorCode {
                 for (int j = 0; j < length && i < inputBytes->size(); ++j) {
                     payload.push_back(inputBytes->at(i));
                     ++i;
+                }
+                for (uint8_t b: payload) {
+                    std::cout << int(b) << '\n';
                 }
                 auto *newStrand = new strand();
                 convertBinaryToNucleotides('A', payload, length - payload.size(), newStrand->payload);
