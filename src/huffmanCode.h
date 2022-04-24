@@ -12,7 +12,7 @@ namespace xorCode {
 
     struct TreeNode {
 
-        virtual void fillMap(std::unordered_map<uint8_t, std::string> *map, types::ternaries *seq) const = 0;
+        virtual void fillMap(std::unordered_map<uint8_t, types::ternaries> &map, types::ternaries &seq) = 0;
 
         virtual void decode(types::iter &itBegin, types::iter &itEnd, types::bytes &out) const = 0;
 
@@ -24,14 +24,16 @@ namespace xorCode {
 
         explicit Leaf(uint8_t byte);
 
-        void fillMap(std::unordered_map<uint8_t, std::string> *map, types::ternaries *seq) const override;
+        void fillMap(std::unordered_map<uint8_t, types::ternaries> &map, types::ternaries &seq) override;
 
         void decode(types::iter &itBegin, types::iter &itEnd, types::bytes &out) const override;
     };
 
     struct ExtraLeaf : public TreeNode {
 
-        void fillMap(std::unordered_map<uint8_t, std::string> *map, types::ternaries *seq) const override;
+        types::ternaries extraSeq;
+
+        void fillMap(std::unordered_map<uint8_t, types::ternaries> &map, types::ternaries &seq) override;
 
         void decode(types::iter &itBegin, types::iter &itEnd, types::bytes &out) const override;
     };
@@ -42,7 +44,7 @@ namespace xorCode {
 
         Composite(TreeNode *left, TreeNode *middle, TreeNode *right);
 
-        void fillMap(std::unordered_map<uint8_t, std::string> *map, types::ternaries *seq) const override;
+        void fillMap(std::unordered_map<uint8_t, types::ternaries> &map, types::ternaries &seq) override;
 
         void decode(types::iter &itBegin, types::iter &itEnd, types::bytes &out) const override;
     };
@@ -52,7 +54,8 @@ namespace xorCode {
     private:
         static HuffmanCode *instance;
         TreeNode *root;
-        std::unordered_map<uint8_t, std::string> *map;
+        std::unordered_map<uint8_t, types::ternaries> *map;
+        ExtraLeaf *extraLeaf;
 
         HuffmanCode();
 
@@ -64,7 +67,9 @@ namespace xorCode {
 
         static HuffmanCode *getInstance();
 
-        const std::string &encodeByte(uint8_t byte);
+        const types::ternaries &encodeToTernaries(uint8_t byte);
+
+        const types::ternaries &getExtraTernaries();
 
         void decodeToByte(types::iter &itBegin, types::iter &itEnd, types::bytes &out);
 

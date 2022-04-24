@@ -2,6 +2,7 @@
 #include <queue>
 #include <unordered_map>
 #include <list>
+#include <iostream>
 #include "huffmanCode.h"
 
 namespace xorCode {
@@ -10,20 +11,16 @@ namespace xorCode {
         this->byte = byte;
     }
 
-    void Leaf::fillMap(std::unordered_map<uint8_t, std::string> *map, types::ternaries *seq) const {
-        std::string value;
-        for (auto c: *seq) {
-            value.append(sizeof(char), c);
-        }
-        (*map)[byte] = value;
+    void Leaf::fillMap(std::unordered_map<uint8_t, types::ternaries> &map, types::ternaries &seq) {
+        map[byte] = seq;
     }
 
     void Leaf::decode(types::iter &itBegin, types::iter &itEnd, types::bytes &out) const {
         out.push_back(byte);
     }
 
-    void ExtraLeaf::fillMap(std::unordered_map<uint8_t, std::string> *map, types::ternaries *seq) const {
-        // do nothing because these leafs are duplicates to fill up the tree
+    void ExtraLeaf::fillMap(std::unordered_map<uint8_t, types::ternaries> &map, types::ternaries &seq) {
+        extraSeq = seq;
     }
 
     void ExtraLeaf::decode(types::iter &itBegin, types::iter &itEnd, types::bytes &out) const {
@@ -36,16 +33,14 @@ namespace xorCode {
         this->right = right;
     }
 
-    void Composite::fillMap(std::unordered_map<uint8_t, std::string> *map, types::ternaries *seq) const {
-        seq->push_back('0');
+    void Composite::fillMap(std::unordered_map<uint8_t, types::ternaries> &map, types::ternaries &seq) {
+        seq.push_back('0');
         left->fillMap(map, seq);
-        seq->pop_back();
-        seq->push_back('1');
+        seq.back() = '1';
         middle->fillMap(map, seq);
-        seq->pop_back();
-        seq->push_back('2');
+        seq.back() = '2';
         right->fillMap(map, seq);
-        seq->pop_back();
+        seq.pop_back();
     }
 
     void Composite::decode(types::iter &itBegin, types::iter &itEnd, types::bytes &out) const {
@@ -85,7 +80,8 @@ namespace xorCode {
             ++byte;
         }
         // add an extra node so that every node later on will have exactly three children
-        q.push(new ExtraLeaf());
+        extraLeaf = new ExtraLeaf();
+        q.push(extraLeaf);
         while (q.size() > 1) {
             auto n1 = q.front();
             q.pop();
@@ -96,13 +92,17 @@ namespace xorCode {
             q.push(new Composite(n1, n2, n3));
         }
         root = q.front();
-        auto *curSeq = new types::ternaries;
-        map = new std::unordered_map<uint8_t, std::string>;
-        root->fillMap(map, curSeq);
+        types::ternaries curSeq;
+        map = new std::unordered_map<uint8_t, types::ternaries>;
+        root->fillMap(*map, curSeq);
     }
 
-    const std::string &HuffmanCode::encodeByte(uint8_t byte) {
+    const types::ternaries &HuffmanCode::encodeToTernaries(uint8_t byte) {
         return (*map)[byte];
+    }
+
+    const types::ternaries &HuffmanCode::getExtraTernaries() {
+        return extraLeaf->extraSeq;
     }
 
     void HuffmanCode::decodeToByte(types::iter &itBegin, types::iter &itEnd, types::bytes &out) {

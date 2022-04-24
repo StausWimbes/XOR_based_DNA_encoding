@@ -4,10 +4,10 @@
 #include "decode.h"
 #include "settings.h"
 
-bool doConsoleOutput = false;
+bool doConsoleOutput = true;
 std::string inputDirectory = "../data/";
-std::string fileName = "example.jpg";
-bool doFileOutput = true;
+std::string fileName = "test.txt";
+bool doFileOutput = false;
 std::string outputDirectory = "../data/out/";
 
 int main() {

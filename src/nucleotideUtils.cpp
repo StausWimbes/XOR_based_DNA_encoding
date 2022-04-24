@@ -65,12 +65,24 @@ namespace xorCode {
         return getNucleotide(index1 xor index2);
     }
 
-    void convertBinaryToNucleotides(char prev, types::bytes &buffer, types::nucleotides &out) {
+    void convertBinaryToNucleotides(char prev, types::bytes &buffer, uint8_t extraBytes, types::nucleotides &out) {
         auto curPrev = prev;
         auto encoder = HuffmanCode::getInstance();
         for (uint8_t byte: buffer) {
             // encode byte as base 3
-            for (char c: encoder->encodeByte(byte)) {
+            for (char c: encoder->encodeToTernaries(byte)) {
+                // convert base 3 digit c into nucleotide
+                uint32_t prevIndex = getIndex(curPrev) + 1;
+                prevIndex += c - '0';
+                prevIndex %= 4;
+                curPrev = getNucleotide(prevIndex);
+                out.push_back(curPrev);
+            }
+        }
+        // add nucleotides for the extra bytes to out
+        for (int i = 0; i < extraBytes; ++i) {
+            // encode byte as base 3
+            for (char c: encoder->getExtraTernaries()) {
                 // convert base 3 digit c into nucleotide
                 uint32_t prevIndex = getIndex(curPrev) + 1;
                 prevIndex += c - '0';

@@ -44,7 +44,7 @@ namespace xorCode {
                     ++i;
                 }
                 auto *newStrand = new strand();
-                convertBinaryToNucleotides('A', payload, newStrand->payload);
+                convertBinaryToNucleotides('A', payload, length - payload.size(), newStrand->payload);
                 newStrand->xOr = false;
                 newStrand->lowAddress = index++;
                 // TODO: create and set primer and primerInv newStrand->primer = ;
@@ -112,7 +112,7 @@ namespace xorCode {
                     address.push_back(s->lowAddressArray[i]);
                 }
                 auto prevSize = result.size();
-                convertBinaryToNucleotides(result.back(), address, result);
+                convertBinaryToNucleotides(result.back(), address, 0, result);
                 // pad address to always have a length of 9 * MAX_NUCLEOTIDES_PER_BYTE
                 auto remaining = (9 * MAX_NUCLEOTIDES_PER_BYTE) - (result.size() - prevSize);
                 char next = 'C';
