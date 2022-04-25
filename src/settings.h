@@ -8,10 +8,10 @@ namespace xorCode {
 
     namespace types {
 
-        typedef std::vector<char>::iterator iter;
+        typedef std::vector<uint8_t>::iterator iter;
         typedef std::vector<uint8_t> bytes;
-        typedef std::vector<char> ternaries;
-        typedef std::vector<char> nucleotides;
+        typedef std::vector<uint8_t> ternaries;
+        typedef std::vector<uint8_t> nucleotides;
 
     }
 

@@ -47,7 +47,7 @@ namespace xorCode {
                     ++i;
                 }
                 auto *newStrand = new strand();
-                convertBinaryToNucleotides('A', payload, length - payload.size(), newStrand->payload);
+                convertBinaryToNucleotides(nuc_A, payload, length - payload.size(), newStrand->payload);
                 newStrand->xOr = false;
                 newStrand->lowAddress = index++;
                 // TODO: create and set primer and primerInv newStrand->primer = ;
@@ -81,7 +81,7 @@ namespace xorCode {
                 }
 
                 // create xor payload
-                newStrand->payload = types::nucleotides(maxLength, 'A');
+                newStrand->payload = types::nucleotides(maxLength, nuc_A);
                 for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
                     auto payload = strands->at(strandIndex)->payload;
                     for (int j = 0; j < payload.size(); ++j) {
@@ -99,9 +99,9 @@ namespace xorCode {
                 // add primer
                 result.insert(result.end(), s->primer->begin(), s->primer->end());
                 // add S nucleotide for detecting if strand is inverted
-                result.push_back('A');
+                result.push_back(nuc_A);
                 // add payload nucleotides
-                for (char c: s->payload) {
+                for (uint8_t c: s->payload) {
                     result.push_back(c);
                 }
                 // add address
@@ -118,20 +118,20 @@ namespace xorCode {
                 convertBinaryToNucleotides(result.back(), address, 0, result);
                 // pad address to always have a length of 9 * MAX_NUCLEOTIDES_PER_BYTE
                 auto remaining = (9 * MAX_NUCLEOTIDES_PER_BYTE) - (result.size() - prevSize);
-                char next = 'C';
-                if (result.back() == 'C') {
-                    next = 'T';
+                uint8_t next = nuc_C;
+                if (result.back() == nuc_C) {
+                    next = nuc_T;
                 }
                 for (int i = 0; i < remaining; ++i) {
                     result.push_back(next);
-                    if (next == 'C') {
-                        next = 'T';
+                    if (next == nuc_C) {
+                        next = nuc_T;
                     } else {
-                        next = 'C';
+                        next = nuc_C;
                     }
                 }
                 // add another S nucleotide
-                result.push_back('A');
+                result.push_back(nuc_A);
                 // add inverted primer
                 result.insert(result.end(), s->primerInv->begin(), s->primerInv->end());
                 output.push_back(result);

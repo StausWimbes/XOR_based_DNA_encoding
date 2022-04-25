@@ -7,13 +7,18 @@
 
 namespace xorCode {
 
+    extern const uint8_t nuc_A;
+    extern const uint8_t nuc_C;
+    extern const uint8_t nuc_G;
+    extern const uint8_t nuc_T;
+
     /**
      * Returns whether the given character is a nucleotide.
      *
      * @param nucleotide the character to be checked
      * @return true if the given character is one of 'A', 'C', 'G', 'T'; false otherwise
      */
-    bool isNucleotide(char nucleotide);
+    bool isNucleotide(uint8_t nucleotide);
 
     /**
      * Returns the nucleotide associated with the given number according to the following mapping:
@@ -55,7 +60,7 @@ namespace xorCode {
      * @param nucleotide2 A char representation of the second nucleotide.
      * @return A char representation of the nucleotide that is the result of the xor operation.
      */
-    char getXorNucleotide(char nucleotide1, char nucleotide2);
+    uint8_t getXorNucleotide(uint8_t nucleotide1, uint8_t nucleotide2);
 
     /**
      * Takes an array of uint8_t and turns it into a string of nucleotides. This is done by first turning each uint8_t
@@ -68,7 +73,7 @@ namespace xorCode {
      * @param size The size of the input array.
      * @return The resulting string of nucleotides.
      */
-    void convertBinaryToNucleotides(char prev, types::bytes &buffer, uint8_t extraBytes, types::nucleotides &out);
+    void convertBinaryToNucleotides(uint8_t prev, types::bytes &buffer, uint8_t extraBytes, types::nucleotides &out);
 
     /**
      * Takes a string of nucleotides and turns a part of it starting at 'startIndex' into an array of uint8_t of size
@@ -84,10 +89,8 @@ namespace xorCode {
      * @return An array of uint8_t with length 'numOfBytes'. If the string cannot be converted into at least 'numOfBytes'
      * many uint8_t then the nullptr is returned instead.
      */
-    void
-    convertNucleotidesToBinary(char prev, types::iter itBegin, types::iter itEnd, uint32_t numOfBytes,
-                               types::bytes &out);
-
+    void convertNucleotidesToBinary(uint8_t prev, types::iter itBegin, types::iter itEnd, uint32_t numOfBytes,
+                                    types::bytes &out);
 
 }
 

@@ -54,9 +54,9 @@ namespace xorCode {
             std::reverse_copy(primer.begin(), primer.end(), revPrimer.end());
             for (auto strand: strands) {
                 // check if strand is inverted
-                if (strand[primer.size()] == 'T') {
+                if (strand[primer.size()] == nuc_T) {
                     invertNucleotides(strand);
-                } else if (strand[primer.size()] != 'A') {
+                } else if (strand[primer.size()] != nuc_A) {
                     continue;
                 }
                 // check if strand is reversed
@@ -66,7 +66,7 @@ namespace xorCode {
                 // check if primers are correct
                 bool correct = true;
                 auto itStart = strand.begin();
-                for (char c: primer) {
+                for (uint8_t c: primer) {
                     correct = c == *itStart;
                     ++itStart;
                 }
@@ -98,7 +98,7 @@ namespace xorCode {
                 // it now points to the char right before the address
                 auto it = strand.end() - addressLength - 1;
                 auto *cur = new xorCode::strand;
-                char prev = *it;
+                uint8_t prev = *it;
                 ++it; // it now points to the first char of the address
                 types::bytes address;
                 convertNucleotidesToBinary(prev, it, strand.end(), addressLengthBytes, address);
@@ -176,7 +176,7 @@ namespace xorCode {
 
                 // recreate xor payload and compare
                 {
-                    auto xorPayload = types::nucleotides(maxLength, 'A');
+                    auto xorPayload = types::nucleotides(maxLength, nuc_A);
                     for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
                         auto payload = payLoadStrands->at(strandIndex).payload;
                         for (int j = 0; j < payload.size(); ++j) {
@@ -232,9 +232,9 @@ namespace xorCode {
                         auto xorStrand = xorStrands->at(start);
 
                         // recreate payload
-                        std::string restoredPayloadString = std::string(xorStrand.payload.size(), 'A');
+                        std::string restoredPayloadString = std::string(xorStrand.payload.size(), nuc_A);
                         int index = 0;
-                        for (char c: xorStrand.payload) {
+                        for (uint8_t c: xorStrand.payload) {
                             restoredPayloadString.at(index) = c;
                             ++index;
                         }
@@ -244,14 +244,14 @@ namespace xorCode {
                             }
                             auto payload = payLoadStrands->at(strandIndex).payload;
                             uint64_t byte = 0;
-                            for (char c: payload) {
+                            for (uint8_t c: payload) {
                                 restoredPayloadString.at(byte) = getXorNucleotide(restoredPayloadString.at(byte), c);
                                 ++byte;
                             }
                         }
 
                         types::nucleotides restoredPayload;
-                        for (char c: restoredPayloadString) {
+                        for (uint8_t c: restoredPayloadString) {
                             restoredPayload.push_back(c);
                         }
 
@@ -290,7 +290,7 @@ namespace xorCode {
 
                 // decode and append payload
                 auto payload = payLoadStrands->at(i).payload;
-                convertNucleotidesToBinary('A', payload.begin(), payload.end(), getPayloadByteLength(), result);
+                convertNucleotidesToBinary(nuc_A, payload.begin(), payload.end(), getPayloadByteLength(), result);
             }
             return result;
         }

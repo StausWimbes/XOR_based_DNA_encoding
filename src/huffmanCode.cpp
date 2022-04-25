@@ -34,11 +34,11 @@ namespace xorCode {
     }
 
     void Composite::fillMap(std::unordered_map<uint8_t, types::ternaries> &map, types::ternaries &seq) {
-        seq.push_back('0');
+        seq.push_back(0);
         left->fillMap(map, seq);
-        seq.back() = '1';
+        seq.back() = 1;
         middle->fillMap(map, seq);
-        seq.back() = '2';
+        seq.back() = 2;
         right->fillMap(map, seq);
         seq.pop_back();
     }
@@ -46,13 +46,13 @@ namespace xorCode {
     void Composite::decode(types::iter &itBegin, types::iter &itEnd, types::bytes &out) const {
         if (itBegin != itEnd) {
             switch (*itBegin) {
-                case '0':
+                case 0:
                     ++itBegin;
                     return left->decode(itBegin, itEnd, out);
-                case '1':
+                case 1:
                     ++itBegin;
                     return middle->decode(itBegin, itEnd, out);
-                case '2':
+                case 2:
                     ++itBegin;
                     return right->decode(itBegin, itEnd, out);
                 default:
@@ -83,11 +83,11 @@ namespace xorCode {
         extraLeaf = new ExtraLeaf();
         q.push(extraLeaf);
         while (q.size() > 1) {
-            auto n1 = q.front();
+            auto *n1 = q.front();
             q.pop();
-            auto n2 = q.front();
+            auto *n2 = q.front();
             q.pop();
-            auto n3 = q.front();
+            auto *n3 = q.front();
             q.pop();
             q.push(new Composite(n1, n2, n3));
         }

@@ -6,8 +6,13 @@
 
 namespace xorCode {
 
-    bool isNucleotide(char nucleotide) {
-        return nucleotide == 'A' || nucleotide == 'C' || nucleotide == 'G' || nucleotide == 'T';
+    const uint8_t nuc_A = 0;
+    const uint8_t nuc_C = 1;
+    const uint8_t nuc_G = 2;
+    const uint8_t nuc_T = 3;
+
+    bool isNucleotide(uint8_t nucleotide) {
+        return nucleotide <= 3;
     }
 
     char getNucleotide(const uint8_t index) {
@@ -41,77 +46,62 @@ namespace xorCode {
     }
 
     void invertNucleotides(types::nucleotides &seq) {
-        for (char &c: seq) {
-            switch (c) {
-                case 'A':
-                    c = 'T';
-                    break;
-                case 'C':
-                    c = 'G';
-                    break;
-                case 'G':
-                    c = 'C';
-                    break;
-                case 'T':
-                    c = 'A';
-                    break;
-            }
+        uint8_t mask = 3; // preserve only the 2 lowest bits
+        for (uint8_t &nucleotide: seq) {
+            nucleotide = ~nucleotide & mask;
         }
     }
 
-    char getXorNucleotide(const char nucleotide1, const char nucleotide2) {
-        uint32_t index1 = getIndex(nucleotide1);
-        uint32_t index2 = getIndex(nucleotide2);
-        return getNucleotide(index1 xor index2);
+    uint8_t getXorNucleotide(uint8_t nucleotide1, uint8_t nucleotide2) {
+        return nucleotide1 ^ nucleotide2;
     }
 
-    void convertBinaryToNucleotides(char prev, types::bytes &buffer, uint8_t extraBytes, types::nucleotides &out) {
+    void convertBinaryToNucleotides(uint8_t prev, types::bytes &buffer, uint8_t extraBytes, types::nucleotides &out) {
         auto curPrev = prev;
-        auto encoder = HuffmanCode::getInstance();
+        auto *encoder = HuffmanCode::getInstance();
         for (uint8_t byte: buffer) {
             // encode byte as base 3
-            for (char c: encoder->encodeToTernaries(byte)) {
+            for (uint8_t c: encoder->encodeToTernaries(byte)) {
                 // convert base 3 digit c into nucleotide
-                uint32_t prevIndex = getIndex(curPrev) + 1;
-                prevIndex += c - '0';
+                uint8_t prevIndex = curPrev + 1;
+                prevIndex += c;
                 prevIndex %= 4;
-                curPrev = getNucleotide(prevIndex);
+                curPrev = prevIndex;
                 out.push_back(curPrev);
             }
         }
         // add nucleotides for the extra bytes to out
         for (int i = 0; i < extraBytes; ++i) {
             // encode byte as base 3
-            for (char c: encoder->getExtraTernaries()) {
+            for (uint8_t c: encoder->getExtraTernaries()) {
                 // convert base 3 digit c into nucleotide
-                uint32_t prevIndex = getIndex(curPrev) + 1;
-                prevIndex += c - '0';
+                uint8_t prevIndex = curPrev + 1;
+                prevIndex += c;
                 prevIndex %= 4;
-                curPrev = getNucleotide(prevIndex);
+                curPrev = prevIndex;
                 out.push_back(curPrev);
             }
         }
     }
 
-    void
-    convertNucleotidesToBinary(char prev, types::iter itBegin, types::iter itEnd, uint32_t numOfBytes,
-                               types::bytes &out) {
+    void convertNucleotidesToBinary(uint8_t prev, types::iter itBegin, types::iter itEnd, uint32_t numOfBytes,
+                                    types::bytes &out) {
         // decode to base 3
         types::ternaries base3;
         auto curPrev = prev;
         while (itBegin != itEnd) {
-            char t = *itBegin;
-            uint8_t prevIndex = getIndex(curPrev);
-            uint8_t curIndex = getIndex(t);
+            uint8_t t = *itBegin;
+            uint8_t prevIndex = curPrev;
+            uint8_t curIndex = t;
             if (curIndex <= prevIndex) {
                 curIndex += 4;
             }
-            base3.push_back(char(curIndex - (prevIndex + 1) + '0'));
+            base3.push_back(curIndex - (prevIndex + 1));
             curPrev = t;
             ++itBegin;
         }
         // decode to binary
-        auto decoder = HuffmanCode::getInstance();
+        auto *decoder = HuffmanCode::getInstance();
         int bytesRead = 0;
         auto itBeginBase3 = base3.begin();
         auto itEndBase3 = base3.end();
