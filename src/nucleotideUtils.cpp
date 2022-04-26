@@ -17,13 +17,13 @@ namespace xorCode {
 
     char getNucleotide(const uint8_t index) {
         switch (index) {
-            case 0:
+            case nuc_A:
                 return 'A';
-            case 1:
+            case nuc_C:
                 return 'C';
-            case 2:
+            case nuc_G:
                 return 'G';
-            case 3:
+            case nuc_T:
                 return 'T';
             default:
                 return 'A';
@@ -33,15 +33,15 @@ namespace xorCode {
     uint8_t getIndex(char nucleotide) {
         switch (nucleotide) {
             case 'A':
-                return 0;
+                return nuc_A;
             case 'C':
-                return 1;
+                return nuc_C;
             case 'G':
-                return 2;
+                return nuc_G;
             case 'T':
-                return 3;
+                return nuc_T;
             default:
-                return 0;
+                return nuc_A;
         }
     }
 
