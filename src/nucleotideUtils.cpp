@@ -11,23 +11,14 @@ namespace xorCode {
     const uint8_t nuc_G = 2;
     const uint8_t nuc_T = 3;
 
+    const char charRepresentations[] = {'A', 'C', 'G', 'T'};
+
     bool isNucleotide(uint8_t nucleotide) {
         return nucleotide <= 3;
     }
 
     char getNucleotide(const uint8_t index) {
-        switch (index) {
-            case nuc_A:
-                return 'A';
-            case nuc_C:
-                return 'C';
-            case nuc_G:
-                return 'G';
-            case nuc_T:
-                return 'T';
-            default:
-                return 'A';
-        }
+        return charRepresentations[index % 4];
     }
 
     uint8_t getIndex(char nucleotide) {
