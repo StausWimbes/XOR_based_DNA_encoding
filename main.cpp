@@ -26,7 +26,7 @@ int main() {
         std::cout << "Strands: " << strands.size() << "\n";
         for (const auto &assembled: strands) {
             for (uint8_t nucleotide: assembled) {
-                std::cout << getNucleotide(nucleotide);
+                std::cout << getCharNucleotide(nucleotide);
             }
             std::cout << " (" << assembled.size() << ')' << '\n';
         }

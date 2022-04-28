@@ -13,81 +13,95 @@ namespace xorCode {
     extern const uint8_t nuc_T;
 
     /**
-     * Returns whether the given character is a nucleotide.
+     * Returns whether the given integer is a correct integer representation of a nucleotide.
      *
-     * @param nucleotide the character to be checked
-     * @return true if the given character is one of 'A', 'C', 'G', 'T'; false otherwise
+     * @param nucleotide the integer to be checked.
+     * @return True if the given integer is one of 0, 1, 2, 3. False otherwise.
      */
     bool isNucleotide(uint8_t nucleotide);
 
     /**
-     * Returns the nucleotide associated with the given number according to the following mapping:
+     * Returns the char representation of the given nucleotide. The mapping works like this:
      * 0 -> 'A', 1 -> 'C', 2 -> 'G', 3 -> 'T'.
-     * This is the exact inverse function to getIndex().
-     * @param index A number between 0 and 3.
-     * @return A char representation of a nucleotide.
+     * This is the exact inverse function to getIntegerNucleotide().
+     *
+     * @param nucleotide An integer representation of a nucleotide.
+     * @return The matching char representation of the nucleotide.
      */
-    char getNucleotide(uint8_t index);
+    char getCharNucleotide(uint8_t nucleotide);
 
     /**
-     * Returns the number associated with the given nucleotide according to the following mapping:
+     * Returns the integer representation of the given nucleotide. The mapping works like this:
      * 'A' -> 0, 'C' -> 1, 'G' -> 2, 'T' -> 3.
-     * This is the exact inverse function to getNucleotide().
+     * This is the exact inverse function to getCharNucleotide().
+     *
      * @param nucleotide A char representation of a nucleotide.
-     * @return A number between 0 and 3.
+     * @return The matching integer representation of the nucleotide.
      */
-    uint8_t getIndex(char nucleotide);
+    uint8_t getIntegerNucleotide(char nucleotide);
 
     /**
-     * Inverts every nucleotide in the given string according to the following pairs:
+     * Inverts every nucleotide in the given sequence according to the following pairs:
      * ('A', 'T'), ('C', 'G').
-     * For example the string "ACTAG" would be turned into "TGATC".
-     * @param seq The string that should be inverted.
+     * For example the sequence "ACTAG" would be turned into "TGATC".
+     *
+     * @param seq The sequence that should be inverted.
      */
     void invertNucleotides(types::nucleotides &seq);
 
     /**
-     * Performs an xor operation on the given nucleotides. The xor operation is based on the nucleotides indices:
+     * Performs an xor operation on the given nucleotides.
      *
-     * xor    | A (00)   C (01)   G (10)   T (11)
-     * ------- ----------------------------------
-     * A (00) | A (00)   C (01)   G (10)   T (11)
-     * C (01) | C (01)   A (00)   T (11)   G (10)
-     * G (10) | G (10)   T (11)   A (00)   C (01)
-     * T (11) | T (11)   G (10)   C (01)   A (00)
-     *
-     * @param nucleotide1 A char representation of the first nucleotide.
-     * @param nucleotide2 A char representation of the second nucleotide.
-     * @return A char representation of the nucleotide that is the result of the xor operation.
+     * @param nucleotide1 An integer representation of the first nucleotide.
+     * @param nucleotide2 An integer representation of the second nucleotide.
+     * @return An integer representation of the nucleotide that is the result of the xor operation.
      */
     uint8_t getXorNucleotide(uint8_t nucleotide1, uint8_t nucleotide2);
 
     /**
-     * Takes an array of uint8_t and turns it into a string of nucleotides. This is done by first turning each uint8_t
-     * into a string of 5 or 6 ternary digits using a prefix encoding. Each of those digits is then turned into a
-     * nucleotide using a rotating encoding that makes sure that no two consecutive nucleotides are the same.
-     * This is the exact inverse function of convertNucleotidesToBinary().
-     * @param prev A char representation of a nucleotide. This is used as the previous nucleotide
-     *             for the rotating encoding.
-     * @param buffer A pointer to the first uint8_t in the input array.
-     * @param size The size of the input array.
-     * @return The resulting string of nucleotides.
+     * Calculates a parity nucleotide for the sequence starting at 'itBegin' (inclusive) and ending at
+     * 'itEnd' (exclusive).
+     *
+     * @param itBegin A Random Access Iterator pointing at the start of the sequence (inclusive).
+     * @param itEnd A Random Access Iterator pointing at the end of the sequence (exclusive).
+     * @return An integer representation of the calculated parity nucleotide.
+     */
+    uint8_t getParityNucleotide(types::iter itBegin, types::iter itEnd);
+
+    /**
+     * Encodes the given sequence of bytes into a sequence of nucleotides. The nucleotides are appended to the
+     * end of 'out'.
+     * The encoding works by first turning each byte into a sequence of 5 or 6 ternary digits using a prefix encoding.
+     * Then each ternary digit is turned into a nucleotide based on a rotary encoding that makes sure that no
+     * nucleotide appears twice in a row. For this the given nucleotide 'prev' is assumed to be the nucleotide that
+     * appears immediately before the newly encoded sequence.
+     * The parameter 'extraBytes' says how bytes worth of padding nucleotides should be added to the end of the
+     * sequence. These extra bytes will be ignored when this same sequence of nucleotides is decoded to a sequence
+     * of bytes using convertNucleotidesToBinary().
+     * This is the exact inverse function to convertNucleotidesToBinary().
+     *
+     * @param prev An integer representation of a nucleotide.
+     * @param buffer A sequence of bytes.
+     * @param extraBytes An integer representing how many extra bytes should be added.
+     * @param out A sequence of nucleotides. The result of this function will be appended to the end of this sequence.
      */
     void convertBinaryToNucleotides(uint8_t prev, types::bytes &buffer, uint8_t extraBytes, types::nucleotides &out);
 
     /**
-     * Takes a string of nucleotides and turns a part of it starting at 'startIndex' into an array of uint8_t of size
-     * 'numOfBytes'. This is done by first turning each nucleotide into a ternary digit according to a rotary encoding.
-     * Then each string of 5 or 6 ternary digits is turned into one uint8_t using a prefix encoding. If the string
-     * can be turned into more than 'numOfBytes' uint8_t then only the first 'numOfBytes' uint8_t will be returned.
-     * This is the exact inverse function of convertBinaryToNucleotides().
-     * @param prev A char representation of a nucleotide. This is used as the previous nucleotide
-     *             for the rotating encoding.
-     * @param nucleotides A string of nucleotides.
-     * @param startIndex The index at which the conversion should start.
-     * @param numOfBytes The number of uint8_t that should be converted.
-     * @return An array of uint8_t with length 'numOfBytes'. If the string cannot be converted into at least 'numOfBytes'
-     * many uint8_t then the nullptr is returned instead.
+     * Decodes the given sequence of nucleotides into a sequence of bytes. The bytes are appended to the
+     * end of 'out'.
+     * The decoding works by first turning each nucleotide into a ternary digit based on a rotating encoding. For this
+     * the given nucleotide 'prev' is assumed to be the nucleotide that appears immediately before the given sequence.
+     * Then every 5 or 6 ternary digits are turned into a byte using a prefix encoding.
+     * The decoding will stop if the end of the given sequence of nucleotides is reached or when 'numOfBytes' many
+     * bytes have been decoded.
+     * This is the exact inverse function to convertBinaryToNucleotides().
+     *
+     * @param prev An integer representation of a nucleotide.
+     * @param itBegin A Random Access Iterator pointing at the start of the sequence of nucleotides (inclusive).
+     * @param itEnd A Random Access Iterator pointing at the end of the sequence of nucleotides (exclusive).
+     * @param numOfBytes The maximum number of bytes that should be decoded.
+     * @param out A sequence of bytes. The result of this function will be appended to the end of this sequence.
      */
     void convertNucleotidesToBinary(uint8_t prev, types::iter itBegin, types::iter itEnd, uint32_t numOfBytes,
                                     types::bytes &out);

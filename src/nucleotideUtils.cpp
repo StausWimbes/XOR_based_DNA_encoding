@@ -17,11 +17,11 @@ namespace xorCode {
         return nucleotide <= 3;
     }
 
-    char getNucleotide(const uint8_t index) {
-        return charRepresentations[index % 4];
+    char getCharNucleotide(uint8_t nucleotide) {
+        return charRepresentations[nucleotide % 4];
     }
 
-    uint8_t getIndex(char nucleotide) {
+    uint8_t getIntegerNucleotide(char nucleotide) {
         switch (nucleotide) {
             case 'A':
                 return nuc_A;
@@ -45,6 +45,15 @@ namespace xorCode {
 
     uint8_t getXorNucleotide(uint8_t nucleotide1, uint8_t nucleotide2) {
         return nucleotide1 ^ nucleotide2;
+    }
+
+    uint8_t getParityNucleotide(types::iter itBegin, types::iter itEnd) {
+        uint8_t sum = 0;
+        while (itBegin < itEnd) {
+            sum = (sum + *itBegin) % 4;
+            ++itBegin;
+        }
+        return sum % 4;
     }
 
     void convertBinaryToNucleotides(uint8_t prev, types::bytes &buffer, uint8_t extraBytes, types::nucleotides &out) {
