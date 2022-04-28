@@ -8,9 +8,23 @@ namespace xorCode {
 
     namespace types {
 
+        /**
+         * A Random Access Iterator for a vector containing uint8_t values.
+         */
         typedef std::vector<uint8_t>::iterator iter;
+        /**
+         * A vector containing bytes.
+         */
         typedef std::vector<uint8_t> bytes;
+        /**
+         * A vector containing ternary digits.
+         * Possible values: 0, 1, 2.
+         */
         typedef std::vector<uint8_t> ternaries;
+        /**
+         * A vector containing integer representations of nucleotides.
+         * Possible values: 0, 1, 2, 3.
+         */
         typedef std::vector<uint8_t> nucleotides;
 
     }
