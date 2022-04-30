@@ -34,7 +34,7 @@ int main() {
 
     start = std::chrono::high_resolution_clock::now();
 
-    auto original = decode("test.txt", strands);
+    auto original = decode(fileName, strands);
 
     end = std::chrono::high_resolution_clock::now();
     duration = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
