@@ -93,15 +93,23 @@ namespace xorCode {
          */
         void decodeStrands() {
             int addressLengthBytes = 9;
-            int addressLength = addressLengthBytes * MAX_NUCLEOTIDES_PER_BYTE;
+            int addressLength = addressLengthBytes * MAX_NUCLEOTIDES_PER_BYTE + 1;
             for (auto &strand: *cleanedStrands) {
-                // it now points to the char right before the address
-                auto it = strand.end() - addressLength - 1;
+                // itBegin now points to the char right before the address
+                auto itBegin = strand.end() - addressLength - 1;
                 auto *cur = new xorCode::strand;
-                uint8_t prev = *it;
-                ++it; // it now points to the first char of the address
+                uint8_t prev = *itBegin;
+                ++itBegin; // itBegin now points to the first char of the address
+                // check parity nucleotide
+                auto itEnd = strand.end() - 1;
+                auto parity = getParityNucleotide(itBegin, itEnd);
+                if (parity != strand.back()) {
+                    continue;
+                }
                 types::bytes address;
-                convertNucleotidesToBinary(prev, it, strand.end(), addressLengthBytes, address);
+                itBegin = strand.end() - addressLength;
+                itEnd = strand.end() - 1;
+                convertNucleotidesToBinary(prev, itBegin, itEnd, addressLengthBytes, address);
                 if (address.size() != addressLengthBytes) {
                     continue;
                 }

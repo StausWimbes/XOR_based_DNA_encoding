@@ -130,6 +130,9 @@ namespace xorCode {
                         next = nuc_C;
                     }
                 }
+                // add parity nucleotide
+                auto parityPointerBegin = result.end() - (9 * MAX_NUCLEOTIDES_PER_BYTE);
+                result.push_back(getParityNucleotide(parityPointerBegin, result.end()));
                 // add another S nucleotide
                 result.push_back(nuc_A);
                 // add inverted primer

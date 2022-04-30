@@ -2,10 +2,11 @@
 
 namespace xorCode {
 
-    // 9 * MAX_NUCLEOTIDES_PER_BYTE for address + 2 for S Nucleotides + 24 for Primers + MAX_NUCLEOTIDES_PER_BYTE for at least one byte in payload
-    const int MIN_STRAND_LENGTH = 26 + (10 * MAX_NUCLEOTIDES_PER_BYTE);
+    // 9 * MAX_NUCLEOTIDES_PER_BYTE for address + 1 for parity nucleotide + 2 for S Nucleotides
+    // + 24 for Primers + MAX_NUCLEOTIDES_PER_BYTE for at least one byte in payload
+    const int MIN_STRAND_LENGTH = 27 + (10 * MAX_NUCLEOTIDES_PER_BYTE);
 
-    int maxStrandLength = 110; // in nucleotides
+    int maxStrandLength = 111; // in nucleotides
     int payloadByteLength = 5; // in bytes
 
     const int MIN_XOR_SIZE = 2;
