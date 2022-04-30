@@ -3,6 +3,8 @@
 
 #include <list>
 #include <cstdint>
+#include <string>
+#include <memory>
 #include "settings.h"
 
 namespace xorCode {
@@ -67,6 +69,16 @@ namespace xorCode {
      * @return An integer representation of the calculated parity nucleotide.
      */
     uint8_t getParityNucleotide(types::iter itBegin, types::iter itEnd);
+
+    /**
+     * Calculates and returns the primerBegin associated with the given key. The returned primerBegin will always have a
+     * length of 12 nucleotides.
+     * IMPORTANT: It is possible that two different keys will be associated with the same primerBegin.
+     *
+     * @param key a normal string.
+     * @return A pointer to the calculated primerBegin as a sequence of nucleotides.
+     */
+    types::nucleotides *getPrimer(const std::string &key);
 
     /**
      * Encodes the given sequence of bytes into a sequence of nucleotides. The nucleotides are appended to the

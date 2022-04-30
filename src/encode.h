@@ -20,8 +20,8 @@ namespace xorCode {
             std::array<uint8_t, 8> lowAddressArray;
         };
         bool xOr;
-        std::shared_ptr<std::string> primer = std::make_shared<std::string>();
-        std::shared_ptr<std::string> primerInv = std::make_shared<std::string>();
+        types::nucleotides *primerBegin;
+        types::nucleotides *primerEnd;
     };
 
     std::vector<types::nucleotides> encode(const std::string &key, std::ifstream &input);

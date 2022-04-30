@@ -36,11 +36,17 @@ namespace xorCode {
         }
 
         void createPayloadStrands() {
+            // create primers
+            auto primerBegin = getPrimer(key);
+            auto primerEnd = new types::nucleotides(12, 0);
+            std::copy(primerBegin->begin(), primerBegin->end(), primerEnd->begin());
+            invertNucleotides(*primerEnd);
+            // start creating the strands
             auto length = getPayloadByteLength();
-
             uint64_t index = 0;
             int i = 0;
             while (i < inputBytes->size()) {
+                // create and encode the payload
                 types::bytes payload;
                 for (int j = 0; j < length && i < inputBytes->size(); ++j) {
                     payload.push_back(inputBytes->at(i));
@@ -48,10 +54,11 @@ namespace xorCode {
                 }
                 auto *newStrand = new strand();
                 convertBinaryToNucleotides(nuc_A, payload, length - payload.size(), newStrand->payload);
+                // set all the other fields
                 newStrand->xOr = false;
                 newStrand->lowAddress = index++;
-                // TODO: create and set primer and primerInv newStrand->primer = ;
-
+                newStrand->primerBegin = primerBegin;
+                newStrand->primerEnd = primerEnd;
                 strands->push_back(newStrand);
             }
         }
@@ -69,8 +76,8 @@ namespace xorCode {
                 auto *newStrand = new strand();
                 newStrand->xOr = true;
                 newStrand->lowAddress = start;
-                newStrand->primer = strands->at(start)->primer;
-                newStrand->primerInv = strands->at(start)->primerInv;
+                newStrand->primerBegin = strands->at(start)->primerBegin;
+                newStrand->primerEnd = strands->at(start)->primerEnd;
 
                 // determine max payload length
                 auto maxLength = strands->at(start)->payload.size();
@@ -96,8 +103,8 @@ namespace xorCode {
             std::vector<types::nucleotides> output;
             for (strand *s: *strands) {
                 types::nucleotides result;
-                // add primer
-                result.insert(result.end(), s->primer->begin(), s->primer->end());
+                // add primerBegin
+                result.insert(result.end(), s->primerBegin->begin(), s->primerBegin->end());
                 // add S nucleotide for detecting if strand is inverted
                 result.push_back(nuc_A);
                 // add payload nucleotides
@@ -135,8 +142,8 @@ namespace xorCode {
                 result.push_back(getParityNucleotide(parityPointerBegin, result.end()));
                 // add another S nucleotide
                 result.push_back(nuc_A);
-                // add inverted primer
-                result.insert(result.end(), s->primerInv->begin(), s->primerInv->end());
+                // add inverted primerBegin
+                result.insert(result.end(), s->primerEnd->begin(), s->primerEnd->end());
                 output.push_back(result);
             }
             return output;

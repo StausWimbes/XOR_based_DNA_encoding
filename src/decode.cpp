@@ -47,34 +47,37 @@ namespace xorCode {
          * 3. Doppelte Strands entfernen
          */
         void filterStrands() {
-            // TODO: Create Primers
-            types::nucleotides primer;
-            types::nucleotides invPrimer;
-            types::nucleotides revPrimer;
-            std::reverse_copy(primer.begin(), primer.end(), revPrimer.end());
+            // create primers
+            auto primerBegin = *getPrimer(fileName);
+            auto primerEnd = types::nucleotides(12, 0);
+            std::copy(primerBegin.begin(), primerBegin.end(), primerEnd.begin());
+            invertNucleotides(primerEnd);
+            auto revPrimerBegin = types::nucleotides(12, 0);
+            std::reverse_copy(primerBegin.begin(), primerBegin.end(), revPrimerBegin.begin());
+            // start filtering the strands
             for (auto strand: strands) {
                 // check if strand is inverted
-                if (strand[primer.size()] == nuc_T) {
+                if (strand[primerBegin.size()] == nuc_T) {
                     invertNucleotides(strand);
-                } else if (strand[primer.size()] != nuc_A) {
+                } else if (strand[primerBegin.size()] != nuc_A) {
                     continue;
                 }
                 // check if strand is reversed
-                if (std::equal(revPrimer.begin(), revPrimer.end(), strand.end() - revPrimer.size())) {
-                    // TODO: uncomment once primers are created strand.reverse();
+                if (std::equal(revPrimerBegin.begin(), revPrimerBegin.end(), strand.end() - revPrimerBegin.size())) {
+                    std::reverse(strand.begin(), strand.end());
                 }
                 // check if primers are correct
                 bool correct = true;
                 auto itStart = strand.begin();
-                for (uint8_t c: primer) {
+                for (auto c: primerBegin) {
                     correct = c == *itStart;
                     ++itStart;
                 }
                 ++itStart;
                 auto itEnd = strand.end();
-                for (int i = invPrimer.size() - 1; i >= 0; --i) {
+                for (int i = primerEnd.size() - 1; i >= 0; --i) {
                     --itEnd;
-                    correct = revPrimer[i] == *itEnd;
+                    correct = primerEnd[i] == *itEnd;
                 }
                 --itEnd;
                 if (correct) {
@@ -267,8 +270,8 @@ namespace xorCode {
                         restoredStrand->payload = restoredPayload;
                         restoredStrand->xOr = false;
                         restoredStrand->lowAddress = restoreIndex;
-                        restoredStrand->primer = xorStrand.primer;
-                        restoredStrand->primerInv = xorStrand.primerInv;
+                        restoredStrand->primerBegin = xorStrand.primerBegin;
+                        restoredStrand->primerEnd = xorStrand.primerEnd;
                         auto const result = payLoadStrands->insert({restoreIndex, *restoredStrand});
                         if (not result.second) { result.first->second = *restoredStrand; }
 
