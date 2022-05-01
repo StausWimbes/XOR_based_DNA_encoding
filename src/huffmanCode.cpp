@@ -24,7 +24,7 @@ namespace xorCode {
     }
 
     void ExtraLeaf::decode(types::iter &itBegin, types::iter &itEnd, types::bytes &out) const {
-        itBegin = itEnd;
+        // don't do anything
     }
 
     Composite::Composite(TreeNode *left, TreeNode *middle, TreeNode *right) {
