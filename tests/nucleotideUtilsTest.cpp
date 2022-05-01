@@ -47,6 +47,12 @@ TEST(NucleotideUtilsTest, GetIntegerNucleotide) {
     ASSERT_EQ(nuc_C, getIntegerNucleotide('C'));
     ASSERT_EQ(nuc_G, getIntegerNucleotide('G'));
     ASSERT_EQ(nuc_T, getIntegerNucleotide('T'));
+
+
+    ASSERT_EQ(nuc_A, getIntegerNucleotide('B'));
+    ASSERT_EQ(nuc_A, getIntegerNucleotide('D'));
+    ASSERT_EQ(nuc_A, getIntegerNucleotide('J'));
+    ASSERT_EQ(nuc_A, getIntegerNucleotide('Z'));
 }
 
 TEST(NucleotideUtilsTest, InvertNucleotides) {
