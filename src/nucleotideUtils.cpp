@@ -66,6 +66,11 @@ namespace xorCode {
         return primer;
     }
 
+    types::nucleotides getXorPayload(types::nucleotides *payloads[], int size) {
+        // TODO: implement
+        return {};
+    }
+
     void convertBinaryToNucleotides(uint8_t prev, types::bytes &buffer, uint8_t extraBytes, types::nucleotides &out) {
         auto curPrev = prev;
         auto *encoder = HuffmanCode::getInstance();

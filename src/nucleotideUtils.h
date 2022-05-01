@@ -80,6 +80,8 @@ namespace xorCode {
      */
     types::nucleotides *getPrimer(const std::string &key);
 
+    types::nucleotides getXorPayload(types::nucleotides *payloads[], int size);
+
     /**
      * Encodes the given sequence of bytes into a sequence of nucleotides. The nucleotides are appended to the
      * end of 'out'.
