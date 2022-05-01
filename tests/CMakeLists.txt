@@ -13,7 +13,7 @@ FetchContent_MakeAvailable(googletest)
 
 
 set(SOURCE_FILES
-        nucleotidesTest.cpp
+        nucleotideUtilsTest.cpp
         )
 
 add_executable(runTests ${SOURCE_FILES})
