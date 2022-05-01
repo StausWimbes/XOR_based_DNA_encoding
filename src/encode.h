@@ -19,7 +19,7 @@ namespace xorCode {
             uint64_t lowAddress;
             std::array<uint8_t, 8> lowAddressArray;
         };
-        bool xOr;
+        bool isXor;
         types::nucleotides *primerBegin;
         types::nucleotides *primerEnd;
     };

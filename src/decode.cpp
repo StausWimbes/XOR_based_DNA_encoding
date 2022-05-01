@@ -91,7 +91,7 @@ namespace xorCode {
         /*
          * 4. Addressen in Binär umwandeln
 	     * 4.1 Bei Fehlern wird Strand weggeschmissen
-         * 5. Aufteilen in xOr und Payload Strands
+         * 5. Aufteilen in xor und Payload Strands
          * 6. Payload Strands sortieren nach index
          */
         void decodeStrands() {
@@ -116,12 +116,12 @@ namespace xorCode {
                 if (address.size() != addressLengthBytes) {
                     continue;
                 }
-                // get xOr byte from address
-                uint8_t xOr = address.at(0);
-                if (xOr != 0 && xOr != 255) {
+                // get xor byte from address
+                uint8_t isXor = address.at(0);
+                if (isXor != 0 && isXor != 255) {
                     continue;
                 }
-                cur->xOr = xOr == 255;
+                cur->isXor = isXor == 255;
                 // get lowAddress from address
                 for (int i = 0; i < 8; ++i) {
                     cur->lowAddressArray[i] = address.at(i + 1);
@@ -132,7 +132,7 @@ namespace xorCode {
                     cur->payload.push_back(strand[i]);
                 }
                 // TODO: figure out a way to store duplicates
-                if (cur->xOr) {
+                if (cur->isXor) {
                     if (cur->lowAddress + getXorSize() - 1 > highestPayloadIndex) {
                         highestPayloadIndex = cur->lowAddress + getXorSize() - 1;
                     }
@@ -206,7 +206,7 @@ namespace xorCode {
                         }
                     }
                     if (std::equal(xorStrand.payload.begin(), xorStrand.payload.end(), xorPayload.begin())) {
-                        // all strands that were involved in the xOr are correct
+                        // all strands that were involved in the xor are correct
                         for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
                             correctStrands.insert(strandIndex);
                         }
@@ -279,7 +279,7 @@ namespace xorCode {
 
                         auto *restoredStrand = new strand();
                         restoredStrand->payload = restoredPayload;
-                        restoredStrand->xOr = false;
+                        restoredStrand->isXor = false;
                         restoredStrand->lowAddress = restoreIndex;
                         restoredStrand->primerBegin = xorStrand.primerBegin;
                         restoredStrand->primerEnd = xorStrand.primerEnd;

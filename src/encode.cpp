@@ -55,7 +55,7 @@ namespace xorCode {
                 auto *newStrand = new strand();
                 convertBinaryToNucleotides(nuc_A, payload, length - payload.size(), newStrand->payload);
                 // set all the other fields
-                newStrand->xOr = false;
+                newStrand->isXor = false;
                 newStrand->lowAddress = index++;
                 newStrand->primerBegin = primerBegin;
                 newStrand->primerEnd = primerEnd;
@@ -72,9 +72,9 @@ namespace xorCode {
                 auto start = i * step; // inclusive
                 auto end = start + size; // exclusive
 
-                // create xOr strand with address start
+                // create xor strand with address start
                 auto *newStrand = new strand();
-                newStrand->xOr = true;
+                newStrand->isXor = true;
                 newStrand->lowAddress = start;
                 newStrand->primerBegin = strands->at(start)->primerBegin;
                 newStrand->primerEnd = strands->at(start)->primerEnd;
@@ -113,7 +113,7 @@ namespace xorCode {
                 }
                 // add address
                 types::bytes address;
-                if (s->xOr) {
+                if (s->isXor) {
                     address.push_back(255);
                 } else {
                     address.push_back(0);

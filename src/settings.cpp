@@ -12,8 +12,8 @@ namespace xorCode {
     const int MIN_XOR_SIZE = 2;
     const int MIN_XOR_STEP = 1;
 
-    int xOrSize = 3; // the amount of strands involved in each xOr
-    int xOrStep = 3; // the difference between the indices of the starting strands for each xOr
+    int xorSize = 3; // the amount of strands involved in each xor
+    int xorStep = 3; // the difference between the indices of the starting strands for each xor
 
     int getMaxStrandLength() {
         return maxStrandLength;
@@ -31,22 +31,22 @@ namespace xorCode {
     }
 
     int getXorSize() {
-        return xOrSize;
+        return xorSize;
     }
 
     void setXorSize(int size) {
         if (size >= MIN_XOR_SIZE) {
-            xOrSize = size;
+            xorSize = size;
         }
     }
 
     int getXorStep() {
-        return xOrStep;
+        return xorStep;
     }
 
     void setXorStep(int step) {
         if (step >= MIN_XOR_STEP) {
-            xOrStep = step;
+            xorStep = step;
         }
     }
 
@@ -55,10 +55,10 @@ namespace xorCode {
         auto step = getXorStep();
 
         // number of strands with step size 1
-        uint64_t xOrStrandsCount = strandsCount - (size - 1);
+        uint64_t xorStrandsCount = strandsCount - (size - 1);
 
         // number of strands with correct step size
-        return (xOrStrandsCount / step) + (xOrStrandsCount % step == 0 ? 0 : 1);
+        return (xorStrandsCount / step) + (xorStrandsCount % step == 0 ? 0 : 1);
     }
 
 }
