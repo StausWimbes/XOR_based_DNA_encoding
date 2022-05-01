@@ -63,9 +63,9 @@ namespace xorCode {
             }
         }
 
-        void createXOrStrands() {
-            auto size = getXOrSize();
-            auto step = getXOrStep();
+        void createXorStrands() {
+            auto size = getXorSize();
+            auto step = getXorStep();
             auto xorStrandsCount = getXorStrandsCount(strands->size());
 
             for (uint64_t i = 0; i < xorStrandsCount; i++) {
@@ -154,7 +154,7 @@ namespace xorCode {
     std::vector<types::nucleotides> encode(const std::string &key, std::ifstream &input) {
         auto encoder = Encoder(key, input);
         encoder.createPayloadStrands();
-        encoder.createXOrStrands();
+        encoder.createXorStrands();
         return encoder.assembleStrands();
     }
 

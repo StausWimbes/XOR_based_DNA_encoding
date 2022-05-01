@@ -30,29 +30,29 @@ namespace xorCode {
         return payloadByteLength;
     }
 
-    int getXOrSize() {
+    int getXorSize() {
         return xOrSize;
     }
 
-    void setXOrSize(int size) {
+    void setXorSize(int size) {
         if (size >= MIN_XOR_SIZE) {
             xOrSize = size;
         }
     }
 
-    int getXOrStep() {
+    int getXorStep() {
         return xOrStep;
     }
 
-    void setXOrStep(int step) {
+    void setXorStep(int step) {
         if (step >= MIN_XOR_STEP) {
             xOrStep = step;
         }
     }
 
     uint64_t getXorStrandsCount(uint64_t strandsCount) {
-        auto size = getXOrSize();
-        auto step = getXOrStep();
+        auto size = getXorSize();
+        auto step = getXorStep();
 
         // number of strands with step size 1
         uint64_t xOrStrandsCount = strandsCount - (size - 1);

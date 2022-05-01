@@ -133,8 +133,8 @@ namespace xorCode {
                 }
                 // TODO: figure out a way to store duplicates
                 if (cur->xOr) {
-                    if (cur->lowAddress + getXOrSize() - 1 > highestPayloadIndex) {
-                        highestPayloadIndex = cur->lowAddress + getXOrSize() - 1;
+                    if (cur->lowAddress + getXorSize() - 1 > highestPayloadIndex) {
+                        highestPayloadIndex = cur->lowAddress + getXorSize() - 1;
                     }
                     xorStrands->insert({cur->lowAddress, *cur});
                 } else {
@@ -144,6 +144,10 @@ namespace xorCode {
                     payLoadStrands->insert({cur->lowAddress, *cur});
                 }
             }
+
+        }
+
+        void checkAllPossibilities(uint64_t xorIndex, std::unordered_set<uint64_t> &correctStrands) {
 
         }
 
@@ -158,8 +162,8 @@ namespace xorCode {
          * 4. If even that fails just choose random bytes.
          */
         void checkAndRestore() {
-            auto size = getXOrSize();
-            auto step = getXOrStep();
+            auto size = getXorSize();
+            auto step = getXorStep();
             auto xorStrandsCount = getXorStrandsCount(highestPayloadIndex + 1);
             if (xorStrands->size() > xorStrandsCount) {
                 xorStrandsCount = xorStrands->size();

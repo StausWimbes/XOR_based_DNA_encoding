@@ -50,20 +50,20 @@ namespace xorCode {
     /**
      * Returns the amount of strands that that are used to create a single xOr strand.
      */
-    int getXOrSize();
+    int getXorSize();
 
     /**
      * Sets the amount of strands that that are used to create a single xOr strand to the given parameter.
      * @param size The new amount of strands.
      */
-    void setXOrSize(int size);
+    void setXorSize(int size);
 
     /**
      * Returns the step size for the creation of the xOr strands.
      * If the strand with index i is the first strand used to create a xOr strand then the first strand for the next
      * xOr strand will have index i + step size.
      */
-    int getXOrStep();
+    int getXorStep();
 
     /**
      * Sets the step size for the creation of the xOr strands to the given parameter.
@@ -71,7 +71,7 @@ namespace xorCode {
      * xOr strand will have index i + step size.
      * @param step The new step size.
      */
-    void setXOrStep(int step);
+    void setXorStep(int step);
 
     /**
      * Calculates the amount of xOr strands that will be created for a given amount of payload strands based on the
