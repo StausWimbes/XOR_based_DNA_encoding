@@ -16,12 +16,17 @@ namespace xorCode {
         std::string fileName;
         std::vector<types::nucleotides> strands;
 
-        std::list<types::nucleotides> *cleanedStrands;
+        std::vector<types::nucleotides *> cleanedStrands;
+        std::vector<strand *> decodedPayloadStrands;
+        std::vector<strand *> decodedXorStrands;
+
+        // the highest index of the strands in the map
+        uint64_t highestPayloadIndex = 0;
+        std::unordered_map<uint64_t, std::vector<strand *>> payloadStrandMap;
+        std::unordered_map<uint64_t, std::vector<strand *>> xorStrandMap;
 
         // map of all payload strands. key is the index (low address) of the strand
         std::unordered_map<uint64_t, strand> *payLoadStrands;
-        // the highest index of the strands in the map
-        uint64_t highestPayloadIndex = 0;
         // map of all xor strands. key is the index (low address) of the strand
         std::unordered_map<uint64_t, strand> *xorStrands;
 
@@ -30,13 +35,14 @@ namespace xorCode {
         StrandDecoder(std::string &fileName, std::vector<types::nucleotides> &strands) {
             this->fileName = fileName;
             this->strands = strands;
-            cleanedStrands = new std::list<types::nucleotides>;
             payLoadStrands = new std::unordered_map<uint64_t, strand>;
             xorStrands = new std::unordered_map<uint64_t, strand>;
         }
 
         ~StrandDecoder() {
-            delete cleanedStrands;
+            for (auto strand: cleanedStrands) {
+                delete strand;
+            }
             delete payLoadStrands;
             delete xorStrands;
         }
@@ -82,8 +88,8 @@ namespace xorCode {
                 --itEnd;
                 if (correct) {
                     // remove primers and 'A' nucleotides
-                    auto cleaned = types::nucleotides(itStart, itEnd);
-                    cleanedStrands->push_back(cleaned);
+                    auto cleaned = new types::nucleotides(itStart, itEnd);
+                    cleanedStrands.push_back(cleaned);
                 }
             }
         }
@@ -97,21 +103,21 @@ namespace xorCode {
         void decodeStrands() {
             int addressLengthBytes = 9;
             int addressLength = addressLengthBytes * MAX_NUCLEOTIDES_PER_BYTE + 1;
-            for (auto &strand: *cleanedStrands) {
+            for (auto strand: cleanedStrands) {
                 // itBegin now points to the char right before the address
-                auto itBegin = strand.end() - addressLength - 1;
-                auto *cur = new xorCode::strand;
+                auto itBegin = strand->end() - addressLength - 1;
+                auto cur = new xorCode::strand;
                 uint8_t prev = *itBegin;
                 ++itBegin; // itBegin now points to the first char of the address
                 // check parity nucleotide
-                auto itEnd = strand.end() - 1;
+                auto itEnd = strand->end() - 1;
                 auto parity = getParityNucleotide(itBegin, itEnd);
-                if (parity != strand.back()) {
+                if (parity != strand->back()) {
                     continue;
                 }
                 types::bytes address;
-                itBegin = strand.end() - addressLength;
-                itEnd = strand.end() - 1;
+                itBegin = strand->end() - addressLength;
+                itEnd = strand->end() - 1;
                 convertNucleotidesToBinary(prev, itBegin, itEnd, addressLengthBytes, address);
                 if (address.size() != addressLengthBytes) {
                     continue;
@@ -127,11 +133,14 @@ namespace xorCode {
                     cur->lowAddressArray[i] = address.at(i + 1);
                 }
                 // extract payload from strand
-                int length = strand.size() - addressLength;
-                for (int i = 0; i < length; ++i) {
-                    cur->payload.push_back(strand[i]);
+                cur->payload.assign(strand->begin(), strand->end() - addressLength);
+                if (cur->isXor) {
+                    decodedXorStrands.push_back(cur);
+                } else {
+                    decodedPayloadStrands.push_back(cur);
                 }
-                // TODO: figure out a way to store duplicates
+
+                // TODO: remove the following code once checkAndRestore() has been finished
                 if (cur->isXor) {
                     if (cur->lowAddress + getXorSize() - 1 > highestPayloadIndex) {
                         highestPayloadIndex = cur->lowAddress + getXorSize() - 1;
@@ -144,7 +153,55 @@ namespace xorCode {
                     payLoadStrands->insert({cur->lowAddress, *cur});
                 }
             }
+        }
 
+        void sortDecodedStrands() {
+            // sort decodedPayloadStrands in ascending order by their lowAddress
+            std::sort(decodedPayloadStrands.begin(), decodedPayloadStrands.end(), [](strand *s1, strand *s2) -> bool {
+                return s1->lowAddress < s2->lowAddress;
+            });
+            // find the highest payload index
+            uint64_t prevIndex = decodedPayloadStrands.back()->lowAddress;
+            int inARow = 0;
+            for (auto i = decodedPayloadStrands.size() - 1; i >= 0 && inARow < MIN_BIGGER_PAYLOADS_AMOUNT; --i) {
+                auto curStrand = decodedPayloadStrands[i];
+                if (curStrand->lowAddress < prevIndex - MAX_PAYLOAD_INDEX_GAP) {
+                    inARow = 1; // already counting curStrand
+                    // remove and delete strands with higher index than curStrand
+                    for (auto j = decodedPayloadStrands.size() - 1; j > i; --j) {
+                        delete decodedPayloadStrands[j];
+                    }
+                    decodedPayloadStrands.resize(i + 1);
+                } else {
+                    ++inARow;
+                }
+                prevIndex = curStrand->lowAddress;
+            }
+            highestPayloadIndex = decodedPayloadStrands.back()->lowAddress;
+            // sort decodedXorStrands in ascending order by their lowAddress
+            std::sort(decodedXorStrands.begin(), decodedXorStrands.end(), [](strand *s1, strand *s2) -> bool {
+                return s1->lowAddress < s2->lowAddress;
+            });
+            // remove and delete xor strands with index that is too high
+            while (!decodedXorStrands.empty()) {
+                if (decodedXorStrands.back()->lowAddress - MAX_PAYLOAD_INDEX_GAP > highestPayloadIndex) {
+                    delete decodedXorStrands.back();
+                    decodedXorStrands.pop_back();
+                }
+            }
+            // put remaining strands into data structures for next step
+            for (auto s: decodedPayloadStrands) {
+                if (!payloadStrandMap.contains(s->lowAddress)) {
+                    payloadStrandMap[s->lowAddress] = std::vector<strand *>();
+                }
+                payloadStrandMap[s->lowAddress].push_back(s);
+            }
+            for (auto s: decodedXorStrands) {
+                if (!xorStrandMap.contains(s->lowAddress)) {
+                    xorStrandMap[s->lowAddress] = std::vector<strand *>();
+                }
+                xorStrandMap[s->lowAddress].push_back(s);
+            }
         }
 
         void checkAllPossibilities(uint64_t xorIndex, std::unordered_set<uint64_t> &correctStrands) {
@@ -323,6 +380,8 @@ namespace xorCode {
         auto decoder = StrandDecoder(fileName, strands);
         decoder.filterStrands();
         decoder.decodeStrands();
+        // TODO: uncomment the next line once checkAndRestore() has been finished
+        // decoder.sortDecodedStrands();
         decoder.checkAndRestore();
         return decoder.assemble();
     }
