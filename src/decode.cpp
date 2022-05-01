@@ -149,6 +149,13 @@ namespace xorCode {
 
         /**
          * Validates existing strands and attempts to correct possible mutations as well as restore lost strands
+         * 1. Check all possibilities when searching for correct strands.
+         * 2. Recreate missing strands.
+         *  2.1 If a missing strand has been recreated and the xors overlap check all possibilities for the other
+         *      xors involving this strand again.
+         * 3. If a strand cant be recreated but a strand with that address is available then just use that strands
+         *    payload
+         * 4. If even that fails just choose random bytes.
          */
         void checkAndRestore() {
             auto size = getXOrSize();
