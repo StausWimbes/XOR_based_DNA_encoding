@@ -75,7 +75,7 @@ namespace xorCode {
             }
         }
         // do xor one by one
-        auto xorPayload = types::nucleotides(maxLength, 'A');
+        auto xorPayload = types::nucleotides(maxLength, nuc_A);
         for (int i = 0; i < size; ++i) {
             for (int j = 0; j < payloads[i]->size(); ++j) {
                 xorPayload[j] = getXorNucleotide(xorPayload[j], payloads[i]->at(j));
