@@ -67,8 +67,21 @@ namespace xorCode {
     }
 
     types::nucleotides getXorPayload(types::nucleotides *payloads[], int size) {
-        // TODO: implement
-        return {};
+        // find maximum length of the payloads
+        uint64_t maxLength = 0;
+        for (int i = 0; i < size; ++i) {
+            if (payloads[i]->size() > maxLength) {
+                maxLength = payloads[i]->size();
+            }
+        }
+        // do xor one by one
+        auto xorPayload = types::nucleotides(maxLength, 'A');
+        for (int i = 0; i < size; ++i) {
+            for (int j = 0; j < payloads[i]->size(); ++j) {
+                xorPayload[j] = getXorNucleotide(xorPayload[j], payloads[i]->at(j));
+            }
+        }
+        return xorPayload;
     }
 
     void convertBinaryToNucleotides(uint8_t prev, types::bytes &buffer, uint8_t extraBytes, types::nucleotides &out) {

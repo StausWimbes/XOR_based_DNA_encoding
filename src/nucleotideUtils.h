@@ -80,6 +80,13 @@ namespace xorCode {
      */
     types::nucleotides *getPrimer(const std::string &key);
 
+    /**
+     * Calculates the sequence of nucleotides that is the result of doing an xor operation between all the given
+     * payload strands. The length of the result will be the length of the longest given payload strand.
+     * @param payloads An array of pointers pointing at a sequence of nucleotides.
+     * @param size The size of the given array.
+     * @return The calculated xor sequence.
+     */
     types::nucleotides getXorPayload(types::nucleotides *payloads[], int size);
 
     /**
