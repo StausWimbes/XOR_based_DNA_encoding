@@ -205,7 +205,79 @@ namespace xorCode {
         }
 
         void checkAllPossibilities(uint64_t xorIndex, std::unordered_set<uint64_t> &correctStrands) {
-            // TODO: implement
+            auto size = getXorSize();
+            auto step = getXorStep();
+            if (!xorStrandMap.contains(xorIndex) || xorIndex + size - 1 > highestPayloadIndex) {
+                return;
+            }
+            auto payloadIterators = std::vector<std::vector<strand *>::iterator>();
+            payloadIterators.resize(size);
+            auto curPayloads = std::vector<types::nucleotides *>();
+            curPayloads.resize(size);
+            for (auto curXorStrand: xorStrandMap[xorIndex]) {
+                // initialize iterators for every payload index
+                for (int i = 0; i < size; ++i) {
+                    if (payloadStrandMap.contains(xorIndex + i)) {
+                        payloadIterators[i] = payloadStrandMap[xorIndex + i].begin();
+                    } else {
+                        return;
+                    }
+                }
+                // iterate over all combinations of payloads and check if they create the correct xor payload
+                int nextIncrease = size - 1;
+                while (nextIncrease >= 0) {
+                    // check current payloads
+                    for (int i = 0; i < size; ++i) {
+                        curPayloads[i] = &((*payloadIterators[i])->payload);
+                    }
+                    auto newXorPayload = getXorPayload(curPayloads.data(), size);
+                    if (newXorPayload.size() == curXorStrand->payload.size()
+                        && std::equal(newXorPayload.begin(), newXorPayload.end(), curXorStrand->payload.begin())) {
+                        auto recursiveCalls = std::unordered_set<unsigned long long>();
+                        // the calculated xor payload is correct
+                        // add current strands to correct strands
+                        for (int i = 0; i < size; ++i) {
+                            auto curStrand = *payloadIterators[i];
+                            if (!correctStrands.contains(curStrand->lowAddress)) {
+                                correctStrands.insert(curStrand->lowAddress);
+                                // remove all incorrect strands from the payloadStrandMap
+                                for (auto otherStrand: payloadStrandMap[xorIndex + i]) {
+                                    if (otherStrand != curStrand) {
+                                        delete otherStrand;
+                                    }
+                                }
+                                payloadStrandMap[xorIndex + i].clear();
+                                payloadStrandMap[xorIndex + i].push_back(curStrand);
+                                // recursively call this function for all other xorStrands that involve this strand
+                                auto smallestXorIndex = curStrand->lowAddress - size - (curStrand->lowAddress % step);
+                                for (auto j = smallestXorIndex; j <= curStrand->lowAddress; j += step) {
+                                    if (j >= 0 && j + size > curStrand->lowAddress && j != xorIndex) {
+                                        recursiveCalls.insert(j);
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                        // execute the recursive calls
+                        for (auto i: recursiveCalls) {
+                            checkAllPossibilities(i, correctStrands);
+                        }
+                        return;
+                    } else {
+                        // update iterators so that they point to the next combination of payloads
+                        while (nextIncrease >= 0) {
+                            payloadIterators[nextIncrease]++;
+                            if (payloadIterators[nextIncrease] == payloadStrandMap[size + nextIncrease].end()) {
+                                payloadIterators[nextIncrease] = payloadStrandMap[size + nextIncrease].begin();
+                                nextIncrease--;
+                            } else {
+                                nextIncrease = size - 1;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         /**
