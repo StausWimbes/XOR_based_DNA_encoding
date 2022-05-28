@@ -3,7 +3,6 @@
 #include "settings.h"
 
 #include <cstdint>
-#include <memory>
 
 namespace xorCode {
 
@@ -58,7 +57,7 @@ namespace xorCode {
     }
 
     types::nucleotides *getPrimer(const std::string &key) {
-        auto primer = new types::nucleotides();
+        auto *primer = new types::nucleotides();
         // TODO: implement properly
         for (int i = 0; i < 12; ++i) {
             primer->push_back(0);
@@ -138,5 +137,4 @@ namespace xorCode {
             ++bytesRead;
         }
     }
-
 }

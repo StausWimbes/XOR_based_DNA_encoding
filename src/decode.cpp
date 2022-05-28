@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <queue>
-#include <iostream>
+#include <algorithm>
 
 namespace xorCode {
 
@@ -40,7 +40,7 @@ namespace xorCode {
         }
 
         ~StrandDecoder() {
-            for (auto strand: cleanedStrands) {
+            for (auto *strand: cleanedStrands) {
                 delete strand;
             }
             delete payLoadStrands;
@@ -103,10 +103,10 @@ namespace xorCode {
         void decodeStrands() {
             int addressLengthBytes = 9;
             int addressLength = addressLengthBytes * MAX_NUCLEOTIDES_PER_BYTE + 1;
-            for (auto strand: cleanedStrands) {
+            for (auto *strand: cleanedStrands) {
                 // itBegin now points to the char right before the address
                 auto itBegin = strand->end() - addressLength - 1;
-                auto cur = new xorCode::strand;
+                auto *cur = new xorCode::strand;
                 uint8_t prev = *itBegin;
                 ++itBegin; // itBegin now points to the first char of the address
                 // check parity nucleotide
@@ -164,7 +164,7 @@ namespace xorCode {
             uint64_t prevIndex = decodedPayloadStrands.back()->lowAddress;
             int inARow = 0;
             for (auto i = decodedPayloadStrands.size() - 1; i >= 0 && inARow < MIN_BIGGER_PAYLOADS_AMOUNT; --i) {
-                auto curStrand = decodedPayloadStrands[i];
+                auto *curStrand = decodedPayloadStrands[i];
                 if (curStrand->lowAddress < prevIndex - MAX_PAYLOAD_INDEX_GAP) {
                     inARow = 1; // already counting curStrand
                     // remove and delete strands with higher index than curStrand
@@ -190,13 +190,13 @@ namespace xorCode {
                 }
             }
             // put remaining strands into data structures for next step
-            for (auto s: decodedPayloadStrands) {
+            for (auto *s: decodedPayloadStrands) {
                 if (!payloadStrandMap.contains(s->lowAddress)) {
                     payloadStrandMap[s->lowAddress] = std::vector<strand *>();
                 }
                 payloadStrandMap[s->lowAddress].push_back(s);
             }
-            for (auto s: decodedXorStrands) {
+            for (auto *s: decodedXorStrands) {
                 if (!xorStrandMap.contains(s->lowAddress)) {
                     xorStrandMap[s->lowAddress] = std::vector<strand *>();
                 }
@@ -214,7 +214,7 @@ namespace xorCode {
             payloadIterators.resize(size);
             auto curPayloads = std::vector<types::nucleotides *>();
             curPayloads.resize(size);
-            for (auto curXorStrand: xorStrandMap[xorIndex]) {
+            for (auto *curXorStrand: xorStrandMap[xorIndex]) {
                 // initialize iterators for every payload index
                 for (int i = 0; i < size; ++i) {
                     if (payloadStrandMap.contains(xorIndex + i)) {
@@ -237,11 +237,11 @@ namespace xorCode {
                         // the calculated xor payload is correct
                         // add current strands to correct strands
                         for (int i = 0; i < size; ++i) {
-                            auto curStrand = *payloadIterators[i];
+                            auto *curStrand = *payloadIterators[i];
                             if (!correctStrands.contains(curStrand->lowAddress)) {
                                 correctStrands.insert(curStrand->lowAddress);
                                 // remove all incorrect strands from the payloadStrandMap
-                                for (auto otherStrand: payloadStrandMap[xorIndex + i]) {
+                                for (auto *otherStrand: payloadStrandMap[xorIndex + i]) {
                                     if (otherStrand != curStrand) {
                                         delete otherStrand;
                                     }
@@ -262,7 +262,6 @@ namespace xorCode {
                         for (auto i: recursiveCalls) {
                             checkAllPossibilities(i, correctStrands);
                         }
-                        return;
                     } else {
                         // update iterators so that they point to the next combination of payloads
                         while (nextIncrease >= 0) {
