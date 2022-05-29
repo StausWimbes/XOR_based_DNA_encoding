@@ -8,6 +8,8 @@ TEST(NucleotideUtilsTest, Nucleotides) {
     ASSERT_EQ(1, nuc_C);
     ASSERT_EQ(2, nuc_G);
     ASSERT_EQ(3, nuc_T);
+    ASSERT_EQ(nuc_A, min_nuc);
+    ASSERT_EQ(nuc_T, max_nuc);
 }
 
 TEST(NucleotideUtilsTest, IsNucleotide) {

@@ -13,6 +13,8 @@ namespace xorCode {
     extern const uint8_t nuc_C;
     extern const uint8_t nuc_G;
     extern const uint8_t nuc_T;
+    extern const uint8_t min_nuc;
+    extern const uint8_t max_nuc;
 
     /**
      * Returns whether the given integer is a correct integer representation of a nucleotide.
@@ -79,6 +81,13 @@ namespace xorCode {
      * @return A pointer to the calculated primerBegin as a sequence of nucleotides.
      */
     types::nucleotides *getPrimer(const std::string &key);
+
+    /**
+     * Generates a random nucleotide sequence with the given length.
+     * @param length The length of the resulting sequence.
+     * @return The generated nucleotide sequence.
+     */
+    types::nucleotides generateRandomPayload(uint64_t length);
 
     /**
      * Calculates the sequence of nucleotides that is the result of doing an xor operation between all the given

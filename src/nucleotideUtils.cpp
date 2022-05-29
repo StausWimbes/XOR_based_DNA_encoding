@@ -3,6 +3,7 @@
 #include "settings.h"
 
 #include <cstdint>
+#include <random>
 
 namespace xorCode {
 
@@ -10,6 +11,8 @@ namespace xorCode {
     const uint8_t nuc_C = 1;
     const uint8_t nuc_G = 2;
     const uint8_t nuc_T = 3;
+    const uint8_t min_nuc = nuc_A;
+    const uint8_t max_nuc = nuc_T;
 
     const char charRepresentations[] = {'A', 'C', 'G', 'T'};
 
@@ -63,6 +66,20 @@ namespace xorCode {
             primer->push_back(0);
         }
         return primer;
+    }
+
+    types::nucleotides generateRandomPayload(uint64_t length) {
+        // initialize RNG (Random Nucleotide Generator)
+        std::random_device rd;
+        std::mt19937 rng(rd()); // https://www.pcg-random.org
+        std::uniform_int_distribution<int> dist(min_nuc, max_nuc);
+
+        auto randomPayload = types::nucleotides(length, nuc_A);
+
+        for (uint8_t &nuc: randomPayload) {
+            nuc = dist(rng);
+        }
+        return randomPayload;
     }
 
     types::nucleotides getXorPayload(types::nucleotides *payloads[], int size) {
