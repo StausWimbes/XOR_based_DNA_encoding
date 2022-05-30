@@ -396,11 +396,11 @@ namespace xorCode {
                 return s1->lowAddress < s2->lowAddress;
             });
             // find the highest payload index
-            uint64_t prevIndex = decodedPayloadStrands.back()->lowAddress;
+            auto prevIndex = decodedPayloadStrands.back()->lowAddress;
             int inARow = 0;
-            for (auto i = decodedPayloadStrands.size() - 1; i >= 0 && inARow < MIN_BIGGER_PAYLOADS_AMOUNT; --i) {
+            for (int i = decodedPayloadStrands.size() - 1; i >= 0 && inARow < MIN_BIGGER_PAYLOADS_AMOUNT; --i) {
                 auto *curStrand = decodedPayloadStrands[i];
-                if (curStrand->lowAddress < prevIndex - MAX_PAYLOAD_INDEX_GAP) {
+                if (curStrand->lowAddress + MAX_PAYLOAD_INDEX_GAP < prevIndex) {
                     inARow = 1; // already counting curStrand
                     // remove and delete strands with higher index than curStrand
                     for (auto j = decodedPayloadStrands.size() - 1; j > i; --j) {
@@ -418,11 +418,18 @@ namespace xorCode {
                 return s1->lowAddress < s2->lowAddress;
             });
             // remove and delete xor strands with index that is too high
+            // otherwise add them to xorStrandMap
             while (!decodedXorStrands.empty()) {
-                if (decodedXorStrands.back()->lowAddress - MAX_PAYLOAD_INDEX_GAP > highestPayloadIndex) {
-                    delete decodedXorStrands.back();
-                    decodedXorStrands.pop_back();
+                auto s = decodedXorStrands.back();
+                if (s->lowAddress > highestPayloadIndex + MAX_PAYLOAD_INDEX_GAP) {
+                    delete s;
+                } else {
+                    if (!xorStrandMap.contains(s->lowAddress)) {
+                        xorStrandMap[s->lowAddress] = std::vector<strand *>();
+                    }
+                    xorStrandMap[s->lowAddress].push_back(s);
                 }
+                decodedXorStrands.pop_back();
             }
             // put remaining strands into data structures for next step
             for (auto *s: decodedPayloadStrands) {
@@ -430,12 +437,6 @@ namespace xorCode {
                     payloadStrandMap[s->lowAddress] = std::vector<strand *>();
                 }
                 payloadStrandMap[s->lowAddress].push_back(s);
-            }
-            for (auto *s: decodedXorStrands) {
-                if (!xorStrandMap.contains(s->lowAddress)) {
-                    xorStrandMap[s->lowAddress] = std::vector<strand *>();
-                }
-                xorStrandMap[s->lowAddress].push_back(s);
             }
         }
 
@@ -701,13 +702,13 @@ namespace xorCode {
             types::bytes result;
 
             for (int i = 0; i <= highestPayloadIndex; ++i) {
-                if (!payLoadStrands->contains(i)) {
+                if (!payloadStrandMap.contains(i)) {
                     // TODO: stop decoding?
                     continue;
                 }
 
                 // decode and append payload
-                auto payload = payLoadStrands->at(i).payload;
+                auto payload = payloadStrandMap[i].front()->payload;
                 convertNucleotidesToBinary(nuc_A, payload.begin(), payload.end(), getPayloadByteLength(), result);
             }
             return result;
