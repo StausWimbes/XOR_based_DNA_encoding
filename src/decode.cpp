@@ -420,7 +420,7 @@ namespace xorCode {
             // remove and delete xor strands with index that is too high
             // otherwise add them to xorStrandMap
             while (!decodedXorStrands.empty()) {
-                auto s = decodedXorStrands.back();
+                auto *s = decodedXorStrands.back();
                 if (s->lowAddress > highestPayloadIndex + MAX_PAYLOAD_INDEX_GAP) {
                     delete s;
                 } else {
@@ -481,7 +481,11 @@ namespace xorCode {
                                 deleteOtherStrands(curStrand, xorIndex + i);
 
                                 // recursively call this function for all other xorStrands that involve this strand
-                                auto smallestXorIndex = curStrand->lowAddress - size - (curStrand->lowAddress % step);
+                                auto offset = size + (curStrand->lowAddress % step);
+                                auto smallestXorIndex = curStrand->lowAddress - offset;
+                                if (curStrand->lowAddress < offset) {
+                                    smallestXorIndex = 0;
+                                }
                                 for (auto j = smallestXorIndex; j <= curStrand->lowAddress; j += step) {
                                     if (j >= 0 && j + size > curStrand->lowAddress && j != xorIndex) {
                                         recursiveCalls.insert(j);
@@ -494,17 +498,18 @@ namespace xorCode {
                         for (auto i: recursiveCalls) {
                             checkAllPossibilities(i, correctStrands);
                         }
-                    } else {
-                        // update iterators so that they point to the next combination of payloads
-                        while (nextIncrease >= 0) {
-                            payloadIterators[nextIncrease]++;
-                            if (payloadIterators[nextIncrease] == payloadStrandMap[size + nextIncrease].end()) {
-                                payloadIterators[nextIncrease] = payloadStrandMap[size + nextIncrease].begin();
-                                nextIncrease--;
-                            } else {
-                                nextIncrease = size - 1;
-                                break;
-                            }
+                        return;
+                    }
+
+                    // update iterators so that they point to the next combination of payloads
+                    while (nextIncrease >= 0) {
+                        payloadIterators[nextIncrease]++;
+                        if (payloadIterators[nextIncrease] == payloadStrandMap[size + nextIncrease].end()) {
+                            payloadIterators[nextIncrease] = payloadStrandMap[size + nextIncrease].begin();
+                            nextIncrease--;
+                        } else {
+                            nextIncrease = size - 1;
+                            break;
                         }
                     }
                 }
@@ -721,8 +726,8 @@ namespace xorCode {
         decoder.filterStrands();
         decoder.decodeStrands();
         // TODO: uncomment the next line once checkAndRestore() has been finished
-        // decoder.sortDecodedStrands();
-        decoder.checkAndRestore();
+        decoder.sortDecodedStrands();
+        decoder.checkAndRestore2();
         return decoder.assemble();
     }
 }
