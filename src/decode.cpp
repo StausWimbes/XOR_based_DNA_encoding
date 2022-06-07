@@ -527,6 +527,7 @@ namespace xorCode {
          * 4. If even that fails just choose random bytes.
          */
         void checkAndRestore2() {
+            auto step = getXorStep();
             auto xorStrandsCount = getXorStrandsCount(highestPayloadIndex + 1);
             if (xorStrands->size() > xorStrandsCount) {
                 xorStrandsCount = xorStrands->size();
@@ -535,7 +536,7 @@ namespace xorCode {
             std::unordered_set<uint64_t> correctStrands{};
 
             // first check for correct strands
-            for (uint64_t xorIndex = 0; xorIndex < xorStrandsCount; xorIndex++) {
+            for (uint64_t xorIndex = 0; xorIndex < xorStrandsCount * step; xorIndex += step) {
                 checkAllPossibilities(xorIndex, correctStrands);
             }
 
