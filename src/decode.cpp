@@ -398,15 +398,16 @@ namespace xorCode {
             // find the highest payload index
             auto prevIndex = decodedPayloadStrands.back()->lowAddress;
             int inARow = 0;
-            for (int i = decodedPayloadStrands.size() - 1; i >= 0 && inARow < MIN_BIGGER_PAYLOADS_AMOUNT; --i) {
-                auto *curStrand = decodedPayloadStrands[i];
+            for (auto i = decodedPayloadStrands.size(); i > 0 && inARow < MIN_BIGGER_PAYLOADS_AMOUNT; --i) {
+                auto i1 = i - 1;
+                auto *curStrand = decodedPayloadStrands[i1];
                 if (curStrand->lowAddress + MAX_PAYLOAD_INDEX_GAP < prevIndex) {
                     inARow = 1; // already counting curStrand
                     // remove and delete strands with higher index than curStrand
-                    for (auto j = decodedPayloadStrands.size() - 1; j > i; --j) {
+                    for (auto j = decodedPayloadStrands.size() - 1; j > i1; --j) {
                         delete decodedPayloadStrands[j];
                     }
-                    decodedPayloadStrands.resize(i + 1);
+                    decodedPayloadStrands.resize(i);
                 } else {
                     ++inARow;
                 }
