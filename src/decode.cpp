@@ -77,7 +77,7 @@ namespace xorCode {
 
 
             // recreate payload
-            std::string restoredPayloadString = std::string(xorStrand->payload.size(), nuc_A);
+            std::string restoredPayloadString = std::string(xorStrand->payload.size(), (int8_t) nuc_A);
 
             // copy xor strand
             for (uint64_t nucIndex = 0; nucIndex < xorStrand->payload.size(); nucIndex++) {
@@ -323,7 +323,7 @@ namespace xorCode {
                 --itEnd;
                 if (correct) {
                     // remove primers and 'A' nucleotides
-                    auto cleaned = new types::nucleotides(itStart, itEnd);
+                    auto *cleaned = new types::nucleotides(itStart, itEnd);
                     cleanedStrands.push_back(cleaned);
                 }
             }

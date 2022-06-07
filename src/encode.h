@@ -1,5 +1,5 @@
-#ifndef XOR_CODE_STRANDS_H
-#define XOR_CODE_STRANDS_H
+#ifndef XOR_CODE_ENCODE_H
+#define XOR_CODE_ENCODE_H
 
 #include "settings.h"
 #include "nucleotideUtils.h"
@@ -31,4 +31,4 @@ namespace xorCode {
 
 }
 
-#endif //XOR_CODE_STRANDS_H
+#endif //XOR_CODE_ENCODE_H

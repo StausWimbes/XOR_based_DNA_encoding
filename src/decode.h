@@ -1,5 +1,5 @@
-#ifndef XOR_CODE_STRANDDECODE_H
-#define XOR_CODE_STRANDDECODE_H
+#ifndef XOR_CODE_DECODE_H
+#define XOR_CODE_DECODE_H
 
 #include "settings.h"
 
@@ -14,4 +14,4 @@ namespace xorCode {
 
 }
 
-#endif //XOR_CODE_STRANDDECODE_H
+#endif //XOR_CODE_DECODE_H
