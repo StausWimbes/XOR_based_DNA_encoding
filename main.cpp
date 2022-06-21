@@ -41,6 +41,7 @@ int main() {
     std::cout << "Time for decoding: " << duration.count() << '\n';
 
     if (doFileOutput) {
+        std::filesystem::create_directories(outputDirectory);
         auto out = std::ofstream(outputDirectory + fileName, std::ios::binary);
         for (uint8_t character: original) {
             out << character;
