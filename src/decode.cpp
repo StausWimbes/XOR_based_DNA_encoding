@@ -196,41 +196,6 @@ namespace xorCode {
             }
         }
 
-        strand *findRelatedStrand(uint64_t strandIndex, uint64_t xorStrandsCount) {
-            auto size = getXorSize();
-            auto step = getXorStep();
-
-            uint64_t min_start = strandIndex / step;
-            uint64_t max_end = min_start;
-
-            // max_start = strandIndex -> ?
-            // min_end = strandIndex + 1 -> ?
-            for (uint64_t i = 0; i < xorStrandsCount; i++) {
-                auto start = i * step; // inclusive; also xorIndex
-                auto end = start + size; // exclusive
-
-                // start <= strandIndex < end
-                if (strandIndex < start || end <= strandIndex) { // TODO move to head of for loop
-                    continue;
-                }
-
-                if (!xorStrandMap[start].empty()) {
-                    return xorStrandMap[start].front();
-                }
-
-                if (max_end < end) { // TODO remove when moving to head of loop
-                    max_end = end;
-                }
-            }
-
-            for (auto i = min_start; i < max_end; i++) {
-                if (!payloadStrandMap[i].empty()) {
-                    return payloadStrandMap[i].front();
-                }
-            }
-            return nullptr;
-        }
-
         void generateRandomStrands(std::unordered_set<uint64_t> &correctStrands,
                                    std::queue<uint64_t> &incorrectStrands,
                                    uint64_t xorStrandsCount) {
@@ -243,17 +208,12 @@ namespace xorCode {
                 auto restoreIndex = incorrectStrands.front();
                 incorrectStrands.pop();
 
-                auto *relatedStrand = findRelatedStrand(restoreIndex, xorStrandsCount);
-                if (relatedStrand == nullptr) {
-                    // TODO random primer?
-                }
-
                 auto *restoredStrand = new strand();
                 restoredStrand->payload = generateRandomPayload(getMaxStrandLength());
                 restoredStrand->isXor = false;
                 restoredStrand->lowAddress = restoreIndex;
-                restoredStrand->primerBegin = relatedStrand->primerBegin;
-                restoredStrand->primerEnd = relatedStrand->primerEnd;
+                restoredStrand->primerBegin = nullptr;
+                restoredStrand->primerEnd = nullptr;
                 payloadStrandMap[restoreIndex].push_back(restoredStrand);
 
                 correctStrands.insert(restoreIndex);
