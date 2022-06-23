@@ -25,11 +25,6 @@ namespace xorCode {
         std::unordered_map<uint64_t, std::vector<strand *>> payloadStrandMap;
         std::unordered_map<uint64_t, std::vector<strand *>> xorStrandMap;
 
-        // map of all payload strands. key is the index (low address) of the strand
-        std::unordered_map<uint64_t, strand> *payLoadStrands;
-        // map of all xor strands. key is the index (low address) of the strand
-        std::unordered_map<uint64_t, strand> *xorStrands;
-
 
         void deleteOtherStrands(strand *keepStrand, uint64_t xorIndex) {
             for (auto *otherStrand: payloadStrandMap[xorIndex]) {
@@ -52,7 +47,7 @@ namespace xorCode {
 
         bool canBeRestored(uint64_t start, uint64_t end, std::unordered_set<uint64_t> &correctStrands) {
             // no strand can be restored without the xor strand
-            if (!xorStrands->contains(start)) {
+            if (!xorStrandMap.contains(start)) {
                 return false;
             }
 
@@ -270,16 +265,12 @@ namespace xorCode {
         StrandDecoder(std::string &fileName, std::vector<types::nucleotides> &strands) {
             this->fileName = fileName;
             this->strands = strands;
-            payLoadStrands = new std::unordered_map<uint64_t, strand>;
-            xorStrands = new std::unordered_map<uint64_t, strand>;
         }
 
         ~StrandDecoder() {
             for (auto *strand: cleanedStrands) {
                 delete strand;
             }
-            delete payLoadStrands;
-            delete xorStrands;
         }
 
         /*
@@ -373,19 +364,6 @@ namespace xorCode {
                     decodedXorStrands.push_back(cur);
                 } else {
                     decodedPayloadStrands.push_back(cur);
-                }
-
-                // TODO: remove the following code once checkAndRestore() has been finished
-                if (cur->isXor) {
-                    if (cur->lowAddress + getXorSize() - 1 > highestPayloadIndex) {
-                        highestPayloadIndex = cur->lowAddress + getXorSize() - 1;
-                    }
-                    xorStrands->insert({cur->lowAddress, *cur});
-                } else {
-                    if (cur->lowAddress > highestPayloadIndex) {
-                        highestPayloadIndex = cur->lowAddress;
-                    }
-                    payLoadStrands->insert({cur->lowAddress, *cur});
                 }
             }
         }
@@ -530,8 +508,8 @@ namespace xorCode {
         void checkAndRestore() {
             auto step = getXorStep();
             auto xorStrandsCount = getXorStrandsCount(highestPayloadIndex + 1);
-            if (xorStrands->size() > xorStrandsCount) {
-                xorStrandsCount = xorStrands->size();
+            if (xorStrandMap.size() > xorStrandsCount) {
+                xorStrandsCount = xorStrandMap.size();
             }
 
             std::unordered_set<uint64_t> correctStrands{};
