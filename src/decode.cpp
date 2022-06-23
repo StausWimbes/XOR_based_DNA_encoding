@@ -197,8 +197,7 @@ namespace xorCode {
         }
 
         void generateRandomStrands(std::unordered_set<uint64_t> &correctStrands,
-                                   std::queue<uint64_t> &incorrectStrands,
-                                   uint64_t xorStrandsCount) {
+                                   std::queue<uint64_t> &incorrectStrands) {
             if (incorrectStrands.empty()) {
                 return;
             }
@@ -490,7 +489,7 @@ namespace xorCode {
             chooseFromAvailableStrands(correctStrands, incorrectStrands);
 
             // generate random strand (most likely not correct)
-            generateRandomStrands(correctStrands, incorrectStrands, xorStrandsCount);
+            generateRandomStrands(correctStrands, incorrectStrands);
         }
 
         /**
