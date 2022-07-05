@@ -68,7 +68,7 @@ namespace xorCode {
         }
 
         void restoreStrand(uint64_t start, uint64_t end, uint64_t restoreIndex) {
-            auto *xorStrand = xorStrandMap[start].front(); // TODO choose different than front?
+            auto *xorStrand = xorStrandMap[start].front();
 
 
             // recreate payload
@@ -173,7 +173,7 @@ namespace xorCode {
                     continue;
                 }
 
-                auto *chosenStrand = payloadStrandMap[restoreIndex].front(); // TODO choose different than front?
+                auto *chosenStrand = payloadStrandMap[restoreIndex].front();
 
                 // remove all incorrect strands from the payloadStrandMap
                 deleteOtherStrands(chosenStrand, restoreIndex);
@@ -484,11 +484,6 @@ namespace xorCode {
             types::bytes result;
 
             for (int i = 0; i <= highestPayloadIndex; ++i) {
-                if (!payloadStrandMap.contains(i)) {
-                    // TODO: stop decoding?
-                    continue;
-                }
-
                 // decode and append payload
                 auto payload = payloadStrandMap[i].front()->payload;
                 convertNucleotidesToBinary(nuc_A, payload.begin(), payload.end(), getPayloadByteLength(), result);
