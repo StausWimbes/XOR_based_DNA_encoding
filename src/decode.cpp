@@ -178,7 +178,8 @@ namespace xorCode {
         void chooseFromAvailableStrands(std::unordered_set<uint64_t> &correctStrands,
                                         std::queue<uint64_t> &incorrectStrands) {
             // go through all strands in the queue exactly once
-            for (uint64_t lookedAt = 0; lookedAt < incorrectStrands.size(); lookedAt++) {
+            auto incorrectCount = incorrectStrands.size(); // can't inline as size changes
+            for (uint64_t lookedAt = 0; lookedAt < incorrectCount; lookedAt++) {
                 auto restoreIndex = incorrectStrands.front();
                 incorrectStrands.pop();
 
@@ -188,7 +189,6 @@ namespace xorCode {
                 }
 
                 auto *chosenStrand = payloadStrandMap[restoreIndex].front(); // TODO choose different than front?
-                payloadStrandMap[restoreIndex].push_back(chosenStrand);
 
                 // remove all incorrect strands from the payloadStrandMap
                 deleteOtherStrands(chosenStrand, restoreIndex);
