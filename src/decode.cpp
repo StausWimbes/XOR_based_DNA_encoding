@@ -70,31 +70,16 @@ namespace xorCode {
         void restoreStrand(uint64_t start, uint64_t end, uint64_t restoreIndex) {
             auto *xorStrand = xorStrandMap[start].front();
 
-
-            // recreate payload
-            std::string restoredPayloadString = std::string(xorStrand->payload.size(), (int8_t) nuc_A);
-
-            // copy xor strand
-            for (uint64_t nucIndex = 0; nucIndex < xorStrand->payload.size(); nucIndex++) {
-                restoredPayloadString.at(nucIndex) = xorStrand->payload[nucIndex];
+            auto curPayloads = std::vector<types::nucleotides *>();
+            curPayloads.resize(getXorSize());
+            curPayloads[0] = &(xorStrand->payload);
+            int i = 1;
+            for (auto strandIndex = start; strandIndex < end; ++strandIndex) {
+                if (strandIndex == restoreIndex) continue;
+                curPayloads[i] = &(payloadStrandMap[strandIndex].front()->payload);
+                i++;
             }
-
-            for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
-                if (strandIndex == restoreIndex) {
-                    continue;
-                }
-
-                auto payload = payloadStrandMap[strandIndex].front()->payload; // should only contain one element (correct)
-                for (uint64_t nucIndex = 0; nucIndex < payload.size(); nucIndex++) {
-                    restoredPayloadString.at(nucIndex) =
-                            getXorNucleotide(restoredPayloadString.at(nucIndex), payload[nucIndex]);
-                }
-            }
-
-            types::nucleotides restoredPayload;
-            for (uint8_t c: restoredPayloadString) {
-                restoredPayload.push_back(c);
-            }
+            auto restoredPayload = getXorPayload(curPayloads.data(), curPayloads.size());
 
             auto *restoredStrand = new strand();
             restoredStrand->payload = restoredPayload;
@@ -357,9 +342,7 @@ namespace xorCode {
             // put remaining strands into data structures for next step
             // TODO: use unordered_multiset to eliminate duplicates and sort by frequency
             for (auto *s: decodedPayloadStrands) {
-                if (!payloadStrandMap.contains(s->lowAddress)) {
-                    payloadStrandMap[s->lowAddress] = std::vector<strand *>();
-                }
+                // [] implicitly adds new vector
                 payloadStrandMap[s->lowAddress].push_back(s);
             }
         }
@@ -377,7 +360,7 @@ namespace xorCode {
             for (auto *curXorStrand: xorStrandMap[xorIndex]) {
                 // initialize iterators for every payload index
                 for (int i = 0; i < size; ++i) {
-                    if (payloadStrandMap.contains(xorIndex + i)) {
+                    if (!payloadStrandMap[xorIndex + i].empty()) {
                         payloadIterators[i] = payloadStrandMap[xorIndex + i].begin();
                     } else {
                         return;
@@ -424,7 +407,8 @@ namespace xorCode {
                     // update iterators so that they point to the next combination of payloads
                     while (nextIncrease >= 0) {
                         payloadIterators[nextIncrease]++;
-                        if (payloadIterators[nextIncrease] == payloadStrandMap[size + nextIncrease].end()) {
+                        auto end = payloadStrandMap[size + nextIncrease].end();
+                        if (!(payloadIterators[nextIncrease] < end)) {
                             payloadIterators[nextIncrease] = payloadStrandMap[size + nextIncrease].begin();
                             nextIncrease--;
                         } else {

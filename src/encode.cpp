@@ -87,6 +87,7 @@ namespace xorCode {
                 }
 
                 // create xor payload
+                // TODO: replace with getXorPayload()
                 newStrand->payload = types::nucleotides(maxLength, nuc_A);
                 for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
                     auto payload = strands->at(strandIndex)->payload;
