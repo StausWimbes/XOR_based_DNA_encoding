@@ -124,19 +124,20 @@ namespace xorCode {
                     incorrectStrands.pop();
 
                     // restore strand if possible
+                    bool isRestored = false;
                     auto smallestXorIndex = getSmallestContainingXorAddress(restoreIndex);
                     for (auto start = smallestXorIndex; start <= restoreIndex; start += step) {
                         auto end = start + size; // exclusive
 
-                        if (!canBeRestored(start, end, correctStrands)) {
-                            continue;
+                        if (canBeRestored(start, end, correctStrands)) {
+                            // found fitting xor batch
+                            restoreStrand(start, end, restoreIndex);
+                            correctStrands.insert(restoreIndex);
+                            isRestored = true;
+                            break;
                         }
-
-
-                        // found fitting xor batch
-                        restoreStrand(start, end, restoreIndex);
-                        correctStrands.insert(restoreIndex);
-
+                    }
+                    if (isRestored) {
                         // check all possibilities for all xor strands, this strand is involved with
                         for (auto start2 = smallestXorIndex; start2 <= restoreIndex; start2 += step) {
                             checkAllPossibilities(start2, correctStrands);
@@ -151,14 +152,11 @@ namespace xorCode {
                                 incorrectStrands.push(incorrectIndex);
                             }
                         }
-
-                        goto nextTry;
+                        break;
+                    } else {
+                        incorrectStrands.push(restoreIndex);
                     }
-
-                    incorrectStrands.push(restoreIndex);
                 }
-
-                nextTry:;
             }
         }
 
