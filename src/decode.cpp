@@ -124,14 +124,9 @@ namespace xorCode {
                     incorrectStrands.pop();
 
                     // restore strand if possible
-                    for (uint64_t i = 0; i < xorStrandsCount; i++) {
-                        auto start = i * step; // inclusive; also xorIndex
+                    auto smallestXorIndex = getSmallestContainingXorAddress(restoreIndex);
+                    for (auto start = smallestXorIndex; start <= restoreIndex; start += step) {
                         auto end = start + size; // exclusive
-
-                        // start <= restoreIndex < end
-                        if (restoreIndex < start || end <= restoreIndex) { // TODO move to head of for loop
-                            continue;
-                        }
 
                         if (!canBeRestored(start, end, correctStrands)) {
                             continue;
@@ -143,16 +138,8 @@ namespace xorCode {
                         correctStrands.insert(restoreIndex);
 
                         // check all possibilities for all xor strands, this strand is involved with
-                        for (uint64_t i2 = 0; i2 < xorStrandsCount; i2++) {
-                            auto start2 = i2 * step; // inclusive; also xorIndex
-                            auto end2 = start2 + size; // exclusive
-
-                            // start2 <= restoreIndex < end2
-                            if (restoreIndex < start2 || end2 <= restoreIndex) { // TODO move to head of for loop
-                                continue;
-                            }
-
-                            checkAllPossibilities(start, correctStrands);
+                        for (auto start2 = smallestXorIndex; start2 <= restoreIndex; start2 += step) {
+                            checkAllPossibilities(start2, correctStrands);
                         }
 
                         // update incorrectStrands
@@ -370,6 +357,7 @@ namespace xorCode {
                 decodedXorStrands.pop_back();
             }
             // put remaining strands into data structures for next step
+            // TODO: use unordered_multiset to eliminate duplicates and sort by frequency
             for (auto *s: decodedPayloadStrands) {
                 if (!payloadStrandMap.contains(s->lowAddress)) {
                     payloadStrandMap[s->lowAddress] = std::vector<strand *>();
@@ -419,11 +407,7 @@ namespace xorCode {
                                 deleteOtherStrands(curStrand, xorIndex + i);
 
                                 // recursively call this function for all other xorStrands that involve this strand
-                                auto offset = size + (curStrand->lowAddress % step);
-                                auto smallestXorIndex = curStrand->lowAddress - offset;
-                                if (curStrand->lowAddress < offset) {
-                                    smallestXorIndex = 0;
-                                }
+                                auto smallestXorIndex = getSmallestContainingXorAddress(curStrand->lowAddress);
                                 for (auto j = smallestXorIndex; j <= curStrand->lowAddress; j += step) {
                                     if (j >= 0 && j + size > curStrand->lowAddress && j != xorIndex) {
                                         recursiveCalls.insert(j);

@@ -54,4 +54,18 @@ namespace xorCode {
         return (xorStrandsCount / step) + (xorStrandsCount % step == 0 ? 0 : 1);
     }
 
+    uint64_t getSmallestContainingXorAddress(uint64_t payloadAddress) {
+        auto size = getXorSize();
+        auto step = getXorStep();
+
+        if (payloadAddress < size) {
+            return 0;
+        }
+        uint64_t result = payloadAddress + 1 - size;
+        if (result % step != 0) {
+            result += step - (result % step);
+        }
+        return result;
+    }
+
 }

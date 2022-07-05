@@ -91,6 +91,13 @@ namespace xorCode {
      */
     uint64_t getXorStrandsCount(uint64_t strandsCount);
 
+    /**
+     * Calculates the address of the smallest xor strand that contains the given payloadAddress.
+     * @param payloadAddress The address of the payload strand.
+     * @return The calculated address.
+     */
+    uint64_t getSmallestContainingXorAddress(uint64_t payloadAddress);
+
 }
 
 #endif //XOR_CODE_SETTINGS_H
