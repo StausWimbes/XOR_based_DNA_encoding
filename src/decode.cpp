@@ -482,11 +482,14 @@ namespace xorCode {
             std::queue<uint64_t> incorrectStrands{};
             determineIncorrectAndMissingStrands(correctStrands, incorrectStrands);
 
-            // restore incorrect/missing strands using xor strands (not correct if the xor strands have problems)
+            // restore incorrect/missing strands using correct strands and xor strands (not correct if the xor strands have problems)
             restoreIncorrectAndMissingStrands(correctStrands, incorrectStrands, xorStrandsCount);
 
             // choose available strand (probably not correct)
             chooseFromAvailableStrands(correctStrands, incorrectStrands);
+
+            // restore incorrect/missing strands using correct strands, available strands and xor strands (not correct if the available or the xor strands have problems)
+            restoreIncorrectAndMissingStrands(correctStrands, incorrectStrands, xorStrandsCount);
 
             // generate random strand (most likely not correct)
             generateRandomStrands(correctStrands, incorrectStrands);
