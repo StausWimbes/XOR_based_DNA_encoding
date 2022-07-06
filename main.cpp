@@ -4,16 +4,16 @@
 #include "decode.h"
 #include "settings.h"
 
-bool doConsoleOutput = true;
+bool doConsoleOutput = false;
 std::string inputDirectory = "../data/";
-std::string fileName = "test3.txt";
-bool doFileOutput = false;
+std::string fileName = "example.jpg";
+bool doFileOutput = true;
 std::string outputDirectory = "../data/out/";
 
 int main() {
     using namespace xorCode;
 
-    setXorStep(1);
+    setXorStep(2);
     setXorSize(3);
 
     std::cout << "Working directory: " << std::filesystem::current_path() << "\n";
@@ -38,7 +38,7 @@ int main() {
 
     auto filteredStrands = std::vector<types::nucleotides>();
     for (int i = 0; i < strands.size(); ++i) {
-        if ((i % 6 != 0 && i % 5 != 0) || i > strands.size() / 2) {
+        if ((i % 3 != 0 && i % 5 != 0) || i > strands.size() / 2) {
             filteredStrands.push_back(strands[i]);
         }
     }

@@ -407,8 +407,7 @@ namespace xorCode {
                     // update iterators so that they point to the next combination of payloads
                     while (nextIncrease >= 0) {
                         payloadIterators[nextIncrease]++;
-                        auto end = payloadStrandMap[size + nextIncrease].end();
-                        if (!(payloadIterators[nextIncrease] < end)) {
+                        if (payloadIterators[nextIncrease] == payloadStrandMap[xorIndex + nextIncrease].end()) {
                             payloadIterators[nextIncrease] = payloadStrandMap[size + nextIncrease].begin();
                             nextIncrease--;
                         } else {
