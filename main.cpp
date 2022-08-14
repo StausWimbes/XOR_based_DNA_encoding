@@ -10,6 +10,9 @@ std::string fileName = "example.jpg";
 bool doFileOutput = true;
 std::string outputDirectory = "../data/out/";
 
+// TODO: add python interface LEON
+// TODO: write github wiki LUCA
+
 int main() {
     using namespace xorCode;
 

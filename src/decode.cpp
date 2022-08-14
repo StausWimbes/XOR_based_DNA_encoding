@@ -340,7 +340,7 @@ namespace xorCode {
                 decodedXorStrands.pop_back();
             }
             // put remaining strands into data structures for next step
-            // TODO: use unordered_multiset to eliminate duplicates and sort by frequency
+            // TODO: use unordered_multiset to eliminate duplicates and sort by frequency LUCA
             for (auto *s: decodedPayloadStrands) {
                 // [] implicitly adds new vector
                 payloadStrandMap[s->lowAddress].push_back(s);
@@ -399,6 +399,7 @@ namespace xorCode {
                         }
                         // execute the recursive calls
                         for (auto i: recursiveCalls) {
+                            // TODO: remove recursion to avoid stack overflow LUCA
                             checkAllPossibilities(i, correctStrands);
                         }
                         return;

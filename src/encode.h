@@ -14,6 +14,8 @@
 
 namespace xorCode {
 
+    // TODO: add some documentation LEON
+
     struct strand {
         types::nucleotides payload;
         union {

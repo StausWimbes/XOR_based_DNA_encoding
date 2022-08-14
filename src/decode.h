@@ -10,6 +10,8 @@
 
 namespace xorCode {
 
+    // TODO: add some documentation LEON
+
     types::bytes decode(std::string fileName, std::vector<types::nucleotides> &strands);
 
 }
