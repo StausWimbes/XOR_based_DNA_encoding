@@ -15,6 +15,9 @@ namespace xorCode {
     const uint8_t max_nuc = nuc_T;
 
     const char charRepresentations[] = {'A', 'C', 'G', 'T'};
+    const int primes[NUCLEOTIDES_PER_PRIMER] = {2, 3, 5, 7, 11, 13,
+                                                17, 19, 23, 29, 31, 37};
+    const std::hash<std::string> hasher;
 
     bool isNucleotide(uint8_t nucleotide) {
         return nucleotide <= 3;
@@ -60,10 +63,10 @@ namespace xorCode {
     }
 
     types::nucleotides *getPrimer(const std::string &key) {
-        auto *primer = new types::nucleotides();
-        // TODO: implement properly by using a list of good Primers and using a hashcode to choose one LEON
+        auto hash = hasher(key);
+        auto *primer = new types::nucleotides(NUCLEOTIDES_PER_PRIMER);
         for (int i = 0; i < NUCLEOTIDES_PER_PRIMER; ++i) {
-            primer->push_back(0);
+            primer->at(i) = (hash / primes[i]) % max_nuc;
         }
         return primer;
     }
