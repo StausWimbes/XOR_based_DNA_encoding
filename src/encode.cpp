@@ -66,6 +66,7 @@ namespace xorCode {
             auto size = getXorSize();
             auto step = getXorStep();
             auto xorStrandsCount = getXorStrandsCount(strands->size());
+            types::nucleotides *payloads[size]; // space for the strands to be used to create a Xor strand
 
             for (uint64_t i = 0; i < xorStrandsCount; i++) {
                 auto start = i * step; // inclusive
@@ -78,23 +79,13 @@ namespace xorCode {
                 newStrand->primerBegin = strands->at(start)->primerBegin;
                 newStrand->primerEnd = strands->at(start)->primerEnd;
 
-                // determine max payload length
-                auto maxLength = strands->at(start)->payload.size();
-                for (uint64_t strand = start + 1; strand < end; strand++) {
-                    if (strands->at(strand)->payload.size() > maxLength) {
-                        maxLength = strands->at(strand)->payload.size();
-                    }
-                }
-
                 // create xor payload
-                // TODO: replace with getXorPayload() LEON
-                newStrand->payload = types::nucleotides(maxLength, nuc_A);
+                unsigned long payloadIndex = 0;
                 for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
-                    auto payload = strands->at(strandIndex)->payload;
-                    for (int j = 0; j < payload.size(); ++j) {
-                        newStrand->payload[j] = getXorNucleotide(newStrand->payload[j], payload[j]);
-                    }
+                    payloads[payloadIndex++] = &strands->at(strandIndex)->payload;
                 }
+                newStrand->payload = getXorPayload(payloads, size);
+
                 strands->push_back(newStrand);
             }
         }
