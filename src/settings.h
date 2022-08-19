@@ -29,6 +29,8 @@ namespace xorCode {
 
     }
 
+    const int NUCLEOTIDES_PER_PRIMER = 12;
+
     const int MAX_NUCLEOTIDES_PER_BYTE = 6;
 
     // 9 * MAX_NUCLEOTIDES_PER_BYTE for address + 1 for parity nucleotide + 2 for S Nucleotides

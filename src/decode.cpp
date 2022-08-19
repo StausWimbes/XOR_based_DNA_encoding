@@ -211,10 +211,10 @@ namespace xorCode {
         void filterStrands() {
             // create primers
             auto primerBegin = *getPrimer(fileName);
-            auto primerEnd = types::nucleotides(12, 0);
+            auto primerEnd = types::nucleotides(NUCLEOTIDES_PER_PRIMER, 0);
             std::copy(primerBegin.begin(), primerBegin.end(), primerEnd.begin());
             invertNucleotides(primerEnd);
-            auto revPrimerBegin = types::nucleotides(12, 0);
+            auto revPrimerBegin = types::nucleotides(NUCLEOTIDES_PER_PRIMER, 0);
             std::reverse_copy(primerBegin.begin(), primerBegin.end(), revPrimerBegin.begin());
             // start filtering the strands
             for (auto strand: strands) {

@@ -62,7 +62,7 @@ namespace xorCode {
     types::nucleotides *getPrimer(const std::string &key) {
         auto *primer = new types::nucleotides();
         // TODO: implement properly by using a list of good Primers and using a hashcode to choose one LEON
-        for (int i = 0; i < 12; ++i) {
+        for (int i = 0; i < NUCLEOTIDES_PER_PRIMER; ++i) {
             primer->push_back(0);
         }
         return primer;

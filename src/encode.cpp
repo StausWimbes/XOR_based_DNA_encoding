@@ -37,7 +37,7 @@ namespace xorCode {
         void createPayloadStrands() {
             // create primers
             auto *primerBegin = getPrimer(key);
-            auto *primerEnd = new types::nucleotides(12, 0);
+            auto *primerEnd = new types::nucleotides(NUCLEOTIDES_PER_PRIMER, 0);
             std::copy(primerBegin->begin(), primerBegin->end(), primerEnd->begin());
             invertNucleotides(*primerEnd);
             // start creating the strands
