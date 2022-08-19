@@ -80,7 +80,7 @@ namespace xorCode {
                 newStrand->primerEnd = strands->at(start)->primerEnd;
 
                 // create xor payload
-                unsigned long payloadIndex = 0;
+                uint64_t payloadIndex = 0;
                 for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
                     payloads[payloadIndex++] = &strands->at(strandIndex)->payload;
                 }
