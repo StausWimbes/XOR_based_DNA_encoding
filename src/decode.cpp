@@ -68,10 +68,11 @@ namespace xorCode {
         }
 
         void restoreStrand(uint64_t start, uint64_t end, uint64_t restoreIndex) {
+            auto size = getXorSize();
             auto *xorStrand = xorStrandMap[start].front();
 
-            auto curPayloads = std::vector<types::nucleotides *>();
-            curPayloads.resize(getXorSize());
+
+            types::nucleotides *curPayloads[size];
             curPayloads[0] = &(xorStrand->payload);
             int i = 1;
             for (auto strandIndex = start; strandIndex < end; ++strandIndex) {
@@ -79,7 +80,7 @@ namespace xorCode {
                 curPayloads[i] = &(payloadStrandMap[strandIndex].front()->payload);
                 i++;
             }
-            auto restoredPayload = getXorPayload(curPayloads.data(), curPayloads.size());
+            auto restoredPayload = getXorPayload(curPayloads, size);
 
             auto *restoredStrand = new strand();
             restoredStrand->payload = restoredPayload;
@@ -355,8 +356,7 @@ namespace xorCode {
             }
             auto payloadIterators = std::vector<std::vector<strand *>::iterator>();
             payloadIterators.resize(size);
-            auto curPayloads = std::vector<types::nucleotides *>();
-            curPayloads.resize(size);
+            types::nucleotides *curPayloads[size];
             for (auto *curXorStrand: xorStrandMap[xorIndex]) {
                 // initialize iterators for every payload index
                 for (int i = 0; i < size; ++i) {
@@ -373,7 +373,7 @@ namespace xorCode {
                     for (int i = 0; i < size; ++i) {
                         curPayloads[i] = &((*payloadIterators[i])->payload);
                     }
-                    auto newXorPayload = getXorPayload(curPayloads.data(), size);
+                    auto newXorPayload = getXorPayload(curPayloads, size);
                     if (newXorPayload.size() == curXorStrand->payload.size()
                         && std::equal(newXorPayload.begin(), newXorPayload.end(), curXorStrand->payload.begin())) {
                         auto recursiveCalls = std::unordered_set<unsigned long long>();
