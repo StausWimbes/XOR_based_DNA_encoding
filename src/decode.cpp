@@ -341,10 +341,46 @@ namespace xorCode {
                 decodedXorStrands.pop_back();
             }
             // put remaining strands into data structures for next step
-            // TODO: use unordered_multiset to eliminate duplicates and sort by frequency LUCA
+            auto setMap = std::unordered_map<uint64_t, std::unordered_set<strand *>>();
+            auto multiSetMap = std::unordered_map<uint64_t, std::unordered_multiset<strand *>>();
             for (auto *s: decodedPayloadStrands) {
                 // [] implicitly adds new vector
                 payloadStrandMap[s->lowAddress].push_back(s);
+            }
+            // eliminate duplicates and sort by frequency
+            struct PointedVectorEq {
+                bool operator()(strand const *l, strand const *r) const {
+                    return l->payload == r->payload;
+                }
+            };
+            struct PointedVectorHash {
+                size_t operator()(strand const *s) const {
+                    // https://stackoverflow.com/questions/20511347/a-good-hash-function-for-a-vector
+                    auto vec = s->payload;
+                    std::size_t seed = vec.size();
+                    for (auto x: vec) {
+                        x = ((x >> 16) ^ x) * 0x45d9f3b;
+                        x = ((x >> 16) ^ x) * 0x45d9f3b;
+                        x = (x >> 16) ^ x;
+                        seed ^= x + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+                    }
+                    return seed;
+                }
+            };
+            for (auto entry: payloadStrandMap) {
+                // put all strands with the current key into a set and a multiset
+                // two strands are only equal if their payloads are equal
+                auto multiSet = std::unordered_multiset<strand *, PointedVectorHash, PointedVectorEq>();
+                auto set = std::unordered_set<strand *, PointedVectorHash, PointedVectorEq>();
+                multiSet.insert(entry.second.begin(), entry.second.end());
+                set.insert(entry.second.begin(), entry.second.end());
+                // insert all unique strands into the vector
+                entry.second.clear();
+                entry.second.insert(entry.second.begin(), set.begin(), set.end());
+                // sort vector in descending order based on how often each strand appears in the multiset
+                std::sort(entry.second.begin(), entry.second.end(), [&multiSet](const auto &lhs, const auto &rhs) {
+                    return multiSet.count(lhs) > multiSet.count(rhs);
+                });
             }
         }
 
