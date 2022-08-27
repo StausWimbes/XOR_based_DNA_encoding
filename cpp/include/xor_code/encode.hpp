@@ -27,7 +27,7 @@ namespace xor_code {
         types::nucleotides *primerEnd;
     };
 
-    std::vector<types::nucleotides> encode(const std::string &key, std::ifstream &input);
+    std::vector<types::nucleotides> encode(const std::string &key, std::istream &input);
 
     std::vector<types::nucleotides> encode(const std::string &filePath);
 

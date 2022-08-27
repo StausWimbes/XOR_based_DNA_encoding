@@ -16,7 +16,7 @@ namespace xor_code {
 
     public:
 
-        Encoder(const std::string &key, std::ifstream &input) {
+        Encoder(const std::string &key, std::istream &input) {
             this->key = key;
             while (!input.eof()) {
                 auto cur = input.get();
@@ -142,7 +142,7 @@ namespace xor_code {
 
     };
 
-    std::vector<types::nucleotides> encode(const std::string &key, std::ifstream &input) {
+    std::vector<types::nucleotides> encode(const std::string &key, std::istream &input) {
         auto encoder = Encoder(key, input);
         encoder.createPayloadStrands();
         encoder.createXorStrands();
