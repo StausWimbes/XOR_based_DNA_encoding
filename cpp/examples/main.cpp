@@ -5,7 +5,7 @@
 #include "xor_code/settings.hpp"
 
 bool doConsoleOutput = false;
-std::string inputDirectory = "../cpp/examples/data/";
+std::string inputDirectory = "../../cpp/examples/data/";
 std::string fileName = "example.jpg";
 bool doFileOutput = true;
 std::string outputDirectory = inputDirectory + "out/";
