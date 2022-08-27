@@ -5,9 +5,9 @@
 #include <cstdint>
 #include <string>
 #include <memory>
-#include "settings.h"
+#include "settings.hpp"
 
-namespace xorCode {
+namespace xor_code {
 
     extern const uint8_t nuc_A;
     extern const uint8_t nuc_C;

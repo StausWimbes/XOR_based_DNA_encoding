@@ -1,13 +1,13 @@
-#include "decode.h"
-#include "encode.h"
-#include "settings.h"
-#include "nucleotideUtils.h"
+#include "xor_code/decode.hpp"
+#include "xor_code/encode.hpp"
+#include "xor_code/settings.hpp"
+#include "xor_code/nucleotideUtils.hpp"
 #include <unordered_map>
 #include <unordered_set>
 #include <queue>
 #include <algorithm>
 
-namespace xorCode {
+namespace xor_code {
 
     class StrandDecoder {
 
@@ -262,7 +262,7 @@ namespace xorCode {
             for (auto *strand: cleanedStrands) {
                 // itBegin now points to the char right before the address
                 auto itBegin = strand->end() - addressLength - 1;
-                auto *cur = new xorCode::strand;
+                auto *cur = new xor_code::strand;
                 uint8_t prev = *itBegin;
                 ++itBegin; // itBegin now points to the first char of the address
                 // check parity nucleotide

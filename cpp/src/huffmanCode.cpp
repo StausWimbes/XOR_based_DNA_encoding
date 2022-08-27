@@ -2,10 +2,9 @@
 #include <queue>
 #include <unordered_map>
 #include <list>
-#include <iostream>
-#include "huffmanCode.h"
+#include "xor_code/huffmanCode.hpp"
 
-namespace xorCode {
+namespace xor_code {
 
     Leaf::Leaf(uint8_t byte) {
         this->byte = byte;

@@ -1,9 +1,9 @@
-#include "encode.h"
-#include "nucleotideUtils.h"
-#include "settings.h"
+#include "xor_code/encode.hpp"
+#include "xor_code/nucleotideUtils.hpp"
+#include "xor_code/settings.hpp"
 #include <iostream>
 
-namespace xorCode {
+namespace xor_code {
 
     class Encoder {
 

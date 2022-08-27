@@ -1,11 +1,11 @@
-#include "nucleotideUtils.h"
-#include "huffmanCode.h"
-#include "settings.h"
+#include "xor_code/nucleotideUtils.hpp"
+#include "xor_code/huffmanCode.hpp"
+#include "xor_code/settings.hpp"
 
 #include <cstdint>
 #include <random>
 
-namespace xorCode {
+namespace xor_code {
 
     const uint8_t nuc_A = 0;
     const uint8_t nuc_C = 1;

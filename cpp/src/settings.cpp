@@ -1,6 +1,6 @@
-#include "settings.h"
+#include "xor_code/settings.hpp"
 
-namespace xorCode {
+namespace xor_code {
 
     int maxStrandLength = 111; // in nucleotides
     int payloadByteLength = 5; // in bytes

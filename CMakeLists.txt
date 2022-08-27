@@ -3,19 +3,14 @@ project(XOR_based_DNA_encoding)
 
 set(CMAKE_CXX_STANDARD 23)
 
+# Windows shared library fix
+# see: https://cmake.org/cmake/help/latest/guide/tutorial/Selecting%20Static%20or%20Shared%20Libraries.html
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${PROJECT_BINARY_DIR}")
 
-set(SOURCE_FILES
-        main.cpp
-        )
+set(LIB_NAME xor_code)
+set(LIB_TESTS_NAME xor_code_tests)
+set(LIB_EXAMPLE_NAME xor_code_run)
 
-add_executable(xorCode_run ${SOURCE_FILES})
-
-
-include_directories(src)
-add_subdirectory(src)
-
-
-target_link_libraries(xorCode_run xorCode)
-
-
-add_subdirectory(tests)
+add_subdirectory(cpp)

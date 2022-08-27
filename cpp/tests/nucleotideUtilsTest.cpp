@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
-#include "nucleotideUtils.h"
+#include "xor_code/nucleotideUtils.hpp"
 
-using namespace xorCode;
+using namespace xor_code;
 
 TEST(NucleotideUtilsTest, Nucleotides) {
     ASSERT_EQ(0, nuc_A);
