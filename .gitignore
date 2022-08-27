@@ -73,7 +73,7 @@
 # *.ipr
 
 # CMake
-cmake-build-*/
+cmake-build*/
 
 # Mongo Explorer plugin
 .idea/**/mongoSettings.xml
@@ -118,3 +118,9 @@ compile_commands.json
 CTestTestfile.cmake
 _deps
 
+
+### python bindings
+venv/
+build/
+*.egg-info
+*.pytest*
