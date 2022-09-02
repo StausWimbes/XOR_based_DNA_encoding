@@ -203,7 +203,7 @@ namespace xorCode {
             // two strands are only equal if their payloads are equal
             auto multiSet = std::unordered_multiset<strand *, PointedVectorHash, PointedVectorEq>();
             auto set = std::unordered_set<strand *, PointedVectorHash, PointedVectorEq>();
-            for (auto entry: payloadStrandMap) {
+            for (auto &entry: payloadStrandMap) {
                 multiSet.insert(entry.second.begin(), entry.second.end());
                 set.insert(entry.second.begin(), entry.second.end());
                 // insert all unique strands into the vector
@@ -216,7 +216,7 @@ namespace xorCode {
                 multiSet.clear();
                 set.clear();
             }
-            for (auto entry: xorStrandMap) {
+            for (auto &entry: xorStrandMap) {
                 multiSet.insert(entry.second.begin(), entry.second.end());
                 set.insert(entry.second.begin(), entry.second.end());
                 // insert all unique strands into the vector
