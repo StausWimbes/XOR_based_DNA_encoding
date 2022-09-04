@@ -1,6 +1,8 @@
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
+#include "xor_code/encode.hpp"
+#include "xor_code/decode.hpp"
 #include "xor_code/settings.hpp"
 
 namespace py = pybind11;
@@ -8,17 +10,68 @@ using namespace pybind11::literals;
 
 namespace xor_code {
     std::vector<std::string> encode_helper(const std::string &filename, const py::array_t<bool> &data) {
+        // convert bit array to byte vector
+        types::bytes bytes;
+
+        uint8_t byte;
+        for (size_t i = 0; i < data.size(); ++i) {
+            byte = (byte << 1) ^ data.at(i);
+
+            if (i % 8 == 7) {
+                bytes.push_back(byte);
+            }
+        }
+
+        // if the last byte isn't complete, don't forget it
+        if (data.size() % 8 != 0) {
+            byte = byte << data.size() % 8;
+            bytes.push_back(byte);
+        }
+
+
+        // encode data
+        auto strands = encode(filename, bytes);
+
+
+        // convert vector of nucleotides to vector of strings
         std::vector<std::string> result;
 
-        // TODO
+        for (const auto &strand: strands) {
+            std::string s;
+            for (uint8_t nucleotide: strand) {
+                s.push_back(getCharNucleotide(nucleotide));
+            }
+            result.push_back(s);
+        }
 
         return result;
     }
 
     py::array_t<bool> decode_helper(const std::string &filename, const std::vector<std::string> &strands) {
+        // convert vector of strings to vector of nucleotides
+        std::vector<types::nucleotides> nucleotides;
+
+        for (const auto &strand: strands) {
+            types::nucleotides n;
+            for (char nucleotide: strand) {
+                n.push_back(getIntegerNucleotide(nucleotide));
+            }
+            nucleotides.push_back(n);
+        }
+
+
+        // decode data
+        auto bytes = decode(filename, nucleotides);
+
+
+        // convert byte vector to bit array
         std::vector<bool> result;
 
-        // TODO
+        for (uint8_t byte: bytes) {
+            for (int8_t shift = 7; shift >= 0; --shift) {
+                result.push_back((byte >> shift & 0x1) == 0x1);
+            }
+        }
 
         return py::cast(result);
     }
