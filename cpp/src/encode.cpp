@@ -1,33 +1,27 @@
-#include "encode.h"
-#include "nucleotideUtils.h"
-#include "settings.h"
+#include "xor_code/encode.hpp"
+#include "xor_code/nucleotideUtils.hpp"
+#include "xor_code/settings.hpp"
 #include <iostream>
 
-namespace xorCode {
+namespace xor_code {
 
     class Encoder {
 
     private:
 
         std::string key;
-        types::bytes *inputBytes = new types::bytes;
+        types::bytes *inputBytes;
 
         std::vector<strand *> *strands = new std::vector<strand *>;
 
     public:
 
-        Encoder(const std::string &key, std::ifstream &input) {
+        Encoder(const std::string &key, types::bytes &bytes) {
             this->key = key;
-            while (!input.eof()) {
-                auto cur = input.get();
-                if (!input.eof()) {
-                    inputBytes->push_back(cur);
-                }
-            }
+            inputBytes = &bytes;
         }
 
         ~Encoder() {
-            delete inputBytes;
             for (strand *s: *strands) {
                 delete s;
             }
@@ -66,7 +60,7 @@ namespace xorCode {
             auto size = getXorSize();
             auto step = getXorStep();
             auto xorStrandsCount = getXorStrandsCount(strands->size());
-            types::nucleotides *payloads[size]; // space for the strands to be used to create a Xor strand
+            auto *curPayloads = new types::nucleotides*[size];; // space for the strands to be used to create a Xor strand
 
             for (uint64_t i = 0; i < xorStrandsCount; i++) {
                 auto start = i * step; // inclusive
@@ -82,12 +76,13 @@ namespace xorCode {
                 // create xor payload
                 uint64_t payloadIndex = 0;
                 for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
-                    payloads[payloadIndex++] = &strands->at(strandIndex)->payload;
+                    curPayloads[payloadIndex++] = &strands->at(strandIndex)->payload;
                 }
-                newStrand->payload = getXorPayload(payloads, size);
+                newStrand->payload = getXorPayload(curPayloads, size);
 
                 strands->push_back(newStrand);
             }
+            delete[] curPayloads;
         }
 
         std::vector<types::nucleotides> assembleStrands() {
@@ -142,11 +137,22 @@ namespace xorCode {
 
     };
 
-    std::vector<types::nucleotides> encode(const std::string &key, std::ifstream &input) {
-        auto encoder = Encoder(key, input);
+    std::vector<types::nucleotides> encode(const std::string &key, types::bytes &bytes) {
+        auto encoder = Encoder(key, bytes);
         encoder.createPayloadStrands();
         encoder.createXorStrands();
         return encoder.assembleStrands();
+    }
+
+    std::vector<types::nucleotides> encode(const std::string &key, std::istream &input) {
+        types::bytes bytes;
+        while (!input.eof()) {
+            auto cur = input.get();
+            if (!input.eof()) {
+                bytes.push_back(cur);
+            }
+        }
+        return encode(key, bytes);
     }
 
     std::vector<types::nucleotides> encode(const std::string &filePath) {

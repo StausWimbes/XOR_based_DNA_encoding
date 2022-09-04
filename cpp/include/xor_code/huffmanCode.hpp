@@ -6,9 +6,9 @@
 #include <string>
 #include <cstdint>
 
-#include "settings.h"
+#include "settings.hpp"
 
-namespace xorCode {
+namespace xor_code {
 
     struct TreeNode {
 

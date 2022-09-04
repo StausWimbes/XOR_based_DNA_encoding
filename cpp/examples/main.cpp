@@ -1,20 +1,20 @@
 #include <iostream>
 #include <filesystem>
-#include "encode.h"
-#include "decode.h"
-#include "settings.h"
+#include "xor_code/encode.hpp"
+#include "xor_code/decode.hpp"
+#include "xor_code/settings.hpp"
 
 bool doConsoleOutput = false;
-std::string inputDirectory = "../data/";
+std::string inputDirectory = "../../cpp/examples/data/";
 std::string fileName = "example.jpg";
 bool doFileOutput = true;
-std::string outputDirectory = "../data/out/";
+std::string outputDirectory = inputDirectory + "out/";
 
 // TODO: add python interface LEON
 // TODO: write github wiki LUCA
 
 int main() {
-    using namespace xorCode;
+    using namespace xor_code;
 
     setXorStep(2);
     setXorSize(3);

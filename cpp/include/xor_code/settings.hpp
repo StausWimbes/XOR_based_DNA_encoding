@@ -4,7 +4,7 @@
 #include <cstdint>
 #include <vector>
 
-namespace xorCode {
+namespace xor_code {
 
     namespace types {
 

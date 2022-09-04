@@ -1,14 +1,14 @@
 #ifndef XOR_CODE_DECODE_H
 #define XOR_CODE_DECODE_H
 
-#include "settings.h"
+#include "settings.hpp"
 
 #include <cstdint>
 #include <vector>
 #include <list>
 #include <string>
 
-namespace xorCode {
+namespace xor_code {
 
     // TODO: add some documentation LEON
 

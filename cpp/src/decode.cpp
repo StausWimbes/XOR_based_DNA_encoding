@@ -1,13 +1,13 @@
-#include "decode.h"
-#include "encode.h"
-#include "settings.h"
-#include "nucleotideUtils.h"
+#include "xor_code/decode.hpp"
+#include "xor_code/encode.hpp"
+#include "xor_code/settings.hpp"
+#include "xor_code/nucleotideUtils.hpp"
 #include <unordered_map>
 #include <unordered_set>
 #include <queue>
 #include <algorithm>
 
-namespace xorCode {
+namespace xor_code {
 
     class StrandDecoder {
 
@@ -85,7 +85,7 @@ namespace xorCode {
             for (auto *strand: cleanedStrands) {
                 // itBegin now points to the char right before the address
                 auto itBegin = strand->end() - addressLength - 1;
-                auto *cur = new xorCode::strand;
+                auto *cur = new xor_code::strand;
                 uint8_t prev = *itBegin;
                 ++itBegin; // itBegin now points to the first char of the address
                 // check parity nucleotide
@@ -433,9 +433,8 @@ namespace xorCode {
             }
             auto payloadIterators = std::vector<std::vector<strand *>::iterator>();
             payloadIterators.resize(size);
-            types::nucleotides *curPayloads[size];
-            for (auto cur = 0; cur < xorStrandMap[xorIndex].size(); cur++) {
-                auto *curXorStrand = xorStrandMap[xorIndex][cur];
+            auto *curPayloads = new types::nucleotides*[size];
+            for (auto *curXorStrand: xorStrandMap[xorIndex]) {
                 // initialize iterators for every payload index
                 for (int i = 0; i < size; ++i) {
                     if (!payloadStrandMap[xorIndex + i].empty()) {
@@ -479,6 +478,7 @@ namespace xorCode {
                             delete xorToDelete;
                         }
                         xorStrandMap[xorIndex].clear();
+                        delete[] curPayloads;
                         return;
                     }
 
@@ -495,6 +495,7 @@ namespace xorCode {
                     }
                 }
             }
+            delete[] curPayloads;
         }
 
         /**

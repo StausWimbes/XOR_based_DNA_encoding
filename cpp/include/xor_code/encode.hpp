@@ -1,8 +1,8 @@
 #ifndef XOR_CODE_ENCODE_H
 #define XOR_CODE_ENCODE_H
 
-#include "settings.h"
-#include "nucleotideUtils.h"
+#include "settings.hpp"
+#include "nucleotideUtils.hpp"
 
 #include <cstdint>
 #include <memory>
@@ -12,7 +12,7 @@
 #include <list>
 #include <array>
 
-namespace xorCode {
+namespace xor_code {
 
     // TODO: add some documentation LEON
 
@@ -27,7 +27,9 @@ namespace xorCode {
         types::nucleotides *primerEnd;
     };
 
-    std::vector<types::nucleotides> encode(const std::string &key, std::ifstream &input);
+    std::vector<types::nucleotides> encode(const std::string &key, types::bytes &bytes);
+
+    std::vector<types::nucleotides> encode(const std::string &key, std::istream &input);
 
     std::vector<types::nucleotides> encode(const std::string &filePath);
 
