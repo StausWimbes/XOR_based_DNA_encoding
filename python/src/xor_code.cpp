@@ -1,14 +1,36 @@
 #include <pybind11/pybind11.h>
-#include "../../cpp/include/xor_code/settings.hpp"
+#include <pybind11/stl.h>
+#include <pybind11/numpy.h>
+#include "xor_code/settings.hpp"
 
 namespace py = pybind11;
 using namespace pybind11::literals;
 
 namespace xor_code {
+    std::vector<std::string> encode_helper(const std::string &filename, const py::array_t<bool> &data) {
+        std::vector<std::string> result;
+
+        // TODO
+
+        return result;
+    }
+
+    py::array_t<bool> decode_helper(const std::string &filename, const std::vector<std::string> &strands) {
+        std::vector<bool> result;
+
+        // TODO
+
+        return py::cast(result);
+    }
+
+
     PYBIND11_MODULE(xor_code_python, m) {
         m.doc() = R"pbdoc(
             Python bindings for the implementation of the xor based DNA Encoding created by Bornholt et al..
             )pbdoc";
+
+        m.def("encode", &encode_helper, "Encode the given data.", "filename"_a, "data"_a);
+        m.def("decode", &decode_helper, "Decode the given strands.", "filename"_a, "strands"_a);
 
 
         m.def("get_max_strand_length", &getMaxStrandLength, R"pbdoc(
