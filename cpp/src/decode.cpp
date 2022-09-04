@@ -290,7 +290,7 @@ namespace xor_code {
             auto *xorStrand = xorStrandMap[start].front();
 
 
-            types::nucleotides *curPayloads[size];
+            auto *curPayloads = new types::nucleotides*[size];
             curPayloads[0] = &(xorStrand->payload);
             int i = 1;
             for (auto strandIndex = start; strandIndex < end; ++strandIndex) {
@@ -299,6 +299,8 @@ namespace xor_code {
                 i++;
             }
             auto restoredPayload = getXorPayload(curPayloads, size);
+
+            delete[] curPayloads;
 
             auto *restoredStrand = new strand();
             restoredStrand->payload = restoredPayload;
