@@ -10,24 +10,18 @@ namespace xor_code {
     private:
 
         std::string key;
-        types::bytes *inputBytes = new types::bytes;
+        types::bytes *inputBytes;
 
         std::vector<strand *> *strands = new std::vector<strand *>;
 
     public:
 
-        Encoder(const std::string &key, std::istream &input) {
+        Encoder(const std::string &key, types::bytes &bytes) {
             this->key = key;
-            while (!input.eof()) {
-                auto cur = input.get();
-                if (!input.eof()) {
-                    inputBytes->push_back(cur);
-                }
-            }
+            inputBytes = &bytes;
         }
 
         ~Encoder() {
-            delete inputBytes;
             for (strand *s: *strands) {
                 delete s;
             }
@@ -142,11 +136,22 @@ namespace xor_code {
 
     };
 
-    std::vector<types::nucleotides> encode(const std::string &key, std::istream &input) {
-        auto encoder = Encoder(key, input);
+    std::vector<types::nucleotides> encode(const std::string &key, types::bytes &bytes) {
+        auto encoder = Encoder(key, bytes);
         encoder.createPayloadStrands();
         encoder.createXorStrands();
         return encoder.assembleStrands();
+    }
+
+    std::vector<types::nucleotides> encode(const std::string &key, std::istream &input) {
+        types::bytes bytes;
+        while (!input.eof()) {
+            auto cur = input.get();
+            if (!input.eof()) {
+                bytes.push_back(cur);
+            }
+        }
+        return encode(key, bytes);
     }
 
     std::vector<types::nucleotides> encode(const std::string &filePath) {
