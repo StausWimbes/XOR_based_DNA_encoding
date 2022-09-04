@@ -1,3 +1,4 @@
+import numpy as np
 import xor_code_python as xor
 
 
@@ -27,3 +28,10 @@ def test_xor_step():
     assert xor.get_xor_step() == 5
     xor.set_xor_step(3)
     assert xor.get_xor_step() == 3
+
+
+def test_encode_decode():
+    original = np.array([i >= 0.5 for i in np.random.rand(1_000_000)])
+    encoded = xor.encode('test', original)
+    decoded = xor.decode('test', encoded)
+    assert (original == decoded).all()
