@@ -60,7 +60,7 @@ namespace xor_code {
             auto size = getXorSize();
             auto step = getXorStep();
             auto xorStrandsCount = getXorStrandsCount(strands->size());
-            types::nucleotides *payloads[size]; // space for the strands to be used to create a Xor strand
+            auto *curPayloads = new types::nucleotides*[size];; // space for the strands to be used to create a Xor strand
 
             for (uint64_t i = 0; i < xorStrandsCount; i++) {
                 auto start = i * step; // inclusive
@@ -76,12 +76,13 @@ namespace xor_code {
                 // create xor payload
                 uint64_t payloadIndex = 0;
                 for (uint64_t strandIndex = start; strandIndex < end; strandIndex++) {
-                    payloads[payloadIndex++] = &strands->at(strandIndex)->payload;
+                    curPayloads[payloadIndex++] = &strands->at(strandIndex)->payload;
                 }
-                newStrand->payload = getXorPayload(payloads, size);
+                newStrand->payload = getXorPayload(curPayloads, size);
 
                 strands->push_back(newStrand);
             }
+            delete[] curPayloads;
         }
 
         std::vector<types::nucleotides> assembleStrands() {

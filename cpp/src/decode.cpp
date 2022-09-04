@@ -72,7 +72,7 @@ namespace xor_code {
             auto *xorStrand = xorStrandMap[start].front();
 
 
-            types::nucleotides *curPayloads[size];
+            auto *curPayloads = new types::nucleotides*[size];
             curPayloads[0] = &(xorStrand->payload);
             int i = 1;
             for (auto strandIndex = start; strandIndex < end; ++strandIndex) {
@@ -81,6 +81,7 @@ namespace xor_code {
                 i++;
             }
             auto restoredPayload = getXorPayload(curPayloads, size);
+            delete[] curPayloads;
 
             auto *restoredStrand = new strand();
             restoredStrand->payload = restoredPayload;
@@ -392,7 +393,7 @@ namespace xor_code {
             }
             auto payloadIterators = std::vector<std::vector<strand *>::iterator>();
             payloadIterators.resize(size);
-            types::nucleotides *curPayloads[size];
+            auto *curPayloads = new types::nucleotides*[size];
             for (auto *curXorStrand: xorStrandMap[xorIndex]) {
                 // initialize iterators for every payload index
                 for (int i = 0; i < size; ++i) {
@@ -438,6 +439,7 @@ namespace xor_code {
                             // TODO: remove recursion to avoid stack overflow LUCA
                             checkAllPossibilities(i, correctStrands);
                         }
+                        delete[] curPayloads;
                         return;
                     }
 
@@ -454,6 +456,7 @@ namespace xor_code {
                     }
                 }
             }
+            delete[] curPayloads;
         }
 
         /**
