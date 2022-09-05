@@ -132,8 +132,3 @@ TEST(NucleotideUtilsTest, GetParityNucleotide) {
 
     ASSERT_EQ(1, getParityNucleotide(begin2, end2));
 }
-
-// TODO getPrimer test
-// TODO getXorPayload test
-// TODO convertBinaryToNucleotides test
-// TODO convertNucleotidesToBinary test

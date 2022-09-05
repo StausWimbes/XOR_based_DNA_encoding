@@ -10,9 +10,6 @@ std::string fileName = "example.jpg";
 bool doFileOutput = true;
 std::string outputDirectory = inputDirectory + "out/";
 
-// TODO: add python interface LEON
-// TODO: write github wiki LUCA
-
 int main() {
     using namespace xor_code;
 
