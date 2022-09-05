@@ -82,8 +82,14 @@ namespace xor_code {
             Python bindings for the implementation of the xor based DNA Encoding created by Bornholt et al..
             )pbdoc";
 
-        m.def("encode", &encode_helper, "Encode the given data.", "filename"_a, "data"_a);
-        m.def("decode", &decode_helper, "Decode the given strands.", "filename"_a, "strands"_a);
+
+        m.def("encode", &encode_helper, R"pbdoc(
+            Encodes the given data into strands of nucleotides.
+            )pbdoc", "filename"_a, "data"_a);
+
+        m.def("decode", &decode_helper, R"pbdoc(
+            Decodes the given nucleotide strands, filtered by the given key (filename), into binary data.
+            )pbdoc", "filename"_a, "strands"_a);
 
 
         m.def("get_max_strand_length", &getMaxStrandLength, R"pbdoc(

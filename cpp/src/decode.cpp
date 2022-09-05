@@ -13,7 +13,7 @@ namespace xor_code {
 
     private:
 
-        std::string fileName;
+        std::string key;
         std::vector<types::nucleotides> strands;
 
         std::vector<types::nucleotides *> cleanedStrands;
@@ -34,7 +34,7 @@ namespace xor_code {
          */
         void filterStrands() {
             // create primers
-            auto primerBegin = *getPrimer(fileName);
+            auto primerBegin = *getPrimer(key);
             auto primerEnd = types::nucleotides(NUCLEOTIDES_PER_PRIMER, 0);
             std::copy(primerBegin.begin(), primerBegin.end(), primerEnd.begin());
             invertNucleotides(primerEnd);
@@ -563,8 +563,8 @@ namespace xor_code {
 
     public:
 
-        StrandDecoder(std::string &fileName, std::vector<types::nucleotides> &strands) {
-            this->fileName = fileName;
+        StrandDecoder(std::string &key, std::vector<types::nucleotides> &strands) {
+            this->key = key;
             this->strands = strands;
         }
 
@@ -585,8 +585,8 @@ namespace xor_code {
 
     };
 
-    types::bytes decode(std::string fileName, std::vector<types::nucleotides> &strands) {
-        auto decoder = StrandDecoder(fileName, strands);
+    types::bytes decode(std::string key, std::vector<types::nucleotides> &strands) {
+        auto decoder = StrandDecoder(key, strands);
         return decoder.decode();
     }
 }

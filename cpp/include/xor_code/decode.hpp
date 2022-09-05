@@ -10,9 +10,14 @@
 
 namespace xor_code {
 
-    // TODO: add some documentation LEON
-
-    types::bytes decode(std::string fileName, std::vector<types::nucleotides> &strands);
+    /**
+     * Decodes the given nucleotide strands, filtered by the given key, into binary data.
+     *
+     * @param key The string identifying the relevant strands.
+     * @param strands The strands to be decoded.
+     * @return The decoded data as a vector of bytes.
+     */
+    types::bytes decode(std::string key, std::vector<types::nucleotides> &strands);
 
 }
 

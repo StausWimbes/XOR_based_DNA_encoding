@@ -14,8 +14,6 @@
 
 namespace xor_code {
 
-    // TODO: add some documentation LEON
-
     struct strand {
         types::nucleotides payload;
         union {
@@ -27,10 +25,30 @@ namespace xor_code {
         types::nucleotides *primerEnd;
     };
 
+    /**
+     * Encodes the given data into strands of nucleotides.
+     *
+     * @param key The string identifying the given data.
+     * @param bytes The binary data to be encoded.
+     * @return The encoded nucleotide strands.
+     */
     std::vector<types::nucleotides> encode(const std::string &key, types::bytes &bytes);
 
+    /**
+     * Encodes the given data into strands of nucleotides.
+     *
+     * @param key The string identifying the given data.
+     * @param input The binary stream to be encoded.
+     * @return The encoded nucleotide strands.
+     */
     std::vector<types::nucleotides> encode(const std::string &key, std::istream &input);
 
+    /**
+     * Encodes the given data into strands of nucleotides.
+     *
+     * @param filePath The file to be read and encoded.
+     * @return The encoded nucleotide strands.
+     */
     std::vector<types::nucleotides> encode(const std::string &filePath);
 
 }
