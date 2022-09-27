@@ -27,6 +27,7 @@ class CMakeBuild(build_ext):
             f'-DPYTHON_EXECUTABLE={python_path}',
             f'-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={lib_dir}'
         ]
+        build_args = []
 
         if self.compiler.compiler_type == 'unix':  # use Ninja on unix systems
             import ninja
@@ -37,8 +38,12 @@ class CMakeBuild(build_ext):
                 f'-DCMAKE_MAKE_PROGRAM:FILEPATH={ninja_path}'
             ]
 
+        else:
+            cmake_args += [f'-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{config.upper()}={lib_dir}']
+            build_args += ['--config', config]
+
         subprocess.check_call(['cmake', project_dir] + cmake_args, cwd=build_dir)
-        subprocess.check_call(['cmake', '--build', '.'], cwd=build_dir)
+        subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=build_dir)
 
 
 setup(
